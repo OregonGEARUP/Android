@@ -15,30 +15,30 @@ import android.webkit.WebView;
  */
 public class InfoFragment extends Fragment
 {
-    private final String GEAR_UP_WEBSITE = "https://oregongoestocollege.org/5-things";
-    private WebView mWebView;
+	private final String GEAR_UP_WEBSITE = "https://oregongoestocollege.org/5-things";
+	private WebView mWebView;
 
-    public InfoFragment()
-    {
-        // Required empty public constructor
-    }
+	public InfoFragment()
+	{
+		// Required empty public constructor
+	}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+	}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-    {
-        // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_info, container, false);
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+		Bundle savedInstanceState)
+	{
+		// Inflate the layout for this fragment
+		View v = inflater.inflate(R.layout.fragment_info, container, false);
 
-        mWebView = v.findViewById(R.id.info_web_view);
-        mWebView.loadUrl(GEAR_UP_WEBSITE);
+		mWebView = v.findViewById(R.id.info_web_view);
+		mWebView.loadUrl(GEAR_UP_WEBSITE);
 
-        return v;
-    }
+		return v;
+	}
 }

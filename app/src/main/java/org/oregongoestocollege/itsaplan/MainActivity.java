@@ -6,8 +6,8 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import org.oregongoestocollege.itsaplan.common.BottomBarAdapter;
-import org.oregongoestocollege.itsaplan.common.NoSwipePager;
+import org.oregongoestocollege.itsaplan.support.BottomBarAdapter;
+import org.oregongoestocollege.itsaplan.support.NoSwipePager;
 
 /**
  * MainActivity
@@ -17,61 +17,60 @@ import org.oregongoestocollege.itsaplan.common.NoSwipePager;
  */
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener
 {
-    private NoSwipePager viewPager;
-    private BottomBarAdapter pagerAdapter;
+	private NoSwipePager viewPager;
+	private BottomBarAdapter pagerAdapter;
+	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+		= new BottomNavigationView.OnNavigationItemSelectedListener()
+	{
+		@Override
+		public boolean onNavigationItemSelected(@NonNull MenuItem item)
+		{
+			int position;
+			switch (item.getItemId())
+			{
+			case R.id.navigation_info:
+				position = 3;
+				break;
+			case R.id.navigation_passwords:
+				position = 2;
+				break;
+			case R.id.navigation_myplan:
+				position = 1;
+				break;
+			case R.id.navigation_checklist:
+			default:
+				position = 0;
+				break;
+			}
+			viewPager.setCurrentItem(position);
+			return true;
+		}
+	};
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener()
-    {
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item)
-        {
-            int position;
-            switch (item.getItemId())
-            {
-                case R.id.navigation_info:
-                    position = 3;
-                    break;
-                case R.id.navigation_passwords:
-                    position = 2;
-                    break;
-                case R.id.navigation_myplan:
-                    position = 1;
-                    break;
-                case R.id.navigation_checklist:
-                default:
-                    position = 0;
-                    break;
-            }
-            viewPager.setCurrentItem(position);
-            return true;
-        }
-    };
+		BottomNavigationView navigation = findViewById(R.id.navigation);
+		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+		pagerAdapter = new BottomBarAdapter(getSupportFragmentManager());
+		pagerAdapter.addFragments(new ChecklistFragment());
+		pagerAdapter.addFragments(new MyPlanFragment());
+		pagerAdapter.addFragments(new PasswordsFragment());
+		pagerAdapter.addFragments(new InfoFragment());
 
-        BottomNavigationView navigation = findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+		// we want to disable swipe, on change fragments via bottom bar
+		viewPager = findViewById(R.id.viewpager);
+		viewPager.setPagingEnabled(false);
+		viewPager.setAdapter(pagerAdapter);
+	}
 
-        pagerAdapter = new BottomBarAdapter(getSupportFragmentManager());
-        pagerAdapter.addFragments(new ChecklistFragment());
-        pagerAdapter.addFragments(new MyPlanFragment());
-        pagerAdapter.addFragments(new PasswordsFragment());
-        pagerAdapter.addFragments(new InfoFragment());
-
-        // we want to disable swipe, on change fragments via bottom bar
-        viewPager = findViewById(R.id.viewpager);
-        viewPager.setPagingEnabled(false);
-        viewPager.setAdapter(pagerAdapter);
-    }
-
-    @Override public void onFragmentInteraction()
-    {
-        // no-op for now
-    }
+	@Override
+	public void onFragmentInteraction()
+	{
+		// no-op for now
+	}
 }

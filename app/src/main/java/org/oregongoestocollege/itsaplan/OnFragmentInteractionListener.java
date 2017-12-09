@@ -12,8 +12,7 @@ package org.oregongoestocollege.itsaplan;
  * <p>
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-
 public interface OnFragmentInteractionListener
 {
-    void onFragmentInteraction();
+	void onFragmentInteraction();
 }
