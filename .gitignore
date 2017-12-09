@@ -8,5 +8,42 @@
 /build
 /captures
 .externalNativeBuild
+<<<<<<< Updated upstream
 .svn
 
+=======
+build
+bin
+gen
+captures
+.svn
+local.properties
+test.properties
+/*/build.xml
+/*/tests/build.xml
+.DS_Store
+.settings
+proguard
+*/usage.txt
+*/dump.txt
+
+# Android Studio
+/.idea/*
+!/.idea/codeStyleSettings.xml
+!/.idea/runConfigurations/
+.gradle
+*.iws
+*.iml
+
+# Crashlytics
+**/com_crashlytics_export_strings.xml
+**/crashlytics-build.properties
+
+/.metadata/
+/.idea/*
+!/.idea/codeStyleSettings.xml
+!/.idea/runConfigurations/
+.gradle
+*.iws
+*.iml
+>>>>>>> Stashed changes
