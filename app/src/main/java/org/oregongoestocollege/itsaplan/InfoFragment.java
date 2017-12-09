@@ -1,11 +1,11 @@
 package org.oregongoestocollege.itsaplan;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 
 /**
  * InfoFragment
@@ -15,7 +15,8 @@ import android.view.ViewGroup;
  */
 public class InfoFragment extends Fragment
 {
-    private OnFragmentInteractionListener mListener;
+    private final String GEAR_UP_WEBSITE = "https://oregongoestocollege.org/5-things";
+    private WebView mWebView;
 
     public InfoFragment()
     {
@@ -33,27 +34,11 @@ public class InfoFragment extends Fragment
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_info, container, false);
-    }
+        View v = inflater.inflate(R.layout.fragment_info, container, false);
 
-    @Override
-    public void onAttach(Context context)
-    {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener)
-        {
-            mListener = (OnFragmentInteractionListener) context;
-        } else
-        {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
+        mWebView = v.findViewById(R.id.info_web_view);
+        mWebView.loadUrl(GEAR_UP_WEBSITE);
 
-    @Override
-    public void onDetach()
-    {
-        super.onDetach();
-        mListener = null;
+        return v;
     }
 }
