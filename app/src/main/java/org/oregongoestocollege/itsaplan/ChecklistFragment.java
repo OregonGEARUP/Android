@@ -1,12 +1,22 @@
 package org.oregongoestocollege.itsaplan;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.oregongoestocollege.itsaplan.data.BlockInfo;
+import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
+import org.oregongoestocollege.itsaplan.viewmodel.BaseViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoViewModel;
 
 /**
  * ChecklistFragment
@@ -31,6 +41,8 @@ public class ChecklistFragment extends Fragment
 	private String mParam1;
 	private String mParam2;
 	private OnFragmentInteractionListener mListener;
+	private RecyclerView recyclerView;
+	private BindingItemsAdapter adapter;
 
 	public ChecklistFragment()
 	{
@@ -72,7 +84,16 @@ public class ChecklistFragment extends Fragment
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_checklist, container, false);
+		View v = inflater.inflate(R.layout.fragment_checklist, container, false);
+
+		adapter = new BindingItemsAdapter();
+
+		recyclerView = v.findViewById(R.id.recycler_view);
+		recyclerView.setAdapter(adapter);
+		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+
+		CheckpointManager.getInstance().init(this);
+		return v;
 	}
 
 	// TODO: Rename method, update argument and hook method into UI event
@@ -104,5 +125,23 @@ public class ChecklistFragment extends Fragment
 	{
 		super.onDetach();
 		mListener = null;
+	}
+
+	public void dataAvailable(List<BlockInfo> blocks)
+	{
+		if (blocks != null)
+		{
+			int counter = 1;
+			List<BaseViewModel> viewModels = new ArrayList<>(blocks.size());
+
+			for (BlockInfo blockInfo : blocks)
+				viewModels.add(new BlockInfoViewModel(getContext(), blockInfo, counter++));
+
+			if (adapter.getItemCount() != 0)
+				adapter.clear();
+
+			adapter.addAll(viewModels);
+		}
+
 	}
 }

@@ -10,7 +10,7 @@ import android.webkit.WebView;
 /**
  * InfoFragment
  * Oregon GEAR UP App
- * <p>
+ *
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
 public class InfoFragment extends Fragment
@@ -36,6 +36,7 @@ public class InfoFragment extends Fragment
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_info, container, false);
 
+		// TODO wait till fragment is displayed before loading web page
 		mWebView = v.findViewById(R.id.info_web_view);
 		mWebView.loadUrl(GEAR_UP_WEBSITE);
 

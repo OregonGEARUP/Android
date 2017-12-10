@@ -1,7 +1,10 @@
 <resources>
-    <string name="app_name">It\'s A Plan - App</string>
+    <string name="app_name">It\'s A Plan</string>
     <string name="title_checklist">Checklist</string>
     <string name="title_myplan">My Plan</string>
     <string name="title_passwords">Passwords</string>
     <string name="title_info">Info</string>
+    <string name="header_checklist">Follow the 10 key steps to apply, pay and go to college.</string>
+    <string name="completed">completed</string>
+    <string name="x_of_y">%d of %d</string>
 </resources>
