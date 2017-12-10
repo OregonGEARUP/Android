@@ -1,17 +1,3 @@
-*.iml
-.gradle
-/local.properties
-/.idea/*
-!/.idea/codeStyleSettings.xml
-!/.idea/runConfigurations.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-<<<<<<< Updated upstream
-.svn
-
-=======
 build
 bin
 gen
@@ -46,4 +32,3 @@ proguard
 .gradle
 *.iws
 *.iml
->>>>>>> Stashed changes
