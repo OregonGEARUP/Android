@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimary">@color/colorPrimaryTurquoise</color>
+    <color name="colorPrimaryDark">@color/colorPrimaryTurquoiseDarker20</color>
+    <color name="colorAccent">@color/colorPrimaryLimeGreen</color>
+
+	// from design docs at https://drive.google.com/drive/folders/0B1Qaz-5WPe5DOEUyZkRCbmpBVW8
+	<color name="colorPrimaryTurquoise">#00AEEF</color>
+	<color name="colorPrimaryTurquoiseDarker10">#009CD7</color>
+	<color name="colorPrimaryTurquoiseDarker20">#008BBF</color>
+    <color name="colorPrimaryLimeGreen">#8CC63F</color>
+    <color name="colorPrimayLightBlue">#C8F0FF</color>
+    <color name="colorAccentLightGreen">#D0E8B2</color>
+    <color name="colorAccentGray">#BFBFBF</color>
+    <color name="colorGearUpGreen">#007F42</color>
+
+	<!-- 12% alpha 000000 -->
+	<color name="button_disabled_background_light">#1E000000</color>
+
+	<!-- 38% alpha 000000 -->
+	<color name="button_text_disabled_light">#61000000</color>
+
 </resources>

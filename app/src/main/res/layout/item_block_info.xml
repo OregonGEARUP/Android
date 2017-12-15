@@ -13,7 +13,13 @@
 	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:minHeight="@dimen/min_touch_target"
+		android:background="@{viewModel.isEnabled ? @drawable/button_background : @drawable/button_background_disabled}"
+		android:minHeight="@dimen/min_touch_target_unit"
+		android:paddingStart="@dimen/baseline_unit"
+		android:paddingEnd="@dimen/baseline_unit"
+		android:paddingTop="@dimen/baseline_unit_half"
+		android:paddingBottom="@dimen/baseline_unit_half"
+		android:layout_marginBottom="@dimen/baseline_unit"
 		android:orientation="vertical">
 
 		<TextView
