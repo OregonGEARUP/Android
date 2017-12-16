@@ -63,15 +63,24 @@ public class ChecklistFragment extends Fragment
 		blockInfoListViewModel = obtainViewModel(getActivity());
 		binding.setUxContext(blockInfoListViewModel);
 
-		blockInfoListViewModel.getUpdateListEvent().observe(this, new Observer<String>()
+		blockInfoListViewModel.getUpdateListEvent().observe(this, new Observer<Void>()
 		{
 			@Override
-			public void onChanged(@Nullable String s)
+			public void onChanged(@Nullable Void aVoid)
 			{
 				if (adapter.getItemCount() != 0)
 					adapter.clear();
 
 				adapter.addAll(blockInfoListViewModel.getItems());
+			}
+		});
+
+		blockInfoListViewModel.getOpenBlockEvent().observe(this, new Observer<String>()
+		{
+			@Override
+			public void onChanged(@Nullable String s)
+			{
+
 			}
 		});
 

@@ -6,6 +6,7 @@
     <!-- default Material baseline Grids -->
     <dimen name="baseline_unit_half">4dp</dimen>
     <dimen name="baseline_unit">8dp</dimen>
+    <dimen name="baseline_unit_1_half">12dp</dimen>
     <dimen name="baseline_unit_2x">16dp</dimen>
     <dimen name="baseline_unit_3x">24dp</dimen>
     <dimen name="baseline_unit_4x">32dp</dimen>

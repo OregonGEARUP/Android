@@ -24,7 +24,7 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 {
 	// These observable fields will update Views automatically
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
-	private final SingleLiveEvent<String> updateListEvent = new SingleLiveEvent<>();
+	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<String> openBlockEvent = new SingleLiveEvent<>();
 	private final Context context; // To avoid leaks, this must be an Application Context.
 	private final CheckpointRepository checkpointRepository;
@@ -46,7 +46,7 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 		checkpointRepository.getBlockInfoList(this);
 	}
 
-	public SingleLiveEvent<String> getUpdateListEvent()
+	public SingleLiveEvent<Void> getUpdateListEvent()
 	{
 		return updateListEvent;
 	}
@@ -70,7 +70,7 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 		List<BaseViewModel> viewModels = new ArrayList<>(blockInfoList.size());
 
 		for (BlockInfo blockInfo : blockInfoList)
-			viewModels.add(new BlockInfoViewModel(context, blockInfo, counter++));
+			viewModels.add(new BlockInfoViewModel(context, blockInfo, counter++, openBlockEvent));
 
 		items = viewModels;
 

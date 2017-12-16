@@ -17,6 +17,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.oregongoestocollege.itsaplan.support.Utils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -64,6 +65,19 @@ public class CheckpointRepository implements CheckpointInterface
 		new GetBlockInfoListTask(callback).execute();
 	}
 
+	@Override
+	public void getBlocks(@NonNull LoadBlocksCallback callback, String blockFileName)
+	{
+		checkNotNull(callback);
+		checkNotNull(blockFileName);
+
+		if (Utils.DEBUG)
+			Utils.d(TAG, "Blocks %s from network", blockFileName);
+
+		// if not make the http request
+		new GetBlocksTask(callback, blockFileName).execute();
+	}
+
 	private static class GetBlockInfoListTask extends AsyncTask<Void, Void, List<BlockInfo>>
 	{
 		LoadBlockInfoListCallback callback;
@@ -101,6 +115,52 @@ public class CheckpointRepository implements CheckpointInterface
 		}
 
 		protected void onPostExecute(List<BlockInfo> blocks)
+		{
+			if (blocks != null && !blocks.isEmpty())
+				callback.onDataLoaded(blocks);
+			else
+				callback.onDataNotAvailable();
+		}
+	}
+
+	private static class GetBlocksTask extends AsyncTask<Void, Void, List<Block>>
+	{
+		LoadBlocksCallback callback;
+		String blockFileName;
+		List<Block> blocks;
+
+		GetBlocksTask(@NonNull LoadBlocksCallback callback, @NonNull String blockFileName)
+		{
+			this.callback = callback;
+			this.blockFileName = blockFileName;
+		}
+
+		protected List<Block> doInBackground(Void... params)
+		{
+			try
+			{
+				URL url = new URL(baseUrl + blockFileName);
+				HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+
+				InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
+				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+
+				Type listType = new TypeToken<ArrayList<Block>>()
+				{
+				}.getType();
+				blocks = new Gson().fromJson(bufferedReader, listType);
+
+				urlConnection.disconnect();
+
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			return blocks;
+		}
+
+		protected void onPostExecute(List<Block> blocks)
 		{
 			if (blocks != null && !blocks.isEmpty())
 				callback.onDataLoaded(blocks);

@@ -19,5 +19,14 @@ public interface CheckpointInterface
 		void onDataNotAvailable();
 	}
 
+	interface LoadBlocksCallback
+	{
+		void onDataLoaded(@NonNull List<Block> blocks);
+
+		void onDataNotAvailable();
+	}
+
 	void getBlockInfoList(@NonNull LoadBlockInfoListCallback callback);
+
+	void getBlocks(@NonNull LoadBlocksCallback callback, String blockFileName);
 }

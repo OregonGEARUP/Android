@@ -15,18 +15,18 @@
 		android:layout_height="wrap_content"
 		android:background="@{viewModel.isEnabled ? @drawable/button_background : @drawable/button_background_disabled}"
 		android:minHeight="@dimen/min_touch_target_unit"
-		android:paddingStart="@dimen/baseline_unit"
-		android:paddingEnd="@dimen/baseline_unit"
-		android:paddingTop="@dimen/baseline_unit_half"
-		android:paddingBottom="@dimen/baseline_unit_half"
-		android:layout_marginBottom="@dimen/baseline_unit"
-		android:orientation="vertical">
+		android:padding="@dimen/baseline_unit_1_half"
+		android:layout_marginBottom="@dimen/baseline_unit_2x"
+		android:orientation="vertical"
+		android:onClick="@{(view) -> viewModel.onBlockClick(view)}">
 
 		<TextView
 			android:id="@+id/textview_title"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerVertical="true"
+			style="@style/GearUpTextAppearance.Title"
+			android:textColor="@{viewModel.isEnabled ? @color/white : @color/button_text_disabled_light}"
 			android:text="@{viewModel.title}"
 			tools:text="1. Explore your options." />
 
@@ -41,12 +41,16 @@
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				style="@style/GearUpTextAppearance.Title"
+				android:textColor="@{viewModel.isEnabled ? @color/white : @color/button_text_disabled_light}"
 				android:text="@{viewModel.count}"
 				tools:text="0 of 3" />
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				style="@style/GearUpTextAppearance.Small"
+				android:textColor="@{viewModel.isEnabled ? @color/white : @color/button_text_disabled_light}"
 				android:text="@string/completed" />
 		</LinearLayout>
 	</RelativeLayout>
