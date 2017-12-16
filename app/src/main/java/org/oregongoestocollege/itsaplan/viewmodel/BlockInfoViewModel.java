@@ -10,25 +10,28 @@ import android.support.annotation.NonNull;
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.data.BlockInfo;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * BlockInfoViewModel
  * Oregon GEAR UP App
- *
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
 public class BlockInfoViewModel implements BaseViewModel
 {
+	// service data
+	private final BlockInfo model;
+	// view data
 	public final String title;
 	public final ObservableField<String> count = new ObservableField<>();
 	public final ObservableBoolean isEnabled = new ObservableBoolean();
 
-	private final BlockInfo model;
-
 	public BlockInfoViewModel(@NonNull Context context, @NonNull BlockInfo model, int index)
 	{
-		this.model = model;
+		checkNotNull(context);
+		checkNotNull(model);
 
-		title = String.format(Locale.getDefault(), "%d. %s", index, model.title);
+		this.model = model;
+		this.title = String.format(Locale.getDefault(), "%d. %s", index, model.title);
 
 		if (model.available())
 		{
