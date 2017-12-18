@@ -8,4 +8,6 @@ package org.oregongoestocollege.itsaplan.data;
  */
 public class Stage
 {
+	public String id;
+	public String title;
 }

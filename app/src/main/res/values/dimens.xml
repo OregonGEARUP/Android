@@ -18,4 +18,7 @@
 
     <!-- default min touch target -->
     <dimen name="min_touch_target_unit">48dp</dimen>
+
+    <!-- default min touch target -->
+    <dimen name="gearup_min_button_height">64dp</dimen>
 </resources>

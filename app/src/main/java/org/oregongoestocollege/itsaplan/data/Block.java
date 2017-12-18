@@ -11,6 +11,6 @@ import java.util.List;
 public class Block
 {
 	public String id;
-	public String blockTitle;
+	public String blocktitle;
 	public List<Stage> stages;
 }

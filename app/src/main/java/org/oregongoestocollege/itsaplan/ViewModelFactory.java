@@ -9,6 +9,7 @@ import android.support.annotation.VisibleForTesting;
 
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.BlockViewModel;
 
 /**
  * A creator for our view models that could be extended to inject dependencies
@@ -56,6 +57,11 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory
 		{
 			//noinspection unchecked
 			return (T)new BlockInfoListViewModel(application, CheckpointRepository.getInstance());
+		}
+		if (modelClass.isAssignableFrom(BlockViewModel.class))
+		{
+			//noinspection unchecked
+			return (T)new BlockViewModel(application, CheckpointRepository.getInstance());
 		}
 		throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
 	}

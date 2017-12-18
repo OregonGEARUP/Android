@@ -7,14 +7,14 @@
 
 		<variable
 			name="viewModel"
-			type="org.oregongoestocollege.itsaplan.viewmodel.BlockInfoViewModel" />
+			type="org.oregongoestocollege.itsaplan.viewmodel.BlockInfoItemViewModel" />
 	</data>
 
 	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:background="@{viewModel.isEnabled ? @drawable/button_background : @drawable/button_background_disabled}"
-		android:minHeight="@dimen/min_touch_target_unit"
+		android:minHeight="@dimen/gearup_min_button_height"
 		android:padding="@dimen/baseline_unit_1_half"
 		android:layout_marginBottom="@dimen/baseline_unit_2x"
 		android:orientation="vertical"

@@ -10,9 +10,10 @@ import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
-import org.oregongoestocollege.itsaplan.data.BlockInfo;
+import org.oregongoestocollege.itsaplan.data.Block;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
+import org.oregongoestocollege.itsaplan.data.Stage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,30 +21,35 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class BlockInfoListViewModel extends AndroidViewModel implements CheckpointInterface.LoadBlockInfoListCallback
+public class BlockViewModel extends AndroidViewModel implements CheckpointInterface.LoadBlockCallback
 {
+	// service data
+	private String blockFileName;
+	private Block model;
+	// view data
 	private final Context context; // To avoid leaks, this must be an Application Context.
 	private final CheckpointRepository checkpointRepository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
-	private final SingleLiveEvent<BlockInfo> openBlockEvent = new SingleLiveEvent<>();
+	private final SingleLiveEvent<Stage> openStageEvent = new SingleLiveEvent<>();
 	private List<BindingItem> items;
-	// These observable fields will update Views automatically
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
 
-	public BlockInfoListViewModel(@NonNull Application context, @NonNull CheckpointRepository checkpointRepository)
+	public BlockViewModel(@NonNull Application context, @NonNull CheckpointRepository checkpointRepository)
 	{
 		super(context);
+
+		checkNotNull(context);
 
 		// force use of application context
 		this.context = context.getApplicationContext();
 		this.checkpointRepository = checkpointRepository;
 	}
 
-	public void start()
+	public void start(@NonNull String blockFileName)
 	{
 		dataLoading.set(true);
 
-		checkpointRepository.getBlockInfoList(this);
+		checkpointRepository.getBlock(this, blockFileName);
 	}
 
 	public SingleLiveEvent<Void> getUpdateListEvent()
@@ -51,9 +57,9 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 		return updateListEvent;
 	}
 
-	public SingleLiveEvent<BlockInfo> getOpenBlockEvent()
+	public SingleLiveEvent<Stage> getOpenStageEvent()
 	{
-		return openBlockEvent;
+		return openStageEvent;
 	}
 
 	public List<BindingItem> getItems()
@@ -62,17 +68,20 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 	}
 
 	@Override
-	public void onDataLoaded(@NonNull List<BlockInfo> blockInfoList)
+	public void onDataLoaded(@NonNull Block block)
 	{
-		checkNotNull(blockInfoList);
+		checkNotNull(block);
 
-		int counter = 1;
-		List<BindingItem> viewModels = new ArrayList<>(blockInfoList.size());
+		List<Stage> stages = block.stages;
+		if (stages != null && !stages.isEmpty())
+		{
+			List<BindingItem> viewModels = new ArrayList<>(stages.size());
 
-		for (BlockInfo blockInfo : blockInfoList)
-			viewModels.add(new BlockInfoItemViewModel(context, blockInfo, counter++, openBlockEvent));
+			for (Stage stage : stages)
+				viewModels.add(new StageItemViewModel(context, stage, openStageEvent));
 
-		items = viewModels;
+			items = viewModels;
+		}
 
 		updateListEvent.call();
 
@@ -83,5 +92,10 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 	public void onDataNotAvailable()
 	{
 		dataLoading.set(false);
+	}
+
+	public String getTitle()
+	{
+		return model != null ? model.blocktitle : null;
 	}
 }

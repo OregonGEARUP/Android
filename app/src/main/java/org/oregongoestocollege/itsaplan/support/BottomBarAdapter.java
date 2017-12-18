@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 
 /**
  * BottomBarAdapter
@@ -39,5 +40,17 @@ public class BottomBarAdapter extends SmartFragmentStatePageAdapter
 	public int getCount()
 	{
 		return fragments.size();
+	}
+
+	public static Fragment getCurrentFragment(ViewPager viewPager)
+	{
+		if (viewPager != null)
+		{
+			int position = viewPager.getCurrentItem();
+			BottomBarAdapter adapter = (BottomBarAdapter) viewPager.getAdapter();
+			if (adapter != null)
+				return adapter.getItem(position);
+		}
+		return null;
 	}
 }

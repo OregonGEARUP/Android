@@ -11,7 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.viewmodel.BaseViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.BindingItem;
 
 /**
  * BindingItemsAdapter
@@ -21,7 +21,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.BaseViewModel;
  */
 public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHolder>
 {
-	private final List<BaseViewModel> items;
+	private final List<BindingItem> items;
 
 	/**
 	 * Constructor for Adapter.
@@ -50,7 +50,7 @@ public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHol
 	 * @throws IndexOutOfBoundsException if the index is out of range
 	 *                                   (<tt>index &lt; 0 || index &gt; size()</tt>)
 	 */
-	public void addAll(@NonNull List<BaseViewModel> items)
+	public void addAll(@NonNull List<BindingItem> items)
 	{
 		addAll(items, false);
 	}
@@ -67,7 +67,7 @@ public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHol
 	 * @throws IndexOutOfBoundsException if the index is out of range
 	 *                                   (<tt>index &lt; 0 || index &gt; size()</tt>)
 	 */
-	public void addAll(int index, @NonNull List<BaseViewModel> items)
+	public void addAll(int index, @NonNull List<BindingItem> items)
 	{
 		this.items.addAll(index, items);
 		notifyItemRangeInserted(index, items.size());
@@ -78,7 +78,7 @@ public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHol
 	 *
 	 * @param item to add
 	 */
-	public void add(@NonNull BaseViewModel item)
+	public void add(@NonNull BindingItem item)
 	{
 		int index = items.size();
 		items.add(item);
@@ -97,7 +97,7 @@ public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHol
 	 * @throws IndexOutOfBoundsException if the index is out of range
 	 *                                   (<tt>index &lt; 0 || index &gt; size()</tt>)
 	 */
-	public void add(int index, @NonNull BaseViewModel item)
+	public void add(int index, @NonNull BindingItem item)
 	{
 		items.add(index, item);
 		notifyItemInserted(index);
@@ -110,7 +110,7 @@ public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHol
 	 * @throws IllegalArgumentException if list is null or some property of the specified
 	 *                                  element prevents it from being added to this list
 	 */
-	public boolean remove(@NonNull BaseViewModel item)
+	public boolean remove(@NonNull BindingItem item)
 	{
 		int index = items.indexOf(item);
 		if (index >= 0)
@@ -128,9 +128,9 @@ public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHol
 	 * @param index position at which to remove the item
 	 * @return The object that was removed or null
 	 */
-	public BaseViewModel remove(int index)
+	public BindingItem remove(int index)
 	{
-		BaseViewModel removedItem = items.remove(index);
+		BindingItem removedItem = items.remove(index);
 		notifyItemRemoved(index);
 		return removedItem;
 	}
@@ -166,7 +166,7 @@ public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHol
 	 * @throws IndexOutOfBoundsException if the index is out of range
 	 *                                   (<tt>index &lt; 0 || index &gt; size()</tt>)
 	 */
-	public BaseViewModel getItem(int position)
+	public BindingItem getItem(int position)
 	{
 		return items.get(position);
 	}
@@ -177,7 +177,7 @@ public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHol
 	 * @param item current item
 	 * @return get the position of item
 	 */
-	public int getItemPosition(@NonNull BaseViewModel item)
+	public int getItemPosition(@NonNull BindingItem item)
 	{
 		return items.indexOf(item);
 	}
@@ -224,7 +224,7 @@ public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHol
 			holder.onBindView(position, getItem(position));
 	}
 
-	protected void addAll(@NonNull List<BaseViewModel> items, boolean notifyItemAdded)
+	protected void addAll(@NonNull List<BindingItem> items, boolean notifyItemAdded)
 	{
 		int index = this.items.size();
 		this.items.addAll(items);

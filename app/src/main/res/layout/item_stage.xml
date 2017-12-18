@@ -1,0 +1,33 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools">
+
+	<data>
+
+		<import type="android.view.View" />
+
+		<variable
+			name="viewModel"
+			type="org.oregongoestocollege.itsaplan.viewmodel.StageItemViewModel" />
+	</data>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:background="@drawable/button_background"
+		android:minHeight="@dimen/gearup_min_button_height"
+		android:padding="@dimen/baseline_unit_1_half"
+		android:layout_marginBottom="@dimen/baseline_unit_2x"
+		android:orientation="vertical"
+		android:onClick="@{(view) -> viewModel.onStageClick(view)}">
+
+		<TextView
+			android:id="@+id/textview_title"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_centerVertical="true"
+			style="@style/GearUpTextAppearance.Title"
+			android:textColor="@color/white"
+			android:text="@{viewModel.title}"
+			tools:text="Why go to colleg?" />
+	</RelativeLayout>
+</layout>

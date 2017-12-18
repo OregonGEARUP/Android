@@ -7,7 +7,6 @@ import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.Toast;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
@@ -19,17 +18,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class BlockInfoViewModel implements BaseViewModel
+public class BlockInfoItemViewModel implements BindingItem
 {
 	// service data
 	private final BlockInfo model;
-	private final SingleLiveEvent<String> openBlockEvent;
+	private final SingleLiveEvent<BlockInfo> openBlockEvent;
 	// view data
 	public final String title;
 	public final ObservableField<String> count = new ObservableField<>();
 	public final ObservableBoolean isEnabled = new ObservableBoolean();
 
-	public BlockInfoViewModel(@NonNull Context context, @NonNull BlockInfo model, int index, SingleLiveEvent<String> openBlockEvent)
+	public BlockInfoItemViewModel(@NonNull Context context, @NonNull BlockInfo model, int index, SingleLiveEvent<BlockInfo> openBlockEvent)
 	{
 		checkNotNull(context);
 		checkNotNull(model);
@@ -55,10 +54,8 @@ public class BlockInfoViewModel implements BaseViewModel
 	{
 		if (model.blockFileName != null && !model.blockFileName.isEmpty())
 		{
-			Toast.makeText(view.getContext(), "got " + model.blockFileName, Toast.LENGTH_SHORT).show();
-
 			if (openBlockEvent != null)
-				openBlockEvent.setValue(model.blockFileName);
+				openBlockEvent.setValue(model);
 		}
 	}
 }

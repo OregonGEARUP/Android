@@ -6,7 +6,7 @@ package org.oregongoestocollege.itsaplan.viewmodel;
  *
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public interface BaseViewModel
+public interface BindingItem
 {
 	int getLayoutId();
 }

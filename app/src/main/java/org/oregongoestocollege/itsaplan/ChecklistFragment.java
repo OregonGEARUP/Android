@@ -1,33 +1,26 @@
 package org.oregongoestocollege.itsaplan;
 
-import android.app.Activity;
-import android.arch.lifecycle.Observer;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.databinding.FragmentChecklistBinding;
-import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
-import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel;
+import org.oregongoestocollege.itsaplan.data.BlockInfo;
 
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class ChecklistFragment extends Fragment
+public class ChecklistFragment extends Fragment implements OnChecklistInteraction
 {
 	private OnFragmentInteractionListener mListener;
-	private RecyclerView recyclerView;
-	private BindingItemsAdapter adapter;
-	private BlockInfoListViewModel blockInfoListViewModel;
+	private int identifier;
 
 
 	public ChecklistFragment()
@@ -50,48 +43,45 @@ public class ChecklistFragment extends Fragment
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		FragmentChecklistBinding
-			binding = DataBindingUtil.inflate(inflater, R.layout.fragment_checklist, container, false);
-		View v = binding.getRoot();
+		View v = inflater.inflate(R.layout.fragment_checklist, container, false);
 
-		adapter = new BindingItemsAdapter();
-
-		recyclerView = v.findViewById(R.id.recycler_view);
-		recyclerView.setAdapter(adapter);
-		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-
-		blockInfoListViewModel = obtainViewModel(getActivity());
-		binding.setUxContext(blockInfoListViewModel);
-
-		blockInfoListViewModel.getUpdateListEvent().observe(this, new Observer<Void>()
-		{
-			@Override
-			public void onChanged(@Nullable Void aVoid)
-			{
-				if (adapter.getItemCount() != 0)
-					adapter.clear();
-
-				adapter.addAll(blockInfoListViewModel.getItems());
-			}
-		});
-
-		blockInfoListViewModel.getOpenBlockEvent().observe(this, new Observer<String>()
-		{
-			@Override
-			public void onChanged(@Nullable String s)
-			{
-
-			}
-		});
+		showStepBlockInfo();
 
 		return v;
 	}
 
-	@Override
-	public void onResume()
+	private void showStepBlockInfo()
 	{
-		super.onResume();
-		blockInfoListViewModel.start();
+		StepBlockInfoFragment newFragment = StepBlockInfoFragment.newInstance();
+		newFragment.init(this);
+
+		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.fragment_container, newFragment);
+		transaction.commit();
+
+		identifier = 1;
+
+		Resources resources = getResources();
+		AppCompatActivity activity = (AppCompatActivity)getActivity();
+		activity.setTitle(R.string.app_name);
+		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+	}
+
+	private void showStepBlock(BlockInfo blockInfo)
+	{
+		StepBlockFragment newFragment = StepBlockFragment.newInstance();
+		newFragment.init(this, blockInfo.blockFileName);
+
+		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.fragment_container, newFragment);
+		transaction.commit();
+
+		identifier = 2;
+
+		Resources resources = getResources();
+		AppCompatActivity activity = (AppCompatActivity)getActivity();
+		activity.setTitle(blockInfo.title);
+		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	// TODO: Rename method, update argument and hook method into UI event
@@ -125,13 +115,19 @@ public class ChecklistFragment extends Fragment
 		mListener = null;
 	}
 
-	public static BlockInfoListViewModel obtainViewModel(Activity activity)
+	@Override
+	public void onShowBlock(BlockInfo blockInfo)
 	{
-		// Use a Factory to inject dependencies into the ViewModel
-		ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
+		showStepBlock(blockInfo);
+	}
 
-		// future - could use ViewModelProviders
-
-		return factory.create(BlockInfoListViewModel.class);
+	public boolean handleBackPressed()
+	{
+		if (identifier == 2)
+		{
+			showStepBlockInfo();
+			return true;
+		}
+		return false;
 	}
 }

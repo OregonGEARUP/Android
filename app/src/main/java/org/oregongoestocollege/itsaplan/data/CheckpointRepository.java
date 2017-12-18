@@ -66,16 +66,16 @@ public class CheckpointRepository implements CheckpointInterface
 	}
 
 	@Override
-	public void getBlocks(@NonNull LoadBlocksCallback callback, String blockFileName)
+	public void getBlock(@NonNull LoadBlockCallback callback, String blockFileName)
 	{
 		checkNotNull(callback);
 		checkNotNull(blockFileName);
 
 		if (Utils.DEBUG)
-			Utils.d(TAG, "Blocks %s from network", blockFileName);
+			Utils.d(TAG, "Block %s from network", blockFileName);
 
 		// if not make the http request
-		new GetBlocksTask(callback, blockFileName).execute();
+		new GetBlockTask(callback, blockFileName).execute();
 	}
 
 	private static class GetBlockInfoListTask extends AsyncTask<Void, Void, List<BlockInfo>>
@@ -123,19 +123,19 @@ public class CheckpointRepository implements CheckpointInterface
 		}
 	}
 
-	private static class GetBlocksTask extends AsyncTask<Void, Void, List<Block>>
+	private static class GetBlockTask extends AsyncTask<Void, Void, Block>
 	{
-		LoadBlocksCallback callback;
+		LoadBlockCallback callback;
 		String blockFileName;
-		List<Block> blocks;
+		Block block;
 
-		GetBlocksTask(@NonNull LoadBlocksCallback callback, @NonNull String blockFileName)
+		GetBlockTask(@NonNull LoadBlockCallback callback, @NonNull String blockFileName)
 		{
 			this.callback = callback;
 			this.blockFileName = blockFileName;
 		}
 
-		protected List<Block> doInBackground(Void... params)
+		protected Block doInBackground(Void... params)
 		{
 			try
 			{
@@ -145,10 +145,12 @@ public class CheckpointRepository implements CheckpointInterface
 				InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
 
-				Type listType = new TypeToken<ArrayList<Block>>()
+				Type listType = new TypeToken<List<Block>>()
 				{
 				}.getType();
-				blocks = new Gson().fromJson(bufferedReader, listType);
+				List<Block> blocks = new Gson().fromJson(bufferedReader, listType);
+				if (blocks != null)
+					block = blocks.get(0);
 
 				urlConnection.disconnect();
 
@@ -157,13 +159,13 @@ public class CheckpointRepository implements CheckpointInterface
 			{
 				e.printStackTrace();
 			}
-			return blocks;
+			return block;
 		}
 
-		protected void onPostExecute(List<Block> blocks)
+		protected void onPostExecute(Block block)
 		{
-			if (blocks != null && !blocks.isEmpty())
-				callback.onDataLoaded(blocks);
+			if (block != null)
+				callback.onDataLoaded(block);
 			else
 				callback.onDataNotAvailable();
 		}

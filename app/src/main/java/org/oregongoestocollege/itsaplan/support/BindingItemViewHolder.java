@@ -4,7 +4,7 @@ import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 
 import org.oregongoestocollege.itsaplan.BR;
-import org.oregongoestocollege.itsaplan.viewmodel.BaseViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.BindingItem;
 
 /**
  * BindingItemViewHolder
@@ -22,7 +22,7 @@ public class BindingItemViewHolder extends RecyclerView.ViewHolder
 		this.viewDataBinding = viewDataBinding;
 	}
 
-	public void onBindView(int position, BaseViewModel item)
+	public void onBindView(int position, BindingItem item)
 	{
 		viewDataBinding.setVariable(BR.viewModel, item);
 		viewDataBinding.executePendingBindings();

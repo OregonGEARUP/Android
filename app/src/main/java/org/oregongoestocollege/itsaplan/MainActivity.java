@@ -3,6 +3,7 @@ package org.oregongoestocollege.itsaplan;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -72,5 +73,35 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 	public void onFragmentInteraction()
 	{
 		// no-op for now
+	}
+
+	@Override
+	public void onBackPressed()
+	{
+		boolean handled = false;
+
+		Fragment fragment = BottomBarAdapter.getCurrentFragment(viewPager);
+		if (fragment instanceof ChecklistFragment)
+		{
+			handled = ((ChecklistFragment)fragment).handleBackPressed();
+		}
+
+		if (!handled)
+			super.onBackPressed();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		boolean handled = false;
+
+		if (item.getItemId() == android.R.id.home)
+		{
+			Fragment fragment = BottomBarAdapter.getCurrentFragment(viewPager);
+			if (fragment instanceof ChecklistFragment)
+				handled = ((ChecklistFragment)fragment).handleBackPressed();
+		}
+
+		return handled;
 	}
 }
