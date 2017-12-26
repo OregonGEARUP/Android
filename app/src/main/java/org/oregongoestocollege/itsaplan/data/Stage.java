@@ -1,5 +1,7 @@
 package org.oregongoestocollege.itsaplan.data;
 
+import java.util.List;
+
 /**
  * Stage
  * Oregon GEAR UP App
@@ -10,4 +12,5 @@ public class Stage
 {
 	public String id;
 	public String title;
+	public List<Checkpoint> checkpoints;
 }

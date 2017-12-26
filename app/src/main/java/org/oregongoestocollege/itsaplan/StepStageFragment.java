@@ -1,14 +1,18 @@
 package org.oregongoestocollege.itsaplan;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
 /**
@@ -20,6 +24,8 @@ public class StepStageFragment extends Fragment
 	private WeakReference<OnChecklistInteraction> listener;
 	private OnFragmentInteractionListener mListener;
 	private Stage stage;
+	private ViewPager viewPager;
+	private CheckpointPagerAdapter pagerAdapter;
 
 	public StepStageFragment()
 	{
@@ -49,8 +55,26 @@ public class StepStageFragment extends Fragment
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_step_stage, container, false);
 
-		TextView textView = v.findViewById(R.id.text);
-		textView.setText(stage.title);
+		List<Fragment> fragments = new ArrayList<>();
+		if (stage != null && stage.checkpoints != null)
+		{
+			for (Checkpoint checkpoint : stage.checkpoints)
+			{
+				fragments.add(CheckpointFragment.newInstance(checkpoint.description));
+			}
+		}
+
+		Resources resources = getResources();
+		int padding = resources.getDimensionPixelSize(R.dimen.checkpoint_pager_padding);
+		int margin = resources.getDimensionPixelSize(R.dimen.checkpoint_pager_margin);
+
+		pagerAdapter = new CheckpointPagerAdapter(getActivity().getSupportFragmentManager(), fragments);
+
+		viewPager = v.findViewById(R.id.viewpager_checkpoints);
+		viewPager.setPadding(padding, padding, padding, padding);
+		viewPager.setClipToPadding(false);
+		viewPager.setPageMargin(margin);
+		viewPager.setAdapter(pagerAdapter);
 
 		return v;
 	}

@@ -1,11 +1,13 @@
 package org.oregongoestocollege.itsaplan.support;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
+
+import org.oregongoestocollege.itsaplan.ChecklistFragment;
+import org.oregongoestocollege.itsaplan.InfoFragment;
+import org.oregongoestocollege.itsaplan.MainActivity;
+import org.oregongoestocollege.itsaplan.MyPlanFragment;
+import org.oregongoestocollege.itsaplan.PasswordsFragment;
 
 /**
  * BottomBarAdapter
@@ -15,42 +17,32 @@ import android.support.v4.view.ViewPager;
  */
 public class BottomBarAdapter extends SmartFragmentStatePageAdapter
 {
-	private final List<Fragment> fragments = new ArrayList<>();
-
 	public BottomBarAdapter(FragmentManager fragmentManager)
 	{
 		super(fragmentManager);
 	}
 
-	/**
-	 * Add fragments for our bottom navigation
-	 */
-	public void addFragments(Fragment fragment)
-	{
-		fragments.add(fragment);
-	}
-
 	@Override
 	public Fragment getItem(int position)
 	{
-		return fragments.get(position);
+		Utils.d(MainActivity.LOG_TAG, "getItem position:%d", position);
+
+		// When we initially run the app the ViewPager calls getItem for creating fragments.
+		// But when re-creating activity (eg. rotate) the ViewPager restores the fragments
+		// from it's instance state and we do not come through this code
+		if (position == 3)
+			return new InfoFragment();
+		else if (position == 2)
+			return new PasswordsFragment();
+		else if (position == 1)
+			return new MyPlanFragment();
+		else
+			return new ChecklistFragment();
 	}
 
 	@Override
 	public int getCount()
 	{
-		return fragments.size();
-	}
-
-	public static Fragment getCurrentFragment(ViewPager viewPager)
-	{
-		if (viewPager != null)
-		{
-			int position = viewPager.getCurrentItem();
-			BottomBarAdapter adapter = (BottomBarAdapter) viewPager.getAdapter();
-			if (adapter != null)
-				return adapter.getItem(position);
-		}
-		return null;
+		return 4;
 	}
 }

@@ -6,6 +6,8 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.util.SparseArray;
 import android.view.ViewGroup;
 
+import org.oregongoestocollege.itsaplan.MainActivity;
+
 /**
  * SmartFragmentStatePageAdapter - extension of FragmentStatePagerAdapter which intelligently
  * caches all active fragments and manages the fragment lifecycles. Usage involves extending
@@ -28,6 +30,8 @@ public abstract class SmartFragmentStatePageAdapter extends FragmentStatePagerAd
 	@Override
 	public Object instantiateItem(ViewGroup container, int position)
 	{
+		Utils.d(MainActivity.LOG_TAG, "instantiateItem position:%d", position);
+
 		Fragment fragment = (Fragment)super.instantiateItem(container, position);
 		registeredFragments.put(position, fragment);
 		return fragment;
@@ -37,6 +41,8 @@ public abstract class SmartFragmentStatePageAdapter extends FragmentStatePagerAd
 	@Override
 	public void destroyItem(ViewGroup container, int position, Object object)
 	{
+		Utils.d(MainActivity.LOG_TAG, "destroyItem position:%d", position);
+
 		registeredFragments.remove(position);
 		super.destroyItem(container, position, object);
 	}

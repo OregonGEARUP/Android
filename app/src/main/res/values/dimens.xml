@@ -21,4 +21,8 @@
 
     <!-- default min touch target -->
     <dimen name="gearup_min_button_height">64dp</dimen>
+
+    <!-- to allow fragment to 'peek' on checkpoints -->
+    <dimen name="checkpoint_pager_padding">24dp</dimen>
+    <dimen name="checkpoint_pager_margin">12dp</dimen>
 </resources>

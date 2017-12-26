@@ -1,7 +1,5 @@
 package org.oregongoestocollege.itsaplan.data;
 
-import java.util.List;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,8 +18,8 @@ public class Checkpoint
 	public String routeFileName;
 	@SerializedName("type")
 	public EntryType entryType;
-	public List<Instance> instances;
-	public List<Criteria> criteria;
+//	public List<Instance> instances;
+//	public List<Criteria> criteria;
 
 
 	public boolean required()

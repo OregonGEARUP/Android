@@ -4,11 +4,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import org.oregongoestocollege.itsaplan.support.BottomBarAdapter;
 import org.oregongoestocollege.itsaplan.support.NoSwipePager;
+import org.oregongoestocollege.itsaplan.support.Utils;
 
 /**
  * MainActivity
@@ -18,35 +20,10 @@ import org.oregongoestocollege.itsaplan.support.NoSwipePager;
  */
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener
 {
+	public static final String LOG_TAG = "GearUP_MainActivity";
+	private int lastSelectedPosition = 0;
 	private NoSwipePager viewPager;
 	private BottomBarAdapter pagerAdapter;
-	private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-		= new BottomNavigationView.OnNavigationItemSelectedListener()
-	{
-		@Override
-		public boolean onNavigationItemSelected(@NonNull MenuItem item)
-		{
-			int position;
-			switch (item.getItemId())
-			{
-			case R.id.navigation_info:
-				position = 3;
-				break;
-			case R.id.navigation_passwords:
-				position = 2;
-				break;
-			case R.id.navigation_myplan:
-				position = 1;
-				break;
-			case R.id.navigation_checklist:
-			default:
-				position = 0;
-				break;
-			}
-			viewPager.setCurrentItem(position);
-			return true;
-		}
-	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -55,18 +32,68 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		setContentView(R.layout.activity_main);
 
 		BottomNavigationView navigation = findViewById(R.id.navigation);
-		navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+		navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener()
+		{
+			@Override
+			public boolean onNavigationItemSelected(@NonNull MenuItem item)
+			{
+				int position;
+				String title;
+				switch (item.getItemId())
+				{
+				case R.id.navigation_info:
+					position = 3;
+					title = getResources().getString(R.string.title_info);
+					break;
+				case R.id.navigation_passwords:
+					position = 2;
+					title = getResources().getString(R.string.title_passwords);
+					break;
+				case R.id.navigation_myplan:
+					position = 1;
+					title = getResources().getString(R.string.title_myplan);
+					break;
+				case R.id.navigation_checklist:
+				default:
+					position = 0;
+					title = getResources().getString(R.string.app_name);
+					break;
+				}
+				viewPager.setCurrentItem(position);
+				setTitle(title);
+				return true;
+			}
+		});
 
 		pagerAdapter = new BottomBarAdapter(getSupportFragmentManager());
-		pagerAdapter.addFragments(new ChecklistFragment());
-		pagerAdapter.addFragments(new MyPlanFragment());
-		pagerAdapter.addFragments(new PasswordsFragment());
-		pagerAdapter.addFragments(new InfoFragment());
 
 		// we want to disable swipe, on change fragments via bottom bar
 		viewPager = findViewById(R.id.viewpager);
 		viewPager.setPagingEnabled(false);
 		viewPager.setAdapter(pagerAdapter);
+		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+		{
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+			{
+				// no-op
+			}
+
+			@Override
+			public void onPageSelected(int position)
+			{
+				if (Utils.DEBUG)
+					Utils.d(LOG_TAG, "onPageSelected last:%d current:%d", lastSelectedPosition, position);
+
+				lastSelectedPosition = position;
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state)
+			{
+				// no-op
+			}
+		});
 	}
 
 	@Override
@@ -80,10 +107,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 	{
 		boolean handled = false;
 
-		Fragment fragment = BottomBarAdapter.getCurrentFragment(viewPager);
-		if (fragment instanceof ChecklistFragment)
+		if (lastSelectedPosition != -1)
 		{
-			handled = ((ChecklistFragment)fragment).handleBackPressed();
+			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
+			if (fragment instanceof ChecklistFragment)
+				handled = ((ChecklistFragment)fragment).handleBackPressed();
 		}
 
 		if (!handled)
@@ -95,9 +123,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 	{
 		boolean handled = false;
 
-		if (item.getItemId() == android.R.id.home)
+		if (item.getItemId() == android.R.id.home && lastSelectedPosition != -1)
 		{
-			Fragment fragment = BottomBarAdapter.getCurrentFragment(viewPager);
+			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
 			if (fragment instanceof ChecklistFragment)
 				handled = ((ChecklistFragment)fragment).handleBackPressed();
 		}
