@@ -68,7 +68,7 @@ public class StepStageFragment extends Fragment
 		int padding = resources.getDimensionPixelSize(R.dimen.checkpoint_pager_padding);
 		int margin = resources.getDimensionPixelSize(R.dimen.checkpoint_pager_margin);
 
-		pagerAdapter = new CheckpointPagerAdapter(getActivity().getSupportFragmentManager(), fragments);
+		pagerAdapter = new CheckpointPagerAdapter(getChildFragmentManager(), fragments);
 
 		viewPager = v.findViewById(R.id.viewpager_checkpoints);
 		viewPager.setPadding(padding, padding, padding, padding);

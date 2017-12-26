@@ -27,7 +27,6 @@ public class CheckpointPagerAdapter extends FragmentPagerAdapter
 
 	public Fragment getItem(int position)
 	{
-
 		return this.fragments.get(position);
 	}
 
@@ -35,7 +34,6 @@ public class CheckpointPagerAdapter extends FragmentPagerAdapter
 
 	public int getCount()
 	{
-
 		return this.fragments.size();
 	}
 }

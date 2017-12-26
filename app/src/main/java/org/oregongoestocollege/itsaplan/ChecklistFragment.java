@@ -92,7 +92,7 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		identifier = 2;
 		this.blockIndex = blockIndex;
 
-		AppCompatActivity activity = (AppCompatActivity)getActivity();// TODO activity.setTitle(blockInfo.title);
+		AppCompatActivity activity = (AppCompatActivity)getActivity();
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
