@@ -26,19 +26,19 @@ public class NoSwipePager extends ViewPager
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		return !enabled && super.onTouchEvent(event);
+		return enabled && super.onTouchEvent(event);
 	}
 
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent event)
 	{
-		return !enabled && super.onInterceptTouchEvent(event);
+		return enabled && super.onInterceptTouchEvent(event);
 	}
 
 	@Override
 	public boolean canScrollHorizontally(int direction)
 	{
-		return !enabled && super.canScrollHorizontally(direction);
+		return enabled && super.canScrollHorizontally(direction);
 	}
 
 	public void setPagingEnabled(boolean enabled)
@@ -53,6 +53,6 @@ public class NoSwipePager extends ViewPager
 	@Override
 	public boolean executeKeyEvent(KeyEvent event)
 	{
-		return (!enabled && super.executeKeyEvent(event));
+		return (enabled && super.executeKeyEvent(event));
 	}
 }

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.BlockInfo;
+import org.oregongoestocollege.itsaplan.data.Stage;
 
 /**
  * Oregon GEAR UP App
@@ -21,7 +22,7 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 {
 	private OnFragmentInteractionListener mListener;
 	private int identifier;
-
+	private BlockInfo lastBlockInfo;
 
 	public ChecklistFragment()
 	{
@@ -77,10 +78,29 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		transaction.commit();
 
 		identifier = 2;
+		// TODO: get from state / repo
+		lastBlockInfo = blockInfo;
 
 		Resources resources = getResources();
 		AppCompatActivity activity = (AppCompatActivity)getActivity();
 		activity.setTitle(blockInfo.title);
+		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	}
+
+	private void showStepStage(Stage stage)
+	{
+		StepStageFragment newFragment = StepStageFragment.newInstance();
+		newFragment.init(this, stage);
+
+		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.fragment_container, newFragment);
+		transaction.commit();
+
+		identifier = 3;
+
+		Resources resources = getResources();
+		AppCompatActivity activity = (AppCompatActivity)getActivity();
+		activity.setTitle(stage.title);
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
@@ -121,8 +141,19 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		showStepBlock(blockInfo);
 	}
 
+	@Override
+	public void onShowStage(Stage stage)
+	{
+		showStepStage(stage);
+	}
+
 	public boolean handleBackPressed()
 	{
+		if (identifier == 3)
+		{
+			showStepBlock(lastBlockInfo);
+			return true;
+		}
 		if (identifier == 2)
 		{
 			showStepBlockInfo();

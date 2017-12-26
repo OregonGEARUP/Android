@@ -13,7 +13,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.databinding.FragmentStepBlockBinding;
@@ -39,7 +38,7 @@ public class StepBlockFragment extends Fragment
 
 	public void init(OnChecklistInteraction listener, String blockFileName)
 	{
-		this.listener = new WeakReference<OnChecklistInteraction>(listener);
+		this.listener = new WeakReference<>(listener);
 		this.blockFileName = blockFileName;
 	}
 
@@ -59,7 +58,7 @@ public class StepBlockFragment extends Fragment
 	{
 		// Inflate the layout for this fragment
 		FragmentStepBlockBinding binding =
-			binding = DataBindingUtil.inflate(inflater, R.layout.fragment_step_block, container, false);
+			DataBindingUtil.inflate(inflater, R.layout.fragment_step_block, container, false);
 		View v = binding.getRoot();
 
 		adapter = new BindingItemsAdapter();
@@ -88,7 +87,8 @@ public class StepBlockFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable Stage stage)
 			{
-				Toast.makeText(getContext(), "todo - " + stage.title, Toast.LENGTH_SHORT).show();;
+				if (listener != null)
+					listener.get().onShowStage(stage);
 			}
 		});
 
