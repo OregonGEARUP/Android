@@ -2,8 +2,8 @@ package org.oregongoestocollege.itsaplan;
 
 import java.lang.ref.WeakReference;
 
-import android.app.Activity;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -15,7 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.BlockInfo;
 import org.oregongoestocollege.itsaplan.databinding.FragmentStepBlockInfoBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel;
@@ -38,7 +37,7 @@ public class StepBlockInfoFragment extends Fragment
 
 	public void init(OnChecklistInteraction listener)
 	{
-		this.listener = new WeakReference<OnChecklistInteraction>(listener);
+		this.listener = new WeakReference<>(listener);
 	}
 
 	/**
@@ -66,7 +65,8 @@ public class StepBlockInfoFragment extends Fragment
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-		blockInfoListViewModel = obtainViewModel(getActivity());
+		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
+		blockInfoListViewModel = ViewModelProviders.of(this, factory).get(BlockInfoListViewModel.class);
 		binding.setUxContext(blockInfoListViewModel);
 
 		blockInfoListViewModel.getUpdateListEvent().observe(this, new Observer<Void>()
@@ -78,16 +78,18 @@ public class StepBlockInfoFragment extends Fragment
 					adapter.clear();
 
 				adapter.addAll(blockInfoListViewModel.getItems());
+
+				getActivity().setTitle(R.string.app_name);
 			}
 		});
 
-		blockInfoListViewModel.getOpenBlockEvent().observe(this, new Observer<BlockInfo>()
+		blockInfoListViewModel.getOpenBlockEvent().observe(this, new Observer<Integer>()
 		{
 			@Override
-			public void onChanged(@Nullable BlockInfo blockInfo)
+			public void onChanged(@Nullable Integer blockIndex)
 			{
-				if (listener != null)
-					listener.get().onShowBlock(blockInfo);
+				if (listener != null && blockIndex != null)
+					listener.get().onShowBlock(blockIndex);
 			}
 		});
 
@@ -111,15 +113,5 @@ public class StepBlockInfoFragment extends Fragment
 	public void onDetach()
 	{
 		super.onDetach();
-	}
-
-	public static BlockInfoListViewModel obtainViewModel(Activity activity)
-	{
-		// Use a Factory to inject dependencies into the ViewModel
-		ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
-
-		// future - could use ViewModelProviders
-
-		return factory.create(BlockInfoListViewModel.class);
 	}
 }

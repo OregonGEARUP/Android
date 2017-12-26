@@ -21,20 +21,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BlockInfoItemViewModel implements BindingItem
 {
 	// service data
+	private final int index;
 	private final BlockInfo model;
-	private final SingleLiveEvent<BlockInfo> openBlockEvent;
+	private final SingleLiveEvent<Integer> openBlockEvent;
 	// view data
 	public final String title;
 	public final ObservableField<String> count = new ObservableField<>();
 	public final ObservableBoolean isEnabled = new ObservableBoolean();
 
-	public BlockInfoItemViewModel(@NonNull Context context, @NonNull BlockInfo model, int index, SingleLiveEvent<BlockInfo> openBlockEvent)
+	public BlockInfoItemViewModel(@NonNull Context context, @NonNull BlockInfo model, int index, SingleLiveEvent<Integer> openBlockEvent)
 	{
 		checkNotNull(context);
 		checkNotNull(model);
 
 		this.model = model;
-		this.title = String.format(Locale.getDefault(), "%d. %s", index, model.title);
+		this.index = index;
+		this.title = String.format(Locale.getDefault(), "%d. %s", index+1, model.title);
 		this.openBlockEvent = openBlockEvent;
 
 		if (model.available())
@@ -55,7 +57,7 @@ public class BlockInfoItemViewModel implements BindingItem
 		if (model.blockFileName != null && !model.blockFileName.isEmpty())
 		{
 			if (openBlockEvent != null)
-				openBlockEvent.setValue(model);
+				openBlockEvent.setValue(index);
 		}
 	}
 }

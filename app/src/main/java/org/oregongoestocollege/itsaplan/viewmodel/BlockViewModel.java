@@ -2,10 +2,10 @@ package org.oregongoestocollege.itsaplan.viewmodel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.content.Context;
 import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 
@@ -24,10 +24,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BlockViewModel extends AndroidViewModel implements CheckpointInterface.LoadBlockCallback
 {
 	// service data
-	private String blockFileName;
 	private Block model;
+	private int index;
 	// view data
-	private final Context context; // To avoid leaks, this must be an Application Context.
 	private final CheckpointRepository checkpointRepository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<Stage> openStageEvent = new SingleLiveEvent<>();
@@ -36,20 +35,21 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 
 	public BlockViewModel(@NonNull Application context, @NonNull CheckpointRepository checkpointRepository)
 	{
+		// To avoid leaks, force use of application context
 		super(context);
 
 		checkNotNull(context);
 
-		// force use of application context
-		this.context = context.getApplicationContext();
 		this.checkpointRepository = checkpointRepository;
 	}
 
-	public void start(@NonNull String blockFileName)
+	public void start(int blockIndex)
 	{
+		this.index = blockIndex;
+
 		dataLoading.set(true);
 
-		checkpointRepository.getBlock(this, blockFileName);
+		checkpointRepository.getBlock(this, index);
 	}
 
 	public SingleLiveEvent<Void> getUpdateListEvent()
@@ -78,9 +78,10 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 			List<BindingItem> viewModels = new ArrayList<>(stages.size());
 
 			for (Stage stage : stages)
-				viewModels.add(new StageItemViewModel(context, stage, openStageEvent));
+				viewModels.add(new StageItemViewModel(this.getApplication(), stage, openStageEvent));
 
 			items = viewModels;
+			model = block;
 		}
 
 		updateListEvent.call();
@@ -96,6 +97,8 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 
 	public String getTitle()
 	{
-		return model != null ? model.blocktitle : null;
+		return model != null ?
+			String.format(Locale.getDefault(), "%d. %s", index + 1, model.blocktitle) :
+			null;
 	}
 }

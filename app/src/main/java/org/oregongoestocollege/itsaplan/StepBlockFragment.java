@@ -2,8 +2,8 @@ package org.oregongoestocollege.itsaplan;
 
 import java.lang.ref.WeakReference;
 
-import android.app.Activity;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,7 +26,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.BlockViewModel;
 public class StepBlockFragment extends Fragment
 {
 	private WeakReference<OnChecklistInteraction> listener;
-	private String blockFileName;
+	private int blockIndex;
 	private RecyclerView recyclerView;
 	private BindingItemsAdapter adapter;
 	private BlockViewModel blockViewModel;
@@ -36,10 +36,10 @@ public class StepBlockFragment extends Fragment
 		// Required empty public constructor
 	}
 
-	public void init(OnChecklistInteraction listener, String blockFileName)
+	public void init(OnChecklistInteraction listener, int blockIndex)
 	{
 		this.listener = new WeakReference<>(listener);
-		this.blockFileName = blockFileName;
+		this.blockIndex = blockIndex;
 	}
 
 	/**
@@ -67,7 +67,8 @@ public class StepBlockFragment extends Fragment
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-		blockViewModel = obtainViewModel(getActivity());
+		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
+		blockViewModel = ViewModelProviders.of(this, factory).get(BlockViewModel.class);
 		binding.setUxContext(blockViewModel);
 
 		blockViewModel.getUpdateListEvent().observe(this, new Observer<Void>()
@@ -79,6 +80,8 @@ public class StepBlockFragment extends Fragment
 					adapter.clear();
 
 				adapter.addAll(blockViewModel.getItems());
+
+				getActivity().setTitle(blockViewModel.getTitle());
 			}
 		});
 
@@ -99,16 +102,6 @@ public class StepBlockFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-		blockViewModel.start(blockFileName);
-	}
-
-	public static BlockViewModel obtainViewModel(Activity activity)
-	{
-		// Use a Factory to inject dependencies into the ViewModel
-		ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
-
-		// future - could use ViewModelProviders
-
-		return factory.create(BlockViewModel.class);
+		blockViewModel.start(blockIndex);
 	}
 }

@@ -1,6 +1,5 @@
 package org.oregongoestocollege.itsaplan;
 
-import org.oregongoestocollege.itsaplan.data.BlockInfo;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
 /**
@@ -9,6 +8,6 @@ import org.oregongoestocollege.itsaplan.data.Stage;
  */
 public interface OnChecklistInteraction
 {
-	void onShowBlock(BlockInfo blockInfo);
+	void onShowBlock(int blockIndex);
 	void onShowStage(Stage stage);
 }

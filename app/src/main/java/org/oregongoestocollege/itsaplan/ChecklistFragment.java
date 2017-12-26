@@ -1,7 +1,6 @@
 package org.oregongoestocollege.itsaplan;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.BlockInfo;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
 /**
@@ -20,9 +18,10 @@ import org.oregongoestocollege.itsaplan.data.Stage;
  */
 public class ChecklistFragment extends Fragment implements OnChecklistInteraction
 {
+	private static final String PARAM_BLOCK_INDEX = "blockIndex";
 	private OnFragmentInteractionListener mListener;
 	private int identifier;
-	private BlockInfo lastBlockInfo;
+	private int blockIndex = -1;
 
 	public ChecklistFragment()
 	{
@@ -40,13 +39,27 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+
+		outState.putInt(PARAM_BLOCK_INDEX, blockIndex);
+	}
+
+	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_checklist, container, false);
 
-		showStepBlockInfo();
+		if (savedInstanceState != null)
+			blockIndex = savedInstanceState.getInt(PARAM_BLOCK_INDEX);
+
+		if (blockIndex >= 0)
+			showStepBlock(blockIndex);
+		else
+			showStepBlockInfo();
 
 		return v;
 	}
@@ -61,29 +74,25 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		transaction.commit();
 
 		identifier = 1;
+		blockIndex = -1;
 
-		Resources resources = getResources();
 		AppCompatActivity activity = (AppCompatActivity)getActivity();
-		activity.setTitle(R.string.app_name);
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 	}
 
-	private void showStepBlock(BlockInfo blockInfo)
+	private void showStepBlock(int blockIndex)
 	{
 		StepBlockFragment newFragment = StepBlockFragment.newInstance();
-		newFragment.init(this, blockInfo.blockFileName);
+		newFragment.init(this, blockIndex);
 
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container, newFragment);
 		transaction.commit();
 
 		identifier = 2;
-		// TODO: get from state / repo
-		lastBlockInfo = blockInfo;
+		this.blockIndex = blockIndex;
 
-		Resources resources = getResources();
-		AppCompatActivity activity = (AppCompatActivity)getActivity();
-		activity.setTitle(blockInfo.title);
+		AppCompatActivity activity = (AppCompatActivity)getActivity();// TODO activity.setTitle(blockInfo.title);
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
@@ -98,9 +107,7 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 
 		identifier = 3;
 
-		Resources resources = getResources();
 		AppCompatActivity activity = (AppCompatActivity)getActivity();
-		activity.setTitle(stage.title);
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
@@ -136,9 +143,9 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 	}
 
 	@Override
-	public void onShowBlock(BlockInfo blockInfo)
+	public void onShowBlock(int blockIndex)
 	{
-		showStepBlock(blockInfo);
+		showStepBlock(blockIndex);
 	}
 
 	@Override
@@ -151,7 +158,7 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 	{
 		if (identifier == 3)
 		{
-			showStepBlock(lastBlockInfo);
+			showStepBlock(blockIndex);
 			return true;
 		}
 		if (identifier == 2)

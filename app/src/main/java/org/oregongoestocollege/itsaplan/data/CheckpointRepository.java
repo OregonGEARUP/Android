@@ -9,11 +9,13 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -30,11 +32,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CheckpointRepository implements CheckpointInterface
 {
-	private final String TAG = "CheckpointManager";
+	private final String TAG = "GearUP_CheckpointMgr";
 	private static final String baseUrl = "https://oregongoestocollege.org/mobileApp/json/";
 	private static CheckpointRepository instance;
-	// cached data from a previous network request
-	protected List<BlockInfo> cachedBlockInfoList;
+	// BlockInfo fields
+	final Object blockInfoListLock = new Object();
+	List<BlockInfo> blockInfoListCache;
+	GetBlockInfoListTask blockInfoListTask;
+	// Block fields
+	final Object blocksLock = new Object();
+	Map<Integer, Block> blocksCache = new HashMap<>();
+	Map<Integer, GetBlockTask> blocksTask = new HashMap<>();
 
 	/**
 	 * @return a shared instance of the Manager
@@ -51,31 +59,83 @@ public class CheckpointRepository implements CheckpointInterface
 	{
 		checkNotNull(callback);
 
-		// response immediately if we have the data cached
-		if (cachedBlockInfoList != null)
+		List<BlockInfo> data = null;
+		GetBlockInfoListTask newTask = null;
+
+		synchronized (blockInfoListLock)
 		{
-			Log.d(TAG, "BlockInfoList from cache");
-			callback.onDataLoaded(cachedBlockInfoList);
-			return;
+			if (blockInfoListCache != null)
+				data = blockInfoListCache;
+			else if (blockInfoListTask != null)
+				blockInfoListTask.setCallback(callback);
+			else
+			{
+				newTask = new GetBlockInfoListTask(callback);
+				blockInfoListTask = newTask;
+			}
 		}
 
-		Log.d(TAG, "BlockInfoList from network");
-
-		// if not make the http request
-		new GetBlockInfoListTask(callback).execute();
+		// response immediately if we have the data cached
+		if (data != null)
+		{
+			Utils.d(TAG, "BlockInfoList from cache");
+			callback.onDataLoaded(blockInfoListCache);
+		}
+		else if (newTask != null)
+		{
+			Utils.d(TAG, "BlockInfoList from network");
+			newTask.execute();
+		}
+		else
+			Utils.d(TAG, "GetBlockInfoListTask pending");
 	}
 
 	@Override
-	public void getBlock(@NonNull LoadBlockCallback callback, String blockFileName)
+	public void getBlock(@NonNull LoadBlockCallback callback, int blockIndex)
 	{
 		checkNotNull(callback);
-		checkNotNull(blockFileName);
 
-		if (Utils.DEBUG)
-			Utils.d(TAG, "Block %s from network", blockFileName);
+		// we must have our BlockInfo before we can load a block
+		BlockInfo blockInfo = null;
+		if (blockInfoListCache != null && blockIndex < blockInfoListCache.size())
+			blockInfo = blockInfoListCache.get(blockIndex);
 
-		// if not make the http request
-		new GetBlockTask(callback, blockFileName).execute();
+		if (blockInfo == null || TextUtils.isEmpty(blockInfo.blockFileName))
+			return;
+
+		Block data;
+		GetBlockTask newTask = null;
+
+		synchronized (blocksLock)
+		{
+			data = blocksCache.get(blockIndex);
+			if (data == null)
+			{
+				GetBlockTask currentTask = blocksTask.get(blockIndex);
+				if (currentTask != null)
+					currentTask.setCallback(callback);
+				else
+				{
+					newTask = new GetBlockTask(callback, blockInfo.blockFileName, blockIndex);
+					blocksTask.put(blockIndex, newTask);
+				}
+
+			}
+		}
+
+		// response immediately if we have the data cached
+		if (data != null)
+		{
+			Utils.d(TAG, "Block from cache");
+			callback.onDataLoaded(data);
+		}
+		else if (newTask != null)
+		{
+			Utils.d(TAG, "Block from network");
+			newTask.execute();
+		}
+		else
+			Utils.d(TAG, "GetBlockTask pending");
 	}
 
 	private static class GetBlockInfoListTask extends AsyncTask<Void, Void, List<BlockInfo>>
@@ -104,8 +164,6 @@ public class CheckpointRepository implements CheckpointInterface
 				blocks = new Gson().fromJson(bufferedReader, listType);
 
 				urlConnection.disconnect();
-
-				CheckpointRepository.getInstance().cachedBlockInfoList = blocks;
 			}
 			catch (IOException e)
 			{
@@ -116,10 +174,26 @@ public class CheckpointRepository implements CheckpointInterface
 
 		protected void onPostExecute(List<BlockInfo> blocks)
 		{
-			if (blocks != null && !blocks.isEmpty())
-				callback.onDataLoaded(blocks);
+			CheckpointRepository repo = CheckpointRepository.getInstance();
+
+			boolean hasData;
+
+			synchronized (repo.blockInfoListLock)
+			{
+				hasData = blocks != null && !blocks.isEmpty();
+				repo.blockInfoListCache = blocks;
+				repo.blockInfoListTask = null;
+			}
+
+			if (hasData)
+				callback.onDataLoaded(repo.blockInfoListCache);
 			else
 				callback.onDataNotAvailable();
+		}
+
+		public void setCallback(LoadBlockInfoListCallback callback)
+		{
+			this.callback = callback;
 		}
 	}
 
@@ -127,12 +201,14 @@ public class CheckpointRepository implements CheckpointInterface
 	{
 		LoadBlockCallback callback;
 		String blockFileName;
+		int blockIndex;
 		Block block;
 
-		GetBlockTask(@NonNull LoadBlockCallback callback, @NonNull String blockFileName)
+		GetBlockTask(@NonNull LoadBlockCallback callback, @NonNull String blockFileName, int blockIndex)
 		{
 			this.callback = callback;
 			this.blockFileName = blockFileName;
+			this.blockIndex = blockIndex;
 		}
 
 		protected Block doInBackground(Void... params)
@@ -153,7 +229,6 @@ public class CheckpointRepository implements CheckpointInterface
 					block = blocks.get(0);
 
 				urlConnection.disconnect();
-
 			}
 			catch (IOException e)
 			{
@@ -164,10 +239,36 @@ public class CheckpointRepository implements CheckpointInterface
 
 		protected void onPostExecute(Block block)
 		{
+			CheckpointRepository repo = CheckpointRepository.getInstance();
+
+			synchronized (repo.blocksLock)
+			{
+				if (block != null)
+					repo.blocksCache.put(blockIndex, block);
+				repo.blocksTask.remove(this);
+			}
+
 			if (block != null)
 				callback.onDataLoaded(block);
 			else
 				callback.onDataNotAvailable();
+		}
+
+		public void setCallback(LoadBlockCallback callback)
+		{
+			this.callback = callback;
+		}
+	}
+
+	private static void simulateNetworkDelay()
+	{
+		try
+		{
+			Thread.sleep(5000L);
+		}
+		catch (InterruptedException e)
+		{
+			Thread.currentThread().interrupt();
 		}
 	}
 }

@@ -76,6 +76,8 @@ public class StepStageFragment extends Fragment
 		viewPager.setPageMargin(margin);
 		viewPager.setAdapter(pagerAdapter);
 
+		getActivity().setTitle(stage.title);
+
 		return v;
 	}
 }

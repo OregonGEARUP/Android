@@ -31,13 +31,15 @@
 			android:layout_height="wrap_content"
 			style="@style/GearUpTextAppearance.SubTitle"
 			android:layout_marginBottom="@dimen/activity_horizontal_margin"
-			android:text="@string/header_checklist" />
+			android:text="@string/header_checklist"
+			android:visibility="@{uxContext.dataLoading ? View.GONE : View.VISIBLE}"/>
 
 		<android.support.v7.widget.RecyclerView
 			android:id="@+id/recycler_view"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:layout_below="@id/title" />
+			android:layout_below="@id/title"
+			android:visibility="@{uxContext.dataLoading ? View.GONE : View.VISIBLE}"/>
 
 	</RelativeLayout>
 </layout>

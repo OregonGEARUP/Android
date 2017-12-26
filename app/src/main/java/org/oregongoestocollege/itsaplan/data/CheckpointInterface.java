@@ -28,5 +28,5 @@ public interface CheckpointInterface
 
 	void getBlockInfoList(@NonNull LoadBlockInfoListCallback callback);
 
-	void getBlock(@NonNull LoadBlockCallback callback, String blockFileName);
+	void getBlock(@NonNull LoadBlockCallback callback, int blockIndex);
 }

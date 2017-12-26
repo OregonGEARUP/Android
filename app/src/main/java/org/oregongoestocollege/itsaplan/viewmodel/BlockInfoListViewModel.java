@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.content.Context;
 import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 
@@ -22,20 +21,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BlockInfoListViewModel extends AndroidViewModel implements CheckpointInterface.LoadBlockInfoListCallback
 {
-	private final Context context; // To avoid leaks, this must be an Application Context.
 	private final CheckpointRepository checkpointRepository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
-	private final SingleLiveEvent<BlockInfo> openBlockEvent = new SingleLiveEvent<>();
+	private final SingleLiveEvent<Integer> openBlockEvent = new SingleLiveEvent<>();
 	private List<BindingItem> items;
 	// These observable fields will update Views automatically
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
 
 	public BlockInfoListViewModel(@NonNull Application context, @NonNull CheckpointRepository checkpointRepository)
 	{
+		// To avoid leaks, force use of application context
 		super(context);
 
-		// force use of application context
-		this.context = context.getApplicationContext();
 		this.checkpointRepository = checkpointRepository;
 	}
 
@@ -51,7 +48,7 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 		return updateListEvent;
 	}
 
-	public SingleLiveEvent<BlockInfo> getOpenBlockEvent()
+	public SingleLiveEvent<Integer> getOpenBlockEvent()
 	{
 		return openBlockEvent;
 	}
@@ -66,11 +63,11 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 	{
 		checkNotNull(blockInfoList);
 
-		int counter = 1;
+		int counter = 0;
 		List<BindingItem> viewModels = new ArrayList<>(blockInfoList.size());
 
 		for (BlockInfo blockInfo : blockInfoList)
-			viewModels.add(new BlockInfoItemViewModel(context, blockInfo, counter++, openBlockEvent));
+			viewModels.add(new BlockInfoItemViewModel(this.getApplication(), blockInfo, counter++, openBlockEvent));
 
 		items = viewModels;
 
