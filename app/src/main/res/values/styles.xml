@@ -1,27 +1,35 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimaryTurquoise</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryTurquoiseDarker20</item>
-        <item name="colorAccent">@color/colorPrimaryLimeGreen</item>
-    </style>
+	<!-- Base application theme. -->
+	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+		<!-- Customize your theme here. -->
+		<item name="colorPrimary">@color/colorPrimaryTurquoise</item>
+		<item name="colorPrimaryDark">@color/colorPrimaryTurquoiseDarker20</item>
+		<item name="colorAccent">@color/colorPrimaryLimeGreen</item>
+	</style>
 
-    <style name="GearUpTextAppearance" parent="@android:style/TextAppearance">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
-    </style>
-    <style name="GearUpTextAppearance.Title">
-        <item name="android:textSize">20sp</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
-    </style>
-    <style name="GearUpTextAppearance.SubTitle">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
-    </style>
-    <style name="GearUpTextAppearance.Small">
-        <item name="android:textSize">12sp</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
-    </style>
+	<!-- splash screen theme -->
+	<style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+		<item name="android:windowBackground">@drawable/splash_background</item>
+	</style>
+
+	<style name="GearUpTextAppearance" parent="@android:style/TextAppearance">
+		<item name="android:textSize">14sp</item>
+		<item name="android:textColor">?android:textColorPrimary</item>
+	</style>
+
+	<style name="GearUpTextAppearance.Title">
+		<item name="android:textSize">20sp</item>
+		<item name="android:textColor">?android:textColorPrimary</item>
+	</style>
+
+	<style name="GearUpTextAppearance.SubTitle">
+		<item name="android:textSize">16sp</item>
+		<item name="android:textColor">?android:textColorPrimary</item>
+	</style>
+
+	<style name="GearUpTextAppearance.Small">
+		<item name="android:textSize">12sp</item>
+		<item name="android:textColor">?android:textColorPrimary</item>
+	</style>
 </resources>
