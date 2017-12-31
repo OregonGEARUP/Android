@@ -168,4 +168,9 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		}
 		return false;
 	}
+
+	public boolean canHandleBackPressed()
+	{
+		return (identifier > 1);
+	}
 }
