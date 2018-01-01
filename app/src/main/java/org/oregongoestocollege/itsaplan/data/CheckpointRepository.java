@@ -401,9 +401,18 @@ public class CheckpointRepository implements CheckpointInterface
 	}
 
 	@Override
-	public List<BlockInfo> getBlockInfo()
+	public int getCountOfBlocks()
 	{
-		return cachedBlockInfos;
+		return cachedBlockInfos != null ? cachedBlockInfos.size() : 0;
+	}
+
+	@Override
+	public BlockInfo getBlockInfo(int blockIndex)
+	{
+		if (cachedBlockInfos != null && blockIndex >= 0 && blockIndex < cachedBlockInfos.size())
+			return cachedBlockInfos.get(blockIndex);
+
+		return null;
 	}
 
 	@Override
@@ -416,6 +425,19 @@ public class CheckpointRepository implements CheckpointInterface
 				return cachedBlocks.get(blockInfo.blockFileName);
 		}
 
+		return null;
+	}
+
+	@Override
+	public Stage getStage(int blockIndex, int stageIndex)
+	{
+		Block block = getBlock(blockIndex);
+		if (block != null)
+		{
+			List<Stage> stages = block.stages;
+			if (stages != null && stageIndex >= 0 && stageIndex < stages.size())
+				return stages.get(stageIndex);
+		}
 		return null;
 	}
 

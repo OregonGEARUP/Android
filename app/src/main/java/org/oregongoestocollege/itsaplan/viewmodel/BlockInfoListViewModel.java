@@ -13,7 +13,6 @@ import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.BlockInfo;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
-import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 
 /**
  * Oregon GEAR UP App
@@ -21,26 +20,26 @@ import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
  */
 public class BlockInfoListViewModel extends AndroidViewModel implements CheckpointInterface.CheckpointCallback
 {
-	private final CheckpointRepository checkpointRepository;
+	private final CheckpointInterface repository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<Integer> openBlockEvent = new SingleLiveEvent<>();
 	private List<BindingItem> items;
 	// These observable fields will update Views automatically
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
 
-	public BlockInfoListViewModel(@NonNull Application context, @NonNull CheckpointRepository checkpointRepository)
+	public BlockInfoListViewModel(@NonNull Application context, @NonNull CheckpointInterface repository)
 	{
 		// To avoid leaks, force use of application context
 		super(context);
 
-		this.checkpointRepository = checkpointRepository;
+		this.repository = repository;
 	}
 
 	public void start()
 	{
 		dataLoading.set(true);
 
-		checkpointRepository.resumeCheckpoints(this.getApplication(), this);
+		repository.resumeCheckpoints(this.getApplication(), this);
 	}
 
 	public SingleLiveEvent<Void> getUpdateListEvent()
@@ -63,15 +62,17 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 	{
 		if (success)
 		{
-			List<BlockInfo> blockInfoList = CheckpointRepository.getInstance().getBlockInfo();
-			if (blockInfoList != null && !blockInfoList.isEmpty())
+			int size = repository.getCountOfBlocks();
+			if (size > 0)
 			{
-				int counter = 0;
-				List<BindingItem> viewModels = new ArrayList<>(blockInfoList.size());
+				List<BindingItem> viewModels = new ArrayList<>(size);
 
-				for (BlockInfo blockInfo : blockInfoList)
+				for (int i = 0; i < size; i++)
+				{
+					BlockInfo blockInfo = repository.getBlockInfo(i);
 					viewModels
-						.add(new BlockInfoItemViewModel(this.getApplication(), blockInfo, counter++, openBlockEvent));
+						.add(new BlockInfoItemViewModel(this.getApplication(), blockInfo, i, openBlockEvent));
+				}
 
 				items = viewModels;
 

@@ -15,6 +15,7 @@ import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.Block;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
+import org.oregongoestocollege.itsaplan.data.Indexes;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -29,20 +30,20 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 	private Block model;
 	private int index;
 	// view data
-	private final CheckpointRepository checkpointRepository;
+	private final CheckpointInterface repository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
-	private final SingleLiveEvent<Stage> openStageEvent = new SingleLiveEvent<>();
+	private final SingleLiveEvent<Indexes> openStageEvent = new SingleLiveEvent<>();
 	private List<BindingItem> items;
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
 
-	public BlockViewModel(@NonNull Application context, @NonNull CheckpointRepository checkpointRepository)
+	public BlockViewModel(@NonNull Application context, @NonNull CheckpointInterface repository)
 	{
 		// To avoid leaks, force use of application context
 		super(context);
 
 		checkNotNull(context);
 
-		this.checkpointRepository = checkpointRepository;
+		this.repository = repository;
 	}
 
 	public void start(int blockIndex)
@@ -51,7 +52,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 
 		dataLoading.set(true);
 
-		checkpointRepository.loadBlock(this.getApplication(), this, index);
+		repository.loadBlock(this.getApplication(), this, index);
 	}
 
 	public SingleLiveEvent<Void> getUpdateListEvent()
@@ -59,7 +60,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 		return updateListEvent;
 	}
 
-	public SingleLiveEvent<Stage> getOpenStageEvent()
+	public SingleLiveEvent<Indexes> getOpenStageEvent()
 	{
 		return openStageEvent;
 	}
@@ -74,19 +75,29 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 	{
 		if (success)
 		{
-			Block block = CheckpointRepository.getInstance().getBlock(index);
+			Block block = repository.getBlock(index);
 			if (block != null)
 			{
 				List<Stage> stages = block.stages;
-				if (stages != null && !stages.isEmpty())
+				if (stages != null)
 				{
-					List<BindingItem> viewModels = new ArrayList<>(stages.size());
+					int size = stages.size();
+					if (size > 0)
+					{
+						List<BindingItem> viewModels = new ArrayList<>(size);
 
-					for (Stage stage : stages)
-						viewModels.add(new StageItemViewModel(this.getApplication(), stage, openStageEvent));
+						for (int i = 0; i < size; i++)
+						{
+							viewModels.add(new StageItemViewModel(
+								getApplication(),
+								CheckpointRepository.getInstance(),
+								index, i,
+								openStageEvent));
+						}
 
-					items = viewModels;
-					model = block;
+						items = viewModels;
+						model = block;
+					}
 				}
 
 				updateListEvent.call();

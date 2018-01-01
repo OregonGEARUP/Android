@@ -1,7 +1,5 @@
 package org.oregongoestocollege.itsaplan;
 
-import org.oregongoestocollege.itsaplan.data.Stage;
-
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
@@ -9,5 +7,5 @@ import org.oregongoestocollege.itsaplan.data.Stage;
 public interface OnChecklistInteraction
 {
 	void onShowBlock(int blockIndex);
-	void onShowStage(Stage stage);
+	void onShowStage(int blockIndex, int stageIndex);
 }

@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.Stage;
-
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
@@ -96,10 +94,10 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
-	private void showStepStage(Stage stage)
+	private void showStepStage(int blockIndex, int stageIndex)
 	{
 		StepStageFragment newFragment = StepStageFragment.newInstance();
-		newFragment.init(this, stage);
+		newFragment.init(this, blockIndex, stageIndex);
 
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container, newFragment);
@@ -149,9 +147,9 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 	}
 
 	@Override
-	public void onShowStage(Stage stage)
+	public void onShowStage(int blockIndex, int stageIndex)
 	{
-		showStepStage(stage);
+		showStepStage(blockIndex, stageIndex);
 	}
 
 	public boolean handleBackPressed()

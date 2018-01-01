@@ -14,7 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.Stage;
+import org.oregongoestocollege.itsaplan.data.Indexes;
 import org.oregongoestocollege.itsaplan.databinding.FragmentStepBlockBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockViewModel;
@@ -85,13 +85,13 @@ public class StepBlockFragment extends Fragment
 			}
 		});
 
-		blockViewModel.getOpenStageEvent().observe(this, new Observer<Stage>()
+		blockViewModel.getOpenStageEvent().observe(this, new Observer<Indexes>()
 		{
 			@Override
-			public void onChanged(@Nullable Stage stage)
+			public void onChanged(@Nullable Indexes indexes)
 			{
-				if (listener != null)
-					listener.get().onShowStage(stage);
+				if (listener != null && indexes != null)
+					listener.get().onShowStage(indexes.blockIndex, indexes.stageIndex);
 			}
 		});
 

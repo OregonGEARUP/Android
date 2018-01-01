@@ -1,7 +1,5 @@
 package org.oregongoestocollege.itsaplan.data;
 
-import java.util.List;
-
 import android.app.Application;
 import android.support.annotation.NonNull;
 
@@ -22,7 +20,11 @@ public interface CheckpointInterface
 
 	void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex);
 
-	List<BlockInfo> getBlockInfo();
+	int getCountOfBlocks();
+
+	BlockInfo getBlockInfo(int blockIndex);
 
 	Block getBlock(int blockIndex);
+
+	Stage getStage(int blockIndex, int stageIndex);
 }

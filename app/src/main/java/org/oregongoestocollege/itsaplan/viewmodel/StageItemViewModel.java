@@ -1,12 +1,14 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
-import android.content.Context;
+import android.app.Application;
 import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.view.View;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
+import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
+import org.oregongoestocollege.itsaplan.data.Indexes;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -18,20 +20,30 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class StageItemViewModel implements BindingItem
 {
 	// service data
-	private final Stage model;
-	private final SingleLiveEvent<Stage> openStageEvent;
+	private int blockIndex;
+	private int stageIndex;
+	private Stage model;
+	private final SingleLiveEvent<Indexes> openStageEvent;
 	// view data
-	public final String title;
+	private final CheckpointInterface repository;
+	public String title;
 	public final ObservableBoolean isComplete = new ObservableBoolean();
 
-	public StageItemViewModel(@NonNull Context context, @NonNull Stage model, SingleLiveEvent<Stage> openStageEvent)
+	public StageItemViewModel(@NonNull Application context, @NonNull CheckpointInterface repository,
+		int blockIndex, int stageIndex,
+		SingleLiveEvent<Indexes> openStageEvent)
 	{
 		checkNotNull(context);
-		checkNotNull(model);
+		checkNotNull(repository);
 
-		this.model = model;
+		this.repository = repository;
+		this.blockIndex = blockIndex;
+		this.stageIndex = stageIndex;
 		this.openStageEvent = openStageEvent;
-		this.title = model.title;
+
+		model = repository.getStage(blockIndex, stageIndex);
+		if (model != null)
+			title = model.title;
 	}
 
 	@Override
@@ -43,6 +55,6 @@ public class StageItemViewModel implements BindingItem
 	public void onStageClick(View view)
 	{
 		if (openStageEvent != null)
-			openStageEvent.setValue(model);
+			openStageEvent.setValue(new Indexes(blockIndex, stageIndex, -1));
 	}
 }

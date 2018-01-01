@@ -1,5 +1,7 @@
 package org.oregongoestocollege.itsaplan.data;
 
+import java.util.List;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -19,8 +21,8 @@ public class Checkpoint
 	public String routeFileName;
 	@SerializedName("type")
 	public EntryType entryType;
-//	public List<Instance> instances;
-//	public List<Criteria> criteria;
+	public List<Instance> instances;
+	public List<KeyValue> criteria;
 
 	public Checkpoint()
 	{
@@ -44,6 +46,25 @@ public class Checkpoint
 			return true;
 
 		// TODO - check based on EntryType
+		switch (entryType)
+		{
+		case info:
+		case checkbox:
+		case route:
+		case nextstage:
+			return true;
+		case radio:
+			// todo
+			break;
+		case field:
+		case dateOnly:
+			// todo
+			break;
+		case dateAndText:
+			// todo
+			break;
+		}
+
 		return false;
 	}
 }

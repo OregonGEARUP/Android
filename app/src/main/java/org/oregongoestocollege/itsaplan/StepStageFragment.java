@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
+import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
 /**
@@ -23,8 +24,8 @@ import org.oregongoestocollege.itsaplan.data.Stage;
 public class StepStageFragment extends Fragment
 {
 	private WeakReference<OnChecklistInteraction> listener;
-	private OnFragmentInteractionListener mListener;
-	private Stage stage;
+	private int blockIndex;
+	private int stageIndex;
 	private ViewPager viewPager;
 	private CheckpointPagerAdapter pagerAdapter;
 
@@ -33,10 +34,11 @@ public class StepStageFragment extends Fragment
 		// Required empty public constructor
 	}
 
-	public void init(OnChecklistInteraction listener, Stage stage)
+	public void init(OnChecklistInteraction listener, int blockIndex, int stageIndex)
 	{
 		this.listener = new WeakReference<>(listener);
-		this.stage = stage;
+		this.blockIndex = blockIndex;
+		this.stageIndex = stageIndex;
 	}
 
 	/**
@@ -57,6 +59,8 @@ public class StepStageFragment extends Fragment
 		View v = inflater.inflate(R.layout.fragment_step_stage, container, false);
 
 		List<Fragment> fragments = new ArrayList<>();
+
+		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
 		if (stage != null && stage.checkpoints != null)
 		{
 			for (Checkpoint checkpoint : stage.checkpoints)
