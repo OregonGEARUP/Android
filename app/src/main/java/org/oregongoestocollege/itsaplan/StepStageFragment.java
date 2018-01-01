@@ -8,6 +8,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +61,11 @@ public class StepStageFragment extends Fragment
 		{
 			for (Checkpoint checkpoint : stage.checkpoints)
 			{
-				fragments.add(CheckpointFragment.newInstance(checkpoint.description));
+				if (TextUtils.isEmpty(checkpoint.description))
+					fragments
+						.add(CheckpointFragment.newInstance(getResources().getString(R.string.checkpoint_end_message)));
+				else
+					fragments.add(CheckpointFragment.newInstance(checkpoint.description));
 			}
 		}
 

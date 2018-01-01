@@ -29,20 +29,23 @@ public class BlockInfoItemViewModel implements BindingItem
 	public final ObservableField<String> count = new ObservableField<>();
 	public final ObservableBoolean isEnabled = new ObservableBoolean();
 
-	public BlockInfoItemViewModel(@NonNull Context context, @NonNull BlockInfo model, int index, SingleLiveEvent<Integer> openBlockEvent)
+	public BlockInfoItemViewModel(@NonNull Context context, @NonNull BlockInfo model, int index,
+		SingleLiveEvent<Integer> openBlockEvent)
 	{
 		checkNotNull(context);
 		checkNotNull(model);
 
 		this.model = model;
 		this.index = index;
-		this.title = String.format(Locale.getDefault(), "%d. %s", index+1, model.title);
+		this.title = String.format(Locale.getDefault(), "%d. %s", index + 1, model.title);
 		this.openBlockEvent = openBlockEvent;
 
 		if (model.available())
 		{
 			isEnabled.set(true);
-			count.set(context.getString(R.string.x_of_y, model.stagesCompleted, model.stageCount));
+
+			if (model.stagesCompleted >= 0 && model.stageCount >= 0)
+				count.set(context.getString(R.string.x_of_y, model.stagesCompleted, model.stageCount));
 		}
 	}
 

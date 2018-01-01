@@ -7,4 +7,6 @@
     <string name="header_checklist">Follow the 10 key steps to apply, pay and go to college.</string>
     <string name="completed">completed</string>
     <string name="x_of_y">%d of %d</string>
+    <string name="checkpoint_end_message">You have reached the end of this section.</string>
+    <string name="error_data">Data unavailable. Please try later.</string>
 </resources>

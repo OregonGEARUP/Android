@@ -8,7 +8,9 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
+import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.Block;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
@@ -21,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class BlockViewModel extends AndroidViewModel implements CheckpointInterface.LoadBlockCallback
+public class BlockViewModel extends AndroidViewModel implements CheckpointInterface.CheckpointCallback
 {
 	// service data
 	private Block model;
@@ -49,7 +51,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 
 		dataLoading.set(true);
 
-		checkpointRepository.getBlock(this, index);
+		checkpointRepository.loadBlock(this.getApplication(), this, index);
 	}
 
 	public SingleLiveEvent<Void> getUpdateListEvent()
@@ -68,30 +70,35 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 	}
 
 	@Override
-	public void onDataLoaded(@NonNull Block block)
+	public void onDataLoaded(boolean success)
 	{
-		checkNotNull(block);
-
-		List<Stage> stages = block.stages;
-		if (stages != null && !stages.isEmpty())
+		if (success)
 		{
-			List<BindingItem> viewModels = new ArrayList<>(stages.size());
+			Block block = CheckpointRepository.getInstance().getBlock(index);
+			if (block != null)
+			{
+				List<Stage> stages = block.stages;
+				if (stages != null && !stages.isEmpty())
+				{
+					List<BindingItem> viewModels = new ArrayList<>(stages.size());
 
-			for (Stage stage : stages)
-				viewModels.add(new StageItemViewModel(this.getApplication(), stage, openStageEvent));
+					for (Stage stage : stages)
+						viewModels.add(new StageItemViewModel(this.getApplication(), stage, openStageEvent));
 
-			items = viewModels;
-			model = block;
+					items = viewModels;
+					model = block;
+				}
+
+				updateListEvent.call();
+			}
+		}
+		else
+		{
+			Toast.makeText(
+				this.getApplication(), getApplication().getResources().getText(R.string.error_data), Toast.LENGTH_SHORT)
+				.show();
 		}
 
-		updateListEvent.call();
-
-		dataLoading.set(false);
-	}
-
-	@Override
-	public void onDataNotAvailable()
-	{
 		dataLoading.set(false);
 	}
 

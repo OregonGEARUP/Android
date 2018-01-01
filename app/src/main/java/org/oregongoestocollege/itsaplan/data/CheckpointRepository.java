@@ -5,17 +5,27 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
+import android.util.Pair;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -35,14 +45,21 @@ public class CheckpointRepository implements CheckpointInterface
 	private final String TAG = "GearUP_CheckpointMgr";
 	private static final String baseUrl = "https://oregongoestocollege.org/mobileApp/json/";
 	private static CheckpointRepository instance;
-	// BlockInfo fields
-	final Object blockInfoListLock = new Object();
-	List<BlockInfo> blockInfoListCache;
-	GetBlockInfoListTask blockInfoListTask;
-	// Block fields
-	final Object blocksLock = new Object();
-	Map<Integer, Block> blocksCache = new HashMap<>();
-	Map<Integer, GetBlockTask> blocksTask = new HashMap<>();
+	// pending Tasks
+	GetBlockInfoTask currentBlockInfoTask;
+	final Map<String, GetBlockTask> currentBlockTasks = new HashMap<>();
+	// sync access to cached data
+	private final Object lock = new Object();
+	// cached BlockInfo list
+	private List<BlockInfo> cachedBlockInfos;
+	// cached Block(s)
+	private final Map<String, Block> cachedBlocks = new HashMap<>();
+	// current state
+	private Block currentBlock;
+	private int currentBlockIndex = 0;
+	private int currentStageIndex = 0;
+	private int currentCheckpointIndex = 0;
+	private final Set<String> visited = new HashSet<>();
 
 	/**
 	 * @return a shared instance of the Manager
@@ -55,50 +72,48 @@ public class CheckpointRepository implements CheckpointInterface
 	}
 
 	@Override
-	public void getBlockInfoList(@NonNull LoadBlockInfoListCallback callback)
+	public void resumeCheckpoints(@NonNull Application context, @NonNull CheckpointCallback callback)
 	{
+		checkNotNull(context);
 		checkNotNull(callback);
 
 		List<BlockInfo> data = null;
-		GetBlockInfoListTask newTask = null;
+		GetBlockInfoTask newTask = null;
 
-		synchronized (blockInfoListLock)
+		synchronized (lock)
 		{
-			if (blockInfoListCache != null)
-				data = blockInfoListCache;
-			else if (blockInfoListTask != null)
-				blockInfoListTask.setCallback(callback);
+			if (cachedBlockInfos != null)
+				data = cachedBlockInfos;
+			else if (currentBlockInfoTask != null)
+				currentBlockInfoTask.setCallback(callback);
 			else
-			{
-				newTask = new GetBlockInfoListTask(callback);
-				blockInfoListTask = newTask;
-			}
+				newTask = new GetBlockInfoTask(context, callback);
 		}
 
-		// response immediately if we have the data cached
+		// respond immediately if we have the data cached
 		if (data != null)
 		{
-			Utils.d(TAG, "BlockInfoList from cache");
-			callback.onDataLoaded(blockInfoListCache);
+			Utils.d(TAG, "BlockInfos from cache");
+			callback.onDataLoaded(true);
 		}
 		else if (newTask != null)
 		{
-			Utils.d(TAG, "BlockInfoList from network");
+			Utils.d(TAG, "BlockInfos from network");
 			newTask.execute();
 		}
 		else
-			Utils.d(TAG, "GetBlockInfoListTask pending");
+			Utils.d(TAG, "GetBlockInfoTask pending");
 	}
 
 	@Override
-	public void getBlock(@NonNull LoadBlockCallback callback, int blockIndex)
+	public void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex)
 	{
 		checkNotNull(callback);
 
 		// we must have our BlockInfo before we can load a block
 		BlockInfo blockInfo = null;
-		if (blockInfoListCache != null && blockIndex < blockInfoListCache.size())
-			blockInfo = blockInfoListCache.get(blockIndex);
+		if (cachedBlockInfos != null && blockIndex < cachedBlockInfos.size())
+			blockInfo = cachedBlockInfos.get(blockIndex);
 
 		if (blockInfo == null || TextUtils.isEmpty(blockInfo.blockFileName))
 			return;
@@ -106,20 +121,16 @@ public class CheckpointRepository implements CheckpointInterface
 		Block data;
 		GetBlockTask newTask = null;
 
-		synchronized (blocksLock)
+		synchronized (lock)
 		{
-			data = blocksCache.get(blockIndex);
+			data = cachedBlocks.get(blockInfo.blockFileName);
 			if (data == null)
 			{
-				GetBlockTask currentTask = blocksTask.get(blockIndex);
+				GetBlockTask currentTask = currentBlockTasks.get(blockInfo.blockFileName);
 				if (currentTask != null)
 					currentTask.setCallback(callback);
 				else
-				{
-					newTask = new GetBlockTask(callback, blockInfo.blockFileName, blockIndex);
-					blocksTask.put(blockIndex, newTask);
-				}
-
+					newTask = new GetBlockTask(context, callback, blockInfo.blockFileName, blockIndex);
 			}
 		}
 
@@ -127,7 +138,8 @@ public class CheckpointRepository implements CheckpointInterface
 		if (data != null)
 		{
 			Utils.d(TAG, "Block from cache");
-			callback.onDataLoaded(data);
+			currentBlock = data;
+			callback.onDataLoaded(true);
 		}
 		else if (newTask != null)
 		{
@@ -138,60 +150,35 @@ public class CheckpointRepository implements CheckpointInterface
 			Utils.d(TAG, "GetBlockTask pending");
 	}
 
-	private static class GetBlockInfoListTask extends AsyncTask<Void, Void, List<BlockInfo>>
+	private static class GetBlockInfoTask extends AsyncTask<Void, Void, Boolean>
 	{
-		LoadBlockInfoListCallback callback;
-		List<BlockInfo> blocks;
+		final WeakReference<Context> contextWeakReference;
+		CheckpointCallback callback;
+		Boolean success;
 
-		GetBlockInfoListTask(@NonNull LoadBlockInfoListCallback callback)
+		GetBlockInfoTask(@NonNull Context context, @NonNull CheckpointCallback callback)
 		{
+			this.contextWeakReference = new WeakReference<>(context);
 			this.callback = callback;
+
+			// keep track of the pending task
+			CheckpointRepository.getInstance().currentBlockInfoTask = this;
 		}
 
-		protected List<BlockInfo> doInBackground(Void... params)
+		protected Boolean doInBackground(Void... params)
 		{
-			try
-			{
-				URL url = new URL(baseUrl + "blocks.json");
-				HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
-
-				InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
-				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
-
-				Type listType = new TypeToken<ArrayList<BlockInfo>>()
-				{
-				}.getType();
-				blocks = new Gson().fromJson(bufferedReader, listType);
-
-				urlConnection.disconnect();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-			return blocks;
+			return CheckpointRepository.getInstance().fetchBlocks(contextWeakReference.get());
 		}
 
-		protected void onPostExecute(List<BlockInfo> blocks)
+		protected void onPostExecute(Boolean success)
 		{
-			CheckpointRepository repo = CheckpointRepository.getInstance();
+			// clear this task
+			CheckpointRepository.getInstance().currentBlockInfoTask = null;
 
-			boolean hasData;
-
-			synchronized (repo.blockInfoListLock)
-			{
-				hasData = blocks != null && !blocks.isEmpty();
-				repo.blockInfoListCache = blocks;
-				repo.blockInfoListTask = null;
-			}
-
-			if (hasData)
-				callback.onDataLoaded(repo.blockInfoListCache);
-			else
-				callback.onDataNotAvailable();
+			callback.onDataLoaded(success);
 		}
 
-		public void setCallback(LoadBlockInfoListCallback callback)
+		public void setCallback(CheckpointCallback callback)
 		{
 			this.callback = callback;
 		}
@@ -199,62 +186,39 @@ public class CheckpointRepository implements CheckpointInterface
 
 	private static class GetBlockTask extends AsyncTask<Void, Void, Block>
 	{
-		LoadBlockCallback callback;
-		String blockFileName;
-		int blockIndex;
+		final WeakReference<Context> contextWeakReference;
+		final String blockFileName;
+		final int blockIndex;
+		CheckpointCallback callback;
 		Block block;
 
-		GetBlockTask(@NonNull LoadBlockCallback callback, @NonNull String blockFileName, int blockIndex)
+		GetBlockTask(@NonNull Context context, @NonNull CheckpointCallback callback, @NonNull String blockFileName,
+			int blockIndex)
 		{
+			this.contextWeakReference = new WeakReference<>(context);
 			this.callback = callback;
 			this.blockFileName = blockFileName;
 			this.blockIndex = blockIndex;
+
+			// keep track of the pending task
+			CheckpointRepository.getInstance().currentBlockTasks.put(blockFileName, this);
 		}
 
 		protected Block doInBackground(Void... params)
 		{
-			try
-			{
-				URL url = new URL(baseUrl + blockFileName);
-				HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
-
-				InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
-				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
-
-				Type listType = new TypeToken<List<Block>>()
-				{
-				}.getType();
-				List<Block> blocks = new Gson().fromJson(bufferedReader, listType);
-				if (blocks != null)
-					block = blocks.get(0);
-
-				urlConnection.disconnect();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
+			block = CheckpointRepository.getInstance().fetchBlock(contextWeakReference.get(), blockFileName, blockIndex);
 			return block;
 		}
 
 		protected void onPostExecute(Block block)
 		{
-			CheckpointRepository repo = CheckpointRepository.getInstance();
+			// clear this task
+			CheckpointRepository.getInstance().currentBlockTasks.remove(blockFileName);
 
-			synchronized (repo.blocksLock)
-			{
-				if (block != null)
-					repo.blocksCache.put(blockIndex, block);
-				repo.blocksTask.remove(this);
-			}
-
-			if (block != null)
-				callback.onDataLoaded(block);
-			else
-				callback.onDataNotAvailable();
+			callback.onDataLoaded(block != null);
 		}
 
-		public void setCallback(LoadBlockCallback callback)
+		public void setCallback(CheckpointCallback callback)
 		{
 			this.callback = callback;
 		}
@@ -271,4 +235,214 @@ public class CheckpointRepository implements CheckpointInterface
 			Thread.currentThread().interrupt();
 		}
 	}
+
+	protected boolean fetchBlocks(Context context)
+	{
+		boolean success = false;
+		List<BlockInfo> blocks = null;
+
+		try
+		{
+			// load the block info
+			URL url = new URL(baseUrl + "blocks.json");
+			HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+
+			InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+
+			Type listType = new TypeToken<ArrayList<BlockInfo>>()
+			{
+			}.getType();
+			blocks = new Gson().fromJson(bufferedReader, listType);
+
+			urlConnection.disconnect();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
+		if (blocks != null && !blocks.isEmpty())
+		{
+			synchronized (lock)
+			{
+				cachedBlockInfos = blocks;
+			}
+
+			// determine what our current indexes are
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+			currentBlockIndex = prefs.getInt("currentBlockIndex", -1);
+			currentStageIndex = prefs.getInt("currentStageIndex", -1);
+			currentCheckpointIndex = prefs.getInt("currentCheckpointIndex", -1);
+
+			String filename = prefs.getString("currentBlockFilename", null);
+
+			// handle initial startup case with first block
+			if (TextUtils.isEmpty(filename) && !blocks.isEmpty())
+			{
+				currentBlockIndex = -1;
+				currentStageIndex = -1;
+				currentCheckpointIndex = -1;
+				filename = blocks.get(0).blockFileName;
+			}
+
+			if (!TextUtils.isEmpty(filename))
+			{
+				Block block = fetchBlock(context, filename, 0);
+				success = block != null;
+			}
+			else
+				Log.e(TAG, "no block filename in fetchBlocks()");
+		}
+
+		return success;
+	}
+
+	Block fetchBlock(Context context, String blockFileName, int index)
+	{
+		Block block = null;
+
+		try
+		{
+			URL url = new URL(baseUrl + blockFileName);
+			HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+
+			InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+
+			Type listType = new TypeToken<List<Block>>()
+			{
+			}.getType();
+			List<Block> blocks = new Gson().fromJson(bufferedReader, listType);
+
+			urlConnection.disconnect();
+
+			if (blocks != null)
+			{
+				block = blocks.get(0);
+				block.addNextStageCheckpoint();
+			}
+
+			if (block != null)
+			{
+				// update the blockIndex for the newly loaded block
+				synchronized (lock)
+				{
+					currentBlock = block;
+					currentBlockIndex = index;
+					cachedBlocks.put(blockFileName, block);
+
+					BlockInfo blockInfo = cachedBlockInfos.get(index);
+					if (blockInfo.ids != null && blockInfo.ids.contains(block.id))
+					{
+						Pair<Integer, Integer> status = blockStagesStatus(block);
+						blockInfo.stagesCompleted = status.first;
+						blockInfo.stageCount = status.second;
+						blockInfo.blockFileName = blockFileName;
+					}
+				}
+			}
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		return block;
+	}
+
+	private Pair<Integer, Integer> blockStagesStatus(@NonNull Block block)
+	{
+		Integer completed = 0;
+		Integer total = 0;
+
+		List<Stage> stages = block.stages;
+		if (stages != null)
+		{
+			for (int i = 0; i < stages.size(); i++)
+			{
+				completed += stageCompleted(block, i) ? 1 : 0;
+				total += 1;
+			}
+		}
+
+		return new Pair<>(completed, total);
+	}
+
+	private boolean stageCompleted(@NonNull Block block, int stageIndex)
+	{
+		boolean completed = true;
+
+		List<Checkpoint> checkpoints = block.stages.get(stageIndex).checkpoints;
+		if (checkpoints != null)
+		{
+			for (int i = 0; i < checkpoints.size(); i++)
+			{
+				completed = completed && checkpointCompleted(i, stageIndex);
+
+				// check for completed route cp at the end of the stage, as soon as we find one visited
+				// route cp then we are good for the stage (this assumes that route cps are always at the end of a stage)
+				if (completed && currentBlock.stages.get(stageIndex).checkpoints.get(i).entryType == EntryType.info)
+					break;
+			}
+		}
+
+		return completed;
+	}
+
+	private boolean checkpointCompleted(int checkpointIndex, int stageIndex)
+	{
+		boolean completed = hasVisited(0, stageIndex, checkpointIndex);
+		if (!completed)
+			return false;
+
+		// check to see if checkpoint is completed
+		Checkpoint cp = currentBlock.stages.get(stageIndex).checkpoints.get(checkpointIndex);
+		return cp.isCompleted(0, stageIndex, checkpointIndex);
+	}
+
+	@Override
+	public List<BlockInfo> getBlockInfo()
+	{
+		return cachedBlockInfos;
+	}
+
+	@Override
+	public Block getBlock(int blockIndex)
+	{
+		if (blockIndex >= 0 && blockIndex < cachedBlockInfos.size())
+		{
+			BlockInfo blockInfo = cachedBlockInfos.get(blockIndex);
+			if (blockInfo != null)
+				return cachedBlocks.get(blockInfo.blockFileName);
+		}
+
+		return null;
+	}
+
+	public void markVisited(int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		visited.add(keyForBlockIndex(blockIndex, stageIndex, checkpointIndex));
+	}
+
+	public boolean hasVisited(int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		return visited.contains(keyForBlockIndex(blockIndex, stageIndex, checkpointIndex));
+	}
+
+	public String keyForBlockIndex(int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		Block block = currentBlock;
+		Stage stage = currentBlock.stages.get(stageIndex);
+		Checkpoint cp = stage.checkpoints.get(checkpointIndex);
+		return String.format(Locale.US, "%s_%s_%s", block.id, stage.id, cp.id);
+	}
+
+//	public String keyForBlockIndex(int blockIndex, int stageIndex, int checkpointIndex, int instanceIndex)
+//	{
+//		Block block = currentBlock;
+//		Stage stage = currentBlock.stages.get(stageIndex);
+//		Checkpoint cp = stage.checkpoints.get(checkpointIndex);
+//		//Instance instance = cp.instances.get(instanceIndex);
+//		return String.format(Locale.US, "%s_%s_%s_%s", block.id, stage.id, cp.id);
+//	}
 }

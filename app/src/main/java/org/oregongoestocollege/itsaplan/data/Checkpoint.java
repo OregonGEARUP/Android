@@ -10,7 +10,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class Checkpoint
 {
-	private String requiredCP;
+	public String id;
+	public String requiredCP;
 	public String title;
 	public String description;
 	public String url;
@@ -21,9 +22,28 @@ public class Checkpoint
 //	public List<Instance> instances;
 //	public List<Criteria> criteria;
 
+	public Checkpoint()
+	{
+
+	}
+
+	public Checkpoint(String id, EntryType entryType)
+	{
+		this.id = id;
+		this.entryType = entryType;
+	}
 
 	public boolean required()
 	{
 		return "yes".equals(requiredCP);
+	}
+
+	public boolean isCompleted(int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		if (!required())
+			return true;
+
+		// TODO - check based on EntryType
+		return false;
 	}
 }

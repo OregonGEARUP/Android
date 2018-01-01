@@ -7,19 +7,19 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
+import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.BlockInfo;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class BlockInfoListViewModel extends AndroidViewModel implements CheckpointInterface.LoadBlockInfoListCallback
+public class BlockInfoListViewModel extends AndroidViewModel implements CheckpointInterface.CheckpointCallback
 {
 	private final CheckpointRepository checkpointRepository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
@@ -40,7 +40,7 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 	{
 		dataLoading.set(true);
 
-		checkpointRepository.getBlockInfoList(this);
+		checkpointRepository.resumeCheckpoints(this.getApplication(), this);
 	}
 
 	public SingleLiveEvent<Void> getUpdateListEvent()
@@ -59,26 +59,32 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 	}
 
 	@Override
-	public void onDataLoaded(@NonNull List<BlockInfo> blockInfoList)
+	public void onDataLoaded(boolean success)
 	{
-		checkNotNull(blockInfoList);
+		if (success)
+		{
+			List<BlockInfo> blockInfoList = CheckpointRepository.getInstance().getBlockInfo();
+			if (blockInfoList != null && !blockInfoList.isEmpty())
+			{
+				int counter = 0;
+				List<BindingItem> viewModels = new ArrayList<>(blockInfoList.size());
 
-		int counter = 0;
-		List<BindingItem> viewModels = new ArrayList<>(blockInfoList.size());
+				for (BlockInfo blockInfo : blockInfoList)
+					viewModels
+						.add(new BlockInfoItemViewModel(this.getApplication(), blockInfo, counter++, openBlockEvent));
 
-		for (BlockInfo blockInfo : blockInfoList)
-			viewModels.add(new BlockInfoItemViewModel(this.getApplication(), blockInfo, counter++, openBlockEvent));
+				items = viewModels;
 
-		items = viewModels;
+				updateListEvent.call();
+			}
+		}
+		else
+		{
+			Toast.makeText(
+				this.getApplication(), getApplication().getResources().getText(R.string.error_data), Toast.LENGTH_SHORT)
+				.show();
+		}
 
-		updateListEvent.call();
-
-		dataLoading.set(false);
-	}
-
-	@Override
-	public void onDataNotAvailable()
-	{
 		dataLoading.set(false);
 	}
 }

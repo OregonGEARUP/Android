@@ -2,6 +2,7 @@ package org.oregongoestocollege.itsaplan.data;
 
 import java.util.List;
 
+import android.app.Application;
 import android.support.annotation.NonNull;
 
 /**
@@ -12,21 +13,16 @@ import android.support.annotation.NonNull;
  */
 public interface CheckpointInterface
 {
-	interface LoadBlockInfoListCallback
+	interface CheckpointCallback
 	{
-		void onDataLoaded(@NonNull List<BlockInfo> blockInfoList);
-
-		void onDataNotAvailable();
+		void onDataLoaded(boolean success);
 	}
 
-	interface LoadBlockCallback
-	{
-		void onDataLoaded(@NonNull Block block);
+	void resumeCheckpoints(@NonNull Application context, @NonNull CheckpointCallback callback);
 
-		void onDataNotAvailable();
-	}
+	void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex);
 
-	void getBlockInfoList(@NonNull LoadBlockInfoListCallback callback);
+	List<BlockInfo> getBlockInfo();
 
-	void getBlock(@NonNull LoadBlockCallback callback, int blockIndex);
+	Block getBlock(int blockIndex);
 }

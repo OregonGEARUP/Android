@@ -15,11 +15,16 @@ public class BlockInfo
 
 	// TODO not sure if this will stay here or in view models, data needs to get persisted
 	// data stored locally when blocks are viewed / completed
-	public int stageCount;
-	public int stagesCompleted;
+	public int stageCount = -1;
+	public int stagesCompleted = -1;
 
 	public boolean available()
 	{
 		return blockFileName != null && !blockFileName.isEmpty();
+	}
+
+	public boolean done()
+	{
+		return stageCount != -1 && stageCount == stagesCompleted;
 	}
 }

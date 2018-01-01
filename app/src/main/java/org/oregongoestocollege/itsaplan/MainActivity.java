@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 				lastSelectedPosition = position;
 
 				Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
-				boolean showBack = (fragment instanceof ChecklistFragment) && ((ChecklistFragment)fragment).canHandleBackPressed();
+				boolean showBack =
+					(fragment instanceof ChecklistFragment) && ((ChecklistFragment)fragment).canHandleBackPressed();
 				getSupportActionBar().setDisplayHomeAsUpEnabled(showBack);
 			}
 
