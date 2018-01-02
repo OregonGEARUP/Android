@@ -8,7 +8,22 @@ package org.oregongoestocollege.itsaplan.data;
  */
 public class Instance
 {
-	public String id;
-	public String prompt;
-	public String placeholder;
+	protected String id;
+	protected String prompt;
+	protected String placeholder;
+
+	public String getId()
+	{
+		return id;
+	}
+
+	public String getPrompt()
+	{
+		return prompt;
+	}
+
+	public String getPlaceholder()
+	{
+		return placeholder;
+	}
 }

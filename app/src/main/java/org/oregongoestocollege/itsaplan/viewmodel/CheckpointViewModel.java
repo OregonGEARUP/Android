@@ -1,5 +1,7 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
+import java.util.List;
+
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Context;
@@ -12,6 +14,7 @@ import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.EntryType;
+import org.oregongoestocollege.itsaplan.data.Instance;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -31,6 +34,10 @@ public class CheckpointViewModel extends AndroidViewModel
 	public String description;
 	public int descriptionTextColor;
 	public Drawable image;
+	// for checkboxes / radio buttons
+	private final int MAX_BUTTONS = 5;
+	private int instanceCount;
+	private List<Instance> instances;
 	// for route / nextstage
 	public String nextText;
 	public boolean showNextText;
@@ -68,6 +75,7 @@ public class CheckpointViewModel extends AndroidViewModel
 				break;
 			case checkbox:
 			case radio:
+				setupCheckboxAndRadioEntry();
 				break;
 			case field:
 			case dateOnly:
@@ -78,6 +86,21 @@ public class CheckpointViewModel extends AndroidViewModel
 			case nextstage:
 				setupRouteEntry();
 				break;
+			}
+		}
+	}
+
+	private void setupCheckboxAndRadioEntry()
+	{
+		List<Instance> modelInstances = model.instances;
+		if (modelInstances != null)
+		{
+			int size = modelInstances.size();
+			if (size > 0)
+			{
+				// limit instances to our maximum
+				instanceCount = size > MAX_BUTTONS ? MAX_BUTTONS : size;
+				instances = modelInstances.subList(0, instanceCount);
 			}
 		}
 	}
@@ -105,6 +128,20 @@ public class CheckpointViewModel extends AndroidViewModel
 		// don't show button if route CP for the last block
 		showNextText = (!EntryType.route.equals(model.entryType) ||
 			blockIndex != repository.getCountOfBlocks()-1);
+	}
 
+	public boolean showInstances()
+	{
+		return instances != null;
+	}
+
+	public boolean showInstance(int instance)
+	{
+		return instances != null && instance >= 0 && instance < instanceCount;
+	}
+
+	public String getInstancePrompt(int instance)
+	{
+		return showInstance(instance) ? instances.get(instance).getPrompt() : null;
 	}
 }
