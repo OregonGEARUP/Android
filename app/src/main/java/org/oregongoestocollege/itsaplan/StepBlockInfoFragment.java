@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.oregongoestocollege.itsaplan.data.Indexes;
 import org.oregongoestocollege.itsaplan.databinding.FragmentStepBlockInfoBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel;
@@ -83,13 +84,13 @@ public class StepBlockInfoFragment extends Fragment
 			}
 		});
 
-		blockInfoListViewModel.getOpenBlockEvent().observe(this, new Observer<Integer>()
+		blockInfoListViewModel.getOpenBlockEvent().observe(this, new Observer<Indexes>()
 		{
 			@Override
-			public void onChanged(@Nullable Integer blockIndex)
+			public void onChanged(@Nullable Indexes indexes)
 			{
-				if (listener != null && blockIndex != null)
-					listener.get().onShowBlock(blockIndex);
+				if (listener != null && Indexes.hasBlockIndex(indexes))
+					listener.get().onShowBlock(indexes.blockIndex);
 			}
 		});
 

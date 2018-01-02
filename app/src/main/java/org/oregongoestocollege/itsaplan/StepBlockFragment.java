@@ -90,7 +90,7 @@ public class StepBlockFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable Indexes indexes)
 			{
-				if (listener != null && indexes != null)
+				if (listener != null && Indexes.hasBlockAndStageIndex(indexes))
 					listener.get().onShowStage(indexes.blockIndex, indexes.stageIndex);
 			}
 		});

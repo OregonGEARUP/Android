@@ -55,6 +55,6 @@ public class StageItemViewModel implements BindingItem
 	public void onStageClick(View view)
 	{
 		if (openStageEvent != null)
-			openStageEvent.setValue(new Indexes(blockIndex, stageIndex, -1));
+			openStageEvent.setValue(new Indexes(blockIndex, stageIndex));
 	}
 }

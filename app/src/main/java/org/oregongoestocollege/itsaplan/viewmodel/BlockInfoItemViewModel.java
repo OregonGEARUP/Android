@@ -11,6 +11,7 @@ import android.view.View;
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.BlockInfo;
+import org.oregongoestocollege.itsaplan.data.Indexes;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -21,23 +22,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BlockInfoItemViewModel implements BindingItem
 {
 	// service data
-	private final int index;
+	private final int blockIndex;
 	private final BlockInfo model;
-	private final SingleLiveEvent<Integer> openBlockEvent;
+	private final SingleLiveEvent<Indexes> openBlockEvent;
 	// view data
 	public final String title;
 	public final ObservableField<String> count = new ObservableField<>();
 	public final ObservableBoolean isEnabled = new ObservableBoolean();
 
-	public BlockInfoItemViewModel(@NonNull Context context, @NonNull BlockInfo model, int index,
-		SingleLiveEvent<Integer> openBlockEvent)
+	public BlockInfoItemViewModel(@NonNull Context context, @NonNull BlockInfo model, int blockIndex,
+		SingleLiveEvent<Indexes> openBlockEvent)
 	{
 		checkNotNull(context);
 		checkNotNull(model);
 
 		this.model = model;
-		this.index = index;
-		this.title = String.format(Locale.getDefault(), "%d. %s", index + 1, model.title);
+		this.blockIndex = blockIndex;
+		this.title = String.format(Locale.getDefault(), "%d. %s", blockIndex + 1, model.title);
 		this.openBlockEvent = openBlockEvent;
 
 		if (model.available())
@@ -60,7 +61,7 @@ public class BlockInfoItemViewModel implements BindingItem
 		if (model.blockFileName != null && !model.blockFileName.isEmpty())
 		{
 			if (openBlockEvent != null)
-				openBlockEvent.setValue(index);
+				openBlockEvent.setValue(new Indexes(blockIndex));
 		}
 	}
 }
