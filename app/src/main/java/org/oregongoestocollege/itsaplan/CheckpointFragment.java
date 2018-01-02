@@ -1,19 +1,26 @@
 package org.oregongoestocollege.itsaplan;
 
+import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+
+import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
+import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Oregon GEAR UP App
+ * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
 public class CheckpointFragment extends Fragment
 {
-	private static final String CHECKPOINT_DESC = "desc";
-	private String description;
+	private CheckpointViewModel checkpointViewModel;
+	private int blockIndex;
+	private int stageIndex;
+	private int checkpointIndex;
 
 	public CheckpointFragment()
 	{
@@ -25,13 +32,16 @@ public class CheckpointFragment extends Fragment
 	 *
 	 * @return A new instance of fragment CheckpointFragment.
 	 */
-	public static CheckpointFragment newInstance(String description)
+	public static CheckpointFragment newInstance()
 	{
-		CheckpointFragment fragment = new CheckpointFragment();
-		Bundle args = new Bundle();
-		args.putString(CHECKPOINT_DESC, description);
-		fragment.setArguments(args);
-		return fragment;
+		return new CheckpointFragment();
+	}
+
+	public void init(int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		this.blockIndex = blockIndex;
+		this.stageIndex = stageIndex;
+		this.checkpointIndex = checkpointIndex;
 	}
 
 	@Override
@@ -39,10 +49,13 @@ public class CheckpointFragment extends Fragment
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		View v = inflater.inflate(R.layout.fragment_checkpoint, container, false);
+		FragmentCheckpointBinding binding =
+			DataBindingUtil.inflate(inflater, R.layout.fragment_checkpoint, container, false);
+		View v = binding.getRoot();
 
-		TextView textView = v.findViewById(R.id.text);
-		textView.setText(description);
+		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
+		checkpointViewModel = ViewModelProviders.of(this, factory).get(CheckpointViewModel.class);
+		binding.setUxContext(checkpointViewModel);
 
 		return v;
 	}
@@ -53,7 +66,14 @@ public class CheckpointFragment extends Fragment
 		super.onCreate(savedInstanceState);
 		if (getArguments() != null)
 		{
-			description = getArguments().getString(CHECKPOINT_DESC);
+			//description = getArguments().getString(CHECKPOINT_DESC);
 		}
+	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		checkpointViewModel.start(blockIndex, stageIndex, checkpointIndex);
 	}
 }

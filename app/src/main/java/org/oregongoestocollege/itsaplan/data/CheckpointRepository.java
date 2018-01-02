@@ -441,6 +441,19 @@ public class CheckpointRepository implements CheckpointInterface
 		return null;
 	}
 
+	@Override
+	public Checkpoint getCheckpoint(int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		Stage stage = getStage(blockIndex, stageIndex);
+		if (stage != null)
+		{
+			List<Checkpoint> checkpoints = stage.checkpoints;
+			if (checkpoints != null && checkpointIndex >= 0 && checkpointIndex < checkpoints.size())
+				return checkpoints.get(checkpointIndex);
+		}
+		return null;
+	}
+
 	public void markVisited(int blockIndex, int stageIndex, int checkpointIndex)
 	{
 		visited.add(keyForBlockIndex(blockIndex, stageIndex, checkpointIndex));

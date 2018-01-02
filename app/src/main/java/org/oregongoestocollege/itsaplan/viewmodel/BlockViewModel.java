@@ -14,7 +14,6 @@ import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.Block;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
-import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.Indexes;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
@@ -90,7 +89,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 						{
 							viewModels.add(new StageItemViewModel(
 								getApplication(),
-								CheckpointRepository.getInstance(),
+								repository,
 								index, i,
 								openStageEvent));
 						}

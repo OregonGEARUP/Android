@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
@@ -23,6 +22,7 @@ import org.oregongoestocollege.itsaplan.data.Stage;
  */
 public class StepStageFragment extends Fragment
 {
+	private final int MAX_CHECKPOINTS = 6;
 	private WeakReference<OnChecklistInteraction> listener;
 	private int blockIndex;
 	private int stageIndex;
@@ -60,16 +60,17 @@ public class StepStageFragment extends Fragment
 
 		List<Fragment> fragments = new ArrayList<>();
 
+		// we only use Stage/Checkpoint model classes to make sure all is valid and setup indexes
 		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
 		if (stage != null && stage.checkpoints != null)
 		{
-			for (Checkpoint checkpoint : stage.checkpoints)
+			int size = stage.checkpoints.size();
+
+			for (int i = 0; i < size && i < MAX_CHECKPOINTS; i++)
 			{
-				if (TextUtils.isEmpty(checkpoint.description))
-					fragments
-						.add(CheckpointFragment.newInstance(getResources().getString(R.string.checkpoint_end_message)));
-				else
-					fragments.add(CheckpointFragment.newInstance(checkpoint.description));
+				CheckpointFragment fragment = CheckpointFragment.newInstance();
+				fragment.init(blockIndex, stageIndex, i);
+				fragments.add(fragment);
 			}
 		}
 
@@ -85,6 +86,7 @@ public class StepStageFragment extends Fragment
 		viewPager.setPageMargin(margin);
 		viewPager.setAdapter(pagerAdapter);
 
+		if (!TextUtils.isEmpty(stage.title))
 		getActivity().setTitle(stage.title);
 
 		return v;

@@ -1,24 +1,52 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	tools:context="org.oregongoestocollege.itsaplan.CheckpointFragment">
+	tools:context="org.oregongoestocollege.itsaplan.ChecklistFragment">
 
-	<LinearLayout
+	<data>
+
+		<import type="android.view.View" />
+
+		<variable
+			name="uxContext"
+			type="org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel" />
+	</data>
+
+	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:background="@drawable/checkpoint_background"
 		android:paddingTop="@dimen/activity_horizontal_margin"
 		android:paddingBottom="@dimen/activity_horizontal_margin"
 		android:paddingStart="@dimen/activity_vertical_margin"
-		android:paddingEnd="@dimen/activity_vertical_margin">
+		android:paddingEnd="@dimen/activity_vertical_margin"
+		android:orientation="vertical">
 
 		<TextView
 			android:id="@+id/text"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			tools:text="hello world" />
+			android:layout_height="wrap_content"
+			android:text="@{uxContext.description}"
+			android:textColor="@{uxContext.descriptionTextColor}"
+			tools:text="You have reached the end of this section."/>
 
-	</LinearLayout>
+		<Button
+			style="@style/GearUpButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/text"
+			android:text="@{uxContext.nextText}"
+			android:layout_marginTop="@dimen/baseline_unit_5x"
+			android:visibility="@{uxContext.showNextText ? View.VISIBLE : View.GONE}"
+			tools:text="Let's keep going"
+			tools:visibility="visible"/>
 
-</FrameLayout>
+		<ImageView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:src="@{uxContext.image}"
+			android:scaleType="fitCenter"
+			android:visibility="@{uxContext.showStars ? View.VISIBLE : View.GONE}"/>
+
+	</RelativeLayout>
+</layout>

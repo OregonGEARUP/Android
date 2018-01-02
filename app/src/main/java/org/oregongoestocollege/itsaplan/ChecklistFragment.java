@@ -17,9 +17,11 @@ import android.view.ViewGroup;
 public class ChecklistFragment extends Fragment implements OnChecklistInteraction
 {
 	private static final String PARAM_BLOCK_INDEX = "blockIndex";
+	private static final String PARAM_STAGE_INDEX = "stageIndex";
 	private OnFragmentInteractionListener mListener;
 	private int identifier;
 	private int blockIndex = -1;
+	private int stageIndex = -1;
 
 	public ChecklistFragment()
 	{
@@ -42,6 +44,7 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		super.onSaveInstanceState(outState);
 
 		outState.putInt(PARAM_BLOCK_INDEX, blockIndex);
+		outState.putInt(PARAM_STAGE_INDEX, stageIndex);
 	}
 
 	@Override
@@ -52,9 +55,14 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		View v = inflater.inflate(R.layout.fragment_checklist, container, false);
 
 		if (savedInstanceState != null)
+		{
 			blockIndex = savedInstanceState.getInt(PARAM_BLOCK_INDEX);
+			stageIndex = savedInstanceState.getInt(PARAM_STAGE_INDEX);
+		}
 
-		if (blockIndex >= 0)
+		if (blockIndex >= 0 && stageIndex >= 0)
+			showStepStage(blockIndex, stageIndex);
+		else if (blockIndex >= 0)
 			showStepBlock(blockIndex);
 		else
 			showStepBlockInfo();
@@ -73,6 +81,7 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 
 		identifier = 1;
 		blockIndex = -1;
+		stageIndex = -1;
 
 		AppCompatActivity activity = (AppCompatActivity)getActivity();
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
@@ -89,6 +98,7 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 
 		identifier = 2;
 		this.blockIndex = blockIndex;
+		this.stageIndex = -1;
 
 		AppCompatActivity activity = (AppCompatActivity)getActivity();
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -104,6 +114,8 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		transaction.commit();
 
 		identifier = 3;
+		this.blockIndex = blockIndex;
+		this.stageIndex = stageIndex;
 
 		AppCompatActivity activity = (AppCompatActivity)getActivity();
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);

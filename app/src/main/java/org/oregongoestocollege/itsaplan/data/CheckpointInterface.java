@@ -27,4 +27,6 @@ public interface CheckpointInterface
 	Block getBlock(int blockIndex);
 
 	Stage getStage(int blockIndex, int stageIndex);
+
+	Checkpoint getCheckpoint(int blockIndex, int stageIndex, int checkpointIndex);
 }
