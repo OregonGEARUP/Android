@@ -1,13 +1,18 @@
 package org.oregongoestocollege.itsaplan;
 
+import java.lang.ref.WeakReference;
+
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.oregongoestocollege.itsaplan.data.Indexes;
 import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
@@ -17,6 +22,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
  */
 public class CheckpointFragment extends Fragment
 {
+	private WeakReference<OnChecklistInteraction> listener;
 	private CheckpointViewModel checkpointViewModel;
 	private int blockIndex;
 	private int stageIndex;
@@ -27,6 +33,14 @@ public class CheckpointFragment extends Fragment
 		// Required empty public constructor
 	}
 
+	public void init(OnChecklistInteraction listener, int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		this.listener = new WeakReference<>(listener);
+		this.blockIndex = blockIndex;
+		this.stageIndex = stageIndex;
+		this.checkpointIndex = checkpointIndex;
+	}
+
 	/**
 	 * Use this factory method to create a new instance of this fragment.
 	 *
@@ -35,13 +49,6 @@ public class CheckpointFragment extends Fragment
 	public static CheckpointFragment newInstance()
 	{
 		return new CheckpointFragment();
-	}
-
-	public void init(int blockIndex, int stageIndex, int checkpointIndex)
-	{
-		this.blockIndex = blockIndex;
-		this.stageIndex = stageIndex;
-		this.checkpointIndex = checkpointIndex;
 	}
 
 	@Override
@@ -56,6 +63,26 @@ public class CheckpointFragment extends Fragment
 		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
 		checkpointViewModel = ViewModelProviders.of(this, factory).get(CheckpointViewModel.class);
 		binding.setUxContext(checkpointViewModel);
+
+		checkpointViewModel.getNextStageEvent().observe(this, new Observer<Indexes>()
+		{
+			@Override
+			public void onChanged(@Nullable Indexes indexes)
+			{
+				if (listener != null)
+					listener.get().onShowStage(indexes.blockIndex, indexes.stageIndex);
+			}
+		});
+
+		checkpointViewModel.getNextBlockEvent().observe(this, new Observer<Indexes>()
+		{
+			@Override
+			public void onChanged(@Nullable Indexes indexes)
+			{
+				if (listener != null)
+					listener.get().onShowBlock(indexes.blockIndex);
+			}
+		});
 
 		return v;
 	}

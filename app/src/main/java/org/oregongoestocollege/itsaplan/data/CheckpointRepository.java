@@ -9,7 +9,9 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -42,9 +44,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CheckpointRepository implements CheckpointInterface
 {
-	private final String TAG = "GearUP_CheckpointMgr";
+	private final String TAG = "GearUpCheckpointMgr";
 	private static final String baseUrl = "https://oregongoestocollege.org/mobileApp/json/";
 	private static CheckpointRepository instance;
+	private final List<String> traces = new ArrayList<>();
 	// pending Tasks
 	GetBlockInfoTask currentBlockInfoTask;
 	final Map<String, GetBlockTask> currentBlockTasks = new HashMap<>();
@@ -206,7 +209,8 @@ public class CheckpointRepository implements CheckpointInterface
 
 		protected Block doInBackground(Void... params)
 		{
-			block = CheckpointRepository.getInstance().fetchBlock(contextWeakReference.get(), blockFileName, blockIndex);
+			block =
+				CheckpointRepository.getInstance().fetchBlock(contextWeakReference.get(), blockFileName, blockIndex);
 			return block;
 		}
 
@@ -480,4 +484,16 @@ public class CheckpointRepository implements CheckpointInterface
 //		//Instance instance = cp.instances.get(instanceIndex);
 //		return String.format(Locale.US, "%s_%s_%s_%s", block.id, stage.id, cp.id);
 //	}
+
+	@Override
+	public void addTrace(String trace)
+	{
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String timestamp = dateFormat.format(new Date());
+		String message = String.format(Locale.US, "%s:  %s", timestamp, trace);
+
+		traces.add(message);
+
+		Utils.d(TAG, trace);
+	}
 }

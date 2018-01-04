@@ -11,22 +11,34 @@ import android.support.annotation.Nullable;
 public class Indexes
 {
 	public static final int NO_INDEX = -1;
+	public final String blockFileName;
 	public final int blockIndex;
 	public final int stageIndex;
 	public final int checkpointIndex;
 
 	public Indexes(int blockIndex)
 	{
-		this(blockIndex, NO_INDEX, NO_INDEX);
+		this(null, blockIndex, NO_INDEX, NO_INDEX);
+	}
+
+	public Indexes(String blockFileName, int blockIndex)
+	{
+		this(blockFileName, blockIndex, NO_INDEX, NO_INDEX);
 	}
 
 	public Indexes(int blockIndex, int stageIndex)
 	{
-		this(blockIndex, stageIndex, NO_INDEX);
+		this(null, blockIndex, stageIndex, NO_INDEX);
 	}
 
 	public Indexes(int blockIndex, int stageIndex, int checkpointIndex)
 	{
+		this(null, blockIndex, stageIndex, checkpointIndex);
+	}
+
+	private Indexes(String blockFileName, int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		this.blockFileName = blockFileName;
 		this.blockIndex = blockIndex;
 		this.stageIndex = stageIndex;
 		this.checkpointIndex = checkpointIndex;

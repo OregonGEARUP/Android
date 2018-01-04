@@ -85,6 +85,7 @@
 			android:layout_marginTop="@dimen/baseline_unit_5x"
 			android:text="@{uxContext.nextText}"
 			android:visibility="@{uxContext.showNextText ? View.VISIBLE : View.GONE, default=gone}"
+			android:onClick="@{() -> uxContext.onNextClick()}"
 			tools:text="Let's keep going"
 			tools:visibility="visible" />
 

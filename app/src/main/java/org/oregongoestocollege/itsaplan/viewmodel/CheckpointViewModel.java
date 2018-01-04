@@ -1,6 +1,7 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -9,12 +10,16 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.R;
+import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.EntryType;
+import org.oregongoestocollege.itsaplan.data.Indexes;
 import org.oregongoestocollege.itsaplan.data.Instance;
+import org.oregongoestocollege.itsaplan.data.Stage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -31,6 +36,8 @@ public class CheckpointViewModel extends AndroidViewModel
 	private int checkpointIndex;
 	// view data
 	private final CheckpointInterface repository;
+	private final SingleLiveEvent<Indexes> nextStageEvent = new SingleLiveEvent<>();
+	private final SingleLiveEvent<Indexes> nextBlockEvent = new SingleLiveEvent<>();
 	public String description;
 	public int descriptionTextColor;
 	public Drawable image;
@@ -42,7 +49,6 @@ public class CheckpointViewModel extends AndroidViewModel
 	public String nextText;
 	public boolean showNextText;
 	public boolean showStars;
-
 
 	public CheckpointViewModel(@NonNull Application context, @NonNull CheckpointInterface repository)
 	{
@@ -90,6 +96,16 @@ public class CheckpointViewModel extends AndroidViewModel
 		}
 	}
 
+	public SingleLiveEvent<Indexes> getNextStageEvent()
+	{
+		return nextStageEvent;
+	}
+
+	public SingleLiveEvent<Indexes> getNextBlockEvent()
+	{
+		return nextBlockEvent;
+	}
+
 	private void setupCheckboxAndRadioEntry()
 	{
 		List<Instance> modelInstances = model.instances;
@@ -117,7 +133,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		{
 			showStars = true;
 			image = ContextCompat.getDrawable(context, R.mipmap.stars);
-			nextText = resources.getString(R.string.checkpoint_next_onward, blockIndex+2);
+			nextText = resources.getString(R.string.checkpoint_next_onward, blockIndex + 2);
 		}
 		else
 		{
@@ -127,7 +143,7 @@ public class CheckpointViewModel extends AndroidViewModel
 
 		// don't show button if route CP for the last block
 		showNextText = (!EntryType.route.equals(model.entryType) ||
-			blockIndex != repository.getCountOfBlocks()-1);
+			blockIndex != repository.getCountOfBlocks() - 1);
 	}
 
 	public boolean showInstances()
@@ -143,5 +159,33 @@ public class CheckpointViewModel extends AndroidViewModel
 	public String getInstancePrompt(int instance)
 	{
 		return showInstance(instance) ? instances.get(instance).getPrompt() : null;
+	}
+
+	public void onNextClick()
+	{
+		if (EntryType.route.equals(model.entryType))
+		{
+			// make sure we have a block file to go to
+			if (!TextUtils.isEmpty(model.routeFileName))
+			{
+				repository.addTrace(String.format(Locale.US, "nextBlockEvent routing to %s", model.routeFileName));
+
+				// TODO hookup next block
+//				Indexes indexes = new Indexes(model.routeFileName, blockIndex + 1);
+//				nextBlockEvent.setValue(indexes);
+			}
+		}
+		else
+		{
+			// make sure we have a Stage to go to
+			Stage nextStage = repository.getStage(blockIndex, stageIndex + 1);
+			if (nextStage != null)
+			{
+				repository.addTrace(repository.keyForBlockIndex(blockIndex, stageIndex + 1, 0));
+
+				Indexes indexes = new Indexes(blockIndex, stageIndex + 1);
+				nextStageEvent.setValue(indexes);
+			}
+		}
 	}
 }

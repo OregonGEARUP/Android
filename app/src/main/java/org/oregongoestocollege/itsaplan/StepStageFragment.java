@@ -69,7 +69,7 @@ public class StepStageFragment extends Fragment
 			for (int i = 0; i < size && i < MAX_CHECKPOINTS; i++)
 			{
 				CheckpointFragment fragment = CheckpointFragment.newInstance();
-				fragment.init(blockIndex, stageIndex, i);
+				fragment.init(listener.get(), blockIndex, stageIndex, i);
 				fragments.add(fragment);
 			}
 		}
@@ -87,7 +87,7 @@ public class StepStageFragment extends Fragment
 		viewPager.setAdapter(pagerAdapter);
 
 		if (!TextUtils.isEmpty(stage.title))
-		getActivity().setTitle(stage.title);
+			getActivity().setTitle(stage.title);
 
 		return v;
 	}

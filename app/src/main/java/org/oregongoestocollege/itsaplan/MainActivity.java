@@ -20,7 +20,7 @@ import org.oregongoestocollege.itsaplan.support.Utils;
  */
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener
 {
-	public static final String LOG_TAG = "GearUP_MainActivity";
+	public static final String LOG_TAG = "GearUpMainActivity";
 	private int lastSelectedPosition = 0;
 	private NoSwipePager viewPager;
 	private BottomBarAdapter pagerAdapter;
