@@ -18,7 +18,7 @@ public interface CheckpointInterface
 
 	void resumeCheckpoints(@NonNull Application context, @NonNull CheckpointCallback callback);
 
-	void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex);
+	void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex, String blockFileName);
 
 	int getCountOfBlocks();
 

@@ -6,6 +6,6 @@ package org.oregongoestocollege.itsaplan;
  */
 public interface OnChecklistInteraction
 {
-	void onShowBlock(int blockIndex);
+	void onShowBlock(int blockIndex, String blockFileName);
 	void onShowStage(int blockIndex, int stageIndex);
 }

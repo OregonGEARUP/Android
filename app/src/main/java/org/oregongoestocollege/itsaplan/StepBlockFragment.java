@@ -27,6 +27,7 @@ public class StepBlockFragment extends Fragment
 {
 	private WeakReference<OnChecklistInteraction> listener;
 	private int blockIndex;
+	private String blockFileName;
 	private RecyclerView recyclerView;
 	private BindingItemsAdapter adapter;
 	private BlockViewModel blockViewModel;
@@ -36,10 +37,11 @@ public class StepBlockFragment extends Fragment
 		// Required empty public constructor
 	}
 
-	public void init(OnChecklistInteraction listener, int blockIndex)
+	public void init(OnChecklistInteraction listener, int blockIndex, String blockFileName)
 	{
 		this.listener = new WeakReference<>(listener);
 		this.blockIndex = blockIndex;
+		this.blockFileName = blockFileName;
 	}
 
 	/**
@@ -90,7 +92,7 @@ public class StepBlockFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable ChecklistState state)
 			{
-				if (listener != null)
+				if (listener != null && state != null)
 					listener.get().onShowStage(state.blockIndex, state.stageIndex);
 			}
 		});
@@ -102,6 +104,6 @@ public class StepBlockFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-		blockViewModel.start(blockIndex);
+		blockViewModel.start(blockIndex, blockFileName);
 	}
 }

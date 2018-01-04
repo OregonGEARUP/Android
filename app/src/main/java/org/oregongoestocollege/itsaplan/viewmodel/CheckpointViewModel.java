@@ -172,9 +172,8 @@ public class CheckpointViewModel extends AndroidViewModel
 			{
 				repository.addTrace(String.format(Locale.US, "nextBlockEvent routing to %s", model.routeFileName));
 
-				// TODO hookup next block
-//				Indexes indexes = new Indexes(model.routeFileName, blockIndex + 1);
-//				nextBlockEvent.setValue(indexes);
+				ChecklistState state  = new ChecklistState(model.routeFileName, blockIndex + 1);
+				nextBlockEvent.setValue(state);
 			}
 		}
 		else

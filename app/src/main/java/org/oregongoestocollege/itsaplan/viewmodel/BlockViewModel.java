@@ -27,7 +27,8 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 {
 	// service data
 	private Block model;
-	private int index;
+	private int blockIndex;
+	private String blockFileName;
 	// view data
 	private final CheckpointInterface repository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
@@ -45,13 +46,14 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 		this.repository = repository;
 	}
 
-	public void start(int blockIndex)
+	public void start(int blockIndex, String blockFileName)
 	{
-		this.index = blockIndex;
+		this.blockIndex = blockIndex;
+		this.blockFileName = blockFileName;
 
 		dataLoading.set(true);
 
-		repository.loadBlock(this.getApplication(), this, index);
+		repository.loadBlock(this.getApplication(), this, blockIndex, blockFileName);
 	}
 
 	public SingleLiveEvent<Void> getUpdateListEvent()
@@ -74,7 +76,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 	{
 		if (success)
 		{
-			Block block = repository.getBlock(index);
+			Block block = repository.getBlock(blockIndex);
 			if (block != null)
 			{
 				List<Stage> stages = block.stages;
@@ -90,7 +92,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 							viewModels.add(new StageItemViewModel(
 								getApplication(),
 								repository,
-								index, i,
+								blockIndex, i,
 								openStageEvent));
 						}
 
@@ -115,7 +117,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 	public String getTitle()
 	{
 		return model != null ?
-			String.format(Locale.getDefault(), "%d. %s", index + 1, model.blocktitle) :
+			String.format(Locale.getDefault(), "%d. %s", blockIndex + 1, model.blocktitle) :
 			null;
 	}
 }

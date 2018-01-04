@@ -23,12 +23,14 @@ import org.oregongoestocollege.itsaplan.data.Stage;
 public class ChecklistFragment extends Fragment implements OnChecklistInteraction
 {
 	private static final String LOG_TAG = "GearUpChecklistFrag";
+	private static final String PARAM_BLOCK_FILE_NAME = "blockFileName";
 	private static final String PARAM_BLOCK_INDEX = "blockIndex";
 	private static final String PARAM_STAGE_INDEX = "stageIndex";
 	private OnFragmentInteractionListener mListener;
 	private int identifier;
-	private int blockIndex = -1;
-	private int stageIndex = -1;
+	private String currentBlockFileName;
+	private int currentBlockIndex = -1;
+	private int currentStageIndex = -1;
 
 	public ChecklistFragment()
 	{
@@ -50,8 +52,9 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 	{
 		super.onSaveInstanceState(outState);
 
-		outState.putInt(PARAM_BLOCK_INDEX, blockIndex);
-		outState.putInt(PARAM_STAGE_INDEX, stageIndex);
+		outState.putString(PARAM_BLOCK_FILE_NAME, currentBlockFileName);
+		outState.putInt(PARAM_BLOCK_INDEX, currentBlockIndex);
+		outState.putInt(PARAM_STAGE_INDEX, currentStageIndex);
 	}
 
 	@Override
@@ -63,14 +66,15 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 
 		if (savedInstanceState != null)
 		{
-			blockIndex = savedInstanceState.getInt(PARAM_BLOCK_INDEX);
-			stageIndex = savedInstanceState.getInt(PARAM_STAGE_INDEX);
+			currentBlockFileName = savedInstanceState.getString(PARAM_BLOCK_FILE_NAME);
+			currentBlockIndex = savedInstanceState.getInt(PARAM_BLOCK_INDEX);
+			currentStageIndex = savedInstanceState.getInt(PARAM_STAGE_INDEX);
 		}
 
-		if (blockIndex >= 0 && stageIndex >= 0)
-			showStepStage(blockIndex, stageIndex);
-		else if (blockIndex >= 0)
-			showStepBlock(blockIndex);
+		if (currentBlockIndex >= 0 && currentStageIndex >= 0)
+			showStepStage(currentBlockIndex, currentStageIndex);
+		else if (currentBlockIndex >= 0)
+			showStepBlock(currentBlockIndex, currentBlockFileName);
 		else
 			showStepBlockInfo();
 
@@ -87,25 +91,27 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		transaction.commit();
 
 		identifier = 1;
-		blockIndex = -1;
-		stageIndex = -1;
+		currentBlockFileName = null;
+		currentBlockIndex = -1;
+		currentStageIndex = -1;
 
 		AppCompatActivity activity = (AppCompatActivity)getActivity();
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 	}
 
-	private void showStepBlock(int blockIndex)
+	private void showStepBlock(int blockIndex, String blockFileName)
 	{
 		StepBlockFragment newFragment = StepBlockFragment.newInstance();
-		newFragment.init(this, blockIndex);
+		newFragment.init(this, blockIndex, blockFileName);
 
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container, newFragment);
 		transaction.commit();
 
 		identifier = 2;
-		this.blockIndex = blockIndex;
-		this.stageIndex = -1;
+		currentBlockFileName = blockFileName;
+		currentBlockIndex = blockIndex;
+		currentStageIndex = -1;
 
 		AppCompatActivity activity = (AppCompatActivity)getActivity();
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -129,8 +135,8 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		transaction.commit();
 
 		identifier = 3;
-		this.blockIndex = blockIndex;
-		this.stageIndex = stageIndex;
+		currentBlockIndex = blockIndex;
+		currentStageIndex = stageIndex;
 
 		AppCompatActivity activity = (AppCompatActivity)getActivity();
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -168,9 +174,9 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 	}
 
 	@Override
-	public void onShowBlock(int blockIndex)
+	public void onShowBlock(int blockIndex, String blockFileName)
 	{
-		showStepBlock(blockIndex);
+		showStepBlock(blockIndex, blockFileName);
 	}
 
 	@Override
@@ -183,7 +189,7 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 	{
 		if (identifier == 3)
 		{
-			showStepBlock(blockIndex);
+			showStepBlock(currentBlockIndex, currentBlockFileName);
 			return true;
 		}
 		if (identifier == 2)

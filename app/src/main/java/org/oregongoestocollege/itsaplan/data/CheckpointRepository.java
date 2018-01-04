@@ -21,12 +21,9 @@ import java.util.Set;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 
 import com.google.gson.Gson;
@@ -109,31 +106,41 @@ public class CheckpointRepository implements CheckpointInterface
 	}
 
 	@Override
-	public void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex)
+	public void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex, String blockFileName)
 	{
 		checkNotNull(callback);
 
 		// we must have our BlockInfo before we can load a block
 		BlockInfo blockInfo = null;
-		if (cachedBlockInfos != null && blockIndex < cachedBlockInfos.size())
+		if (cachedBlockInfos != null && blockIndex >= 0 && blockIndex < cachedBlockInfos.size())
 			blockInfo = cachedBlockInfos.get(blockIndex);
 
-		if (blockInfo == null || TextUtils.isEmpty(blockInfo.blockFileName))
+		// load either saved blockFileName or first from the BlockInfo
+		String fileName = blockInfo != null ? blockInfo.blockFileName : null;
+		// or we could be loading a new block
+		if (TextUtils.isEmpty(fileName))
+			fileName = blockFileName;
+
+		if (blockInfo == null || TextUtils.isEmpty(fileName))
+		{
+			Utils.d(TAG, "Missing information for loadBlock().");
+			callback.onDataLoaded(false);
 			return;
+		}
 
 		Block data;
 		GetBlockTask newTask = null;
 
 		synchronized (lock)
 		{
-			data = cachedBlocks.get(blockInfo.blockFileName);
+			data = cachedBlocks.get(fileName);
 			if (data == null)
 			{
-				GetBlockTask currentTask = currentBlockTasks.get(blockInfo.blockFileName);
+				GetBlockTask currentTask = currentBlockTasks.get(fileName);
 				if (currentTask != null)
 					currentTask.setCallback(callback);
 				else
-					newTask = new GetBlockTask(context, callback, blockInfo.blockFileName, blockIndex);
+					newTask = new GetBlockTask(context, callback, fileName, blockIndex);
 			}
 		}
 
@@ -181,6 +188,9 @@ public class CheckpointRepository implements CheckpointInterface
 			callback.onDataLoaded(success);
 		}
 
+		/**
+		 * This allows us to hook into an existing network call to show loading status
+		 */
 		public void setCallback(CheckpointCallback callback)
 		{
 			this.callback = callback;
@@ -222,6 +232,9 @@ public class CheckpointRepository implements CheckpointInterface
 			callback.onDataLoaded(block != null);
 		}
 
+		/**
+		 * This allows us to hook into an existing network call to show loading status
+		 */
 		public void setCallback(CheckpointCallback callback)
 		{
 			this.callback = callback;
@@ -240,7 +253,7 @@ public class CheckpointRepository implements CheckpointInterface
 		}
 	}
 
-	protected boolean fetchBlocks(Context context)
+	boolean fetchBlocks(Context context)
 	{
 		boolean success = false;
 		List<BlockInfo> blocks = null;
@@ -272,31 +285,7 @@ public class CheckpointRepository implements CheckpointInterface
 			{
 				cachedBlockInfos = blocks;
 			}
-
-			// determine what our current state is
-			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-			currentBlockIndex = prefs.getInt("currentBlockIndex", -1);
-			currentStageIndex = prefs.getInt("currentStageIndex", -1);
-			currentCheckpointIndex = prefs.getInt("currentCheckpointIndex", -1);
-
-			String filename = prefs.getString("currentBlockFilename", null);
-
-			// handle initial startup case with first block
-			if (TextUtils.isEmpty(filename) && !blocks.isEmpty())
-			{
-				currentBlockIndex = -1;
-				currentStageIndex = -1;
-				currentCheckpointIndex = -1;
-				filename = blocks.get(0).blockFileName;
-			}
-
-			if (!TextUtils.isEmpty(filename))
-			{
-				Block block = fetchBlock(context, filename, 0);
-				success = block != null;
-			}
-			else
-				Log.e(TAG, "no block filename in fetchBlocks()");
+			success = true;
 		}
 
 		return success;
@@ -327,11 +316,15 @@ public class CheckpointRepository implements CheckpointInterface
 				block.addNextStageCheckpoint();
 			}
 
-			if (block != null)
+			if (block != null && block.stages != null && block.stages.size() > 0)
 			{
 				// update the blockIndex for the newly loaded block
 				synchronized (lock)
 				{
+					// store the file name once loaded successfully
+					cachedBlockInfos.get(index).blockFileName = blockFileName;
+					// TODO: persist changes to data
+
 					currentBlock = block;
 					currentBlockIndex = index;
 					cachedBlocks.put(blockFileName, block);
@@ -488,7 +481,7 @@ public class CheckpointRepository implements CheckpointInterface
 	@Override
 	public void addTrace(String trace)
 	{
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 		String timestamp = dateFormat.format(new Date());
 		String message = String.format(Locale.US, "%s:  %s", timestamp, trace);
 
@@ -496,4 +489,33 @@ public class CheckpointRepository implements CheckpointInterface
 
 		Utils.d(TAG, trace);
 	}
+
+
+	/*
+				// determine what our current state is
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+			currentBlockIndex = prefs.getInt("currentBlockIndex", -1);
+			currentStageIndex = prefs.getInt("currentStageIndex", -1);
+			currentCheckpointIndex = prefs.getInt("currentCheckpointIndex", -1);
+
+			String filename = prefs.getString("currentBlockFilename", null);
+
+			// handle initial startup case with first block
+			if (TextUtils.isEmpty(filename) && !blocks.isEmpty())
+			{
+				currentBlockIndex = -1;
+				currentStageIndex = -1;
+				currentCheckpointIndex = -1;
+				filename = blocks.get(0).blockFileName;
+			}
+
+			if (!TextUtils.isEmpty(filename))
+			{
+				Block block = fetchBlock(context, filename, 0);
+				success = block != null;
+			}
+			else
+				Log.e(TAG, "no block filename in fetchBlocks()");
+
+	 */
 }

@@ -89,8 +89,8 @@ public class StepBlockInfoFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable ChecklistState state)
 			{
-				if (listener != null)
-					listener.get().onShowBlock(state.blockIndex);
+				if (listener != null && state != null)
+					listener.get().onShowBlock(state.blockIndex, state.blockFileName);
 			}
 		});
 
