@@ -15,7 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.Indexes;
+import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentStepBlockInfoBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel;
@@ -84,13 +84,13 @@ public class StepBlockInfoFragment extends Fragment
 			}
 		});
 
-		blockInfoListViewModel.getOpenBlockEvent().observe(this, new Observer<Indexes>()
+		blockInfoListViewModel.getOpenBlockEvent().observe(this, new Observer<ChecklistState>()
 		{
 			@Override
-			public void onChanged(@Nullable Indexes indexes)
+			public void onChanged(@Nullable ChecklistState state)
 			{
-				if (listener != null && Indexes.hasBlockIndex(indexes))
-					listener.get().onShowBlock(indexes.blockIndex);
+				if (listener != null)
+					listener.get().onShowBlock(state.blockIndex);
 			}
 		});
 

@@ -12,7 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.Indexes;
+import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
@@ -64,23 +64,23 @@ public class CheckpointFragment extends Fragment
 		checkpointViewModel = ViewModelProviders.of(this, factory).get(CheckpointViewModel.class);
 		binding.setUxContext(checkpointViewModel);
 
-		checkpointViewModel.getNextStageEvent().observe(this, new Observer<Indexes>()
+		checkpointViewModel.getNextStageEvent().observe(this, new Observer<ChecklistState>()
 		{
 			@Override
-			public void onChanged(@Nullable Indexes indexes)
+			public void onChanged(@Nullable ChecklistState state)
 			{
 				if (listener != null)
-					listener.get().onShowStage(indexes.blockIndex, indexes.stageIndex);
+					listener.get().onShowStage(state.blockIndex, state.stageIndex);
 			}
 		});
 
-		checkpointViewModel.getNextBlockEvent().observe(this, new Observer<Indexes>()
+		checkpointViewModel.getNextBlockEvent().observe(this, new Observer<ChecklistState>()
 		{
 			@Override
-			public void onChanged(@Nullable Indexes indexes)
+			public void onChanged(@Nullable ChecklistState state)
 			{
 				if (listener != null)
-					listener.get().onShowBlock(indexes.blockIndex);
+					listener.get().onShowBlock(state.blockIndex);
 			}
 		});
 

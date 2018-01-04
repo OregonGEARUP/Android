@@ -273,7 +273,7 @@ public class CheckpointRepository implements CheckpointInterface
 				cachedBlockInfos = blocks;
 			}
 
-			// determine what our current indexes are
+			// determine what our current state is
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 			currentBlockIndex = prefs.getInt("currentBlockIndex", -1);
 			currentStageIndex = prefs.getInt("currentStageIndex", -1);

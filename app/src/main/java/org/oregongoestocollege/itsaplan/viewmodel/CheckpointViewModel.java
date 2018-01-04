@@ -11,13 +11,15 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.Toast;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
+import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.EntryType;
-import org.oregongoestocollege.itsaplan.data.Indexes;
 import org.oregongoestocollege.itsaplan.data.Instance;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
@@ -36,8 +38,8 @@ public class CheckpointViewModel extends AndroidViewModel
 	private int checkpointIndex;
 	// view data
 	private final CheckpointInterface repository;
-	private final SingleLiveEvent<Indexes> nextStageEvent = new SingleLiveEvent<>();
-	private final SingleLiveEvent<Indexes> nextBlockEvent = new SingleLiveEvent<>();
+	private final SingleLiveEvent<ChecklistState> nextStageEvent = new SingleLiveEvent<>();
+	private final SingleLiveEvent<ChecklistState> nextBlockEvent = new SingleLiveEvent<>();
 	public String description;
 	public int descriptionTextColor;
 	public Drawable image;
@@ -96,12 +98,12 @@ public class CheckpointViewModel extends AndroidViewModel
 		}
 	}
 
-	public SingleLiveEvent<Indexes> getNextStageEvent()
+	public SingleLiveEvent<ChecklistState> getNextStageEvent()
 	{
 		return nextStageEvent;
 	}
 
-	public SingleLiveEvent<Indexes> getNextBlockEvent()
+	public SingleLiveEvent<ChecklistState> getNextBlockEvent()
 	{
 		return nextBlockEvent;
 	}
@@ -183,9 +185,19 @@ public class CheckpointViewModel extends AndroidViewModel
 			{
 				repository.addTrace(repository.keyForBlockIndex(blockIndex, stageIndex + 1, 0));
 
-				Indexes indexes = new Indexes(blockIndex, stageIndex + 1);
-				nextStageEvent.setValue(indexes);
+				ChecklistState state = new ChecklistState(blockIndex, stageIndex + 1);
+				nextStageEvent.setValue(state);
 			}
 		}
+	}
+
+	public boolean onShowDebug(View view)
+	{
+		Toast.makeText(view.getContext(),
+			String.format(Locale.US, "Checkpoint key %s", repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex)),
+			Toast.LENGTH_LONG).
+			show();
+
+		return true;
 	}
 }

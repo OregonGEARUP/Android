@@ -7,8 +7,8 @@ import android.view.View;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
+import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
-import org.oregongoestocollege.itsaplan.data.Indexes;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -23,7 +23,7 @@ public class StageItemViewModel implements BindingItem
 	private int blockIndex;
 	private int stageIndex;
 	private Stage model;
-	private final SingleLiveEvent<Indexes> openStageEvent;
+	private final SingleLiveEvent<ChecklistState> openStageEvent;
 	// view data
 	private final CheckpointInterface repository;
 	public String title;
@@ -31,7 +31,7 @@ public class StageItemViewModel implements BindingItem
 
 	public StageItemViewModel(@NonNull Application context, @NonNull CheckpointInterface repository,
 		int blockIndex, int stageIndex,
-		SingleLiveEvent<Indexes> openStageEvent)
+		SingleLiveEvent<ChecklistState> openStageEvent)
 	{
 		checkNotNull(context);
 		checkNotNull(repository);
@@ -55,6 +55,6 @@ public class StageItemViewModel implements BindingItem
 	public void onStageClick(View view)
 	{
 		if (openStageEvent != null)
-			openStageEvent.setValue(new Indexes(blockIndex, stageIndex));
+			openStageEvent.setValue(new ChecklistState(blockIndex, stageIndex));
 	}
 }

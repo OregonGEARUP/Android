@@ -1,14 +1,20 @@
 package org.oregongoestocollege.itsaplan;
 
+import java.util.Locale;
+
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
+import org.oregongoestocollege.itsaplan.data.Stage;
 
 /**
  * Oregon GEAR UP App
@@ -16,6 +22,7 @@ import android.view.ViewGroup;
  */
 public class ChecklistFragment extends Fragment implements OnChecklistInteraction
 {
+	private static final String LOG_TAG = "GearUpChecklistFrag";
 	private static final String PARAM_BLOCK_INDEX = "blockIndex";
 	private static final String PARAM_STAGE_INDEX = "stageIndex";
 	private OnFragmentInteractionListener mListener;
@@ -106,6 +113,14 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 
 	private void showStepStage(int blockIndex, int stageIndex)
 	{
+		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
+		if (stage == null)
+		{
+			// this shouldn't happen
+			Log.w(LOG_TAG, String.format(Locale.US, "Invalid block:%d stage:%d", blockIndex, stageIndex));
+			return;
+		}
+
 		StepStageFragment newFragment = StepStageFragment.newInstance();
 		newFragment.init(this, blockIndex, stageIndex);
 

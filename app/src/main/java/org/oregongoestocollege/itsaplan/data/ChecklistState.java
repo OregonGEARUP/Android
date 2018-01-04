@@ -3,12 +3,12 @@ package org.oregongoestocollege.itsaplan.data;
 import android.support.annotation.Nullable;
 
 /**
- * Holds the indexes needed to find {@link Block}s, {@link Stage}s and {@link Checkpoint}s.
+ * Holds the state needed to load {@link Block}s, {@link Stage}s and {@link Checkpoint}s.
  *
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class Indexes
+public class ChecklistState
 {
 	public static final int NO_INDEX = -1;
 	public final String blockFileName;
@@ -16,27 +16,28 @@ public class Indexes
 	public final int stageIndex;
 	public final int checkpointIndex;
 
-	public Indexes(int blockIndex)
+	public ChecklistState(int blockIndex)
 	{
 		this(null, blockIndex, NO_INDEX, NO_INDEX);
+
 	}
 
-	public Indexes(String blockFileName, int blockIndex)
+	public ChecklistState(String blockFileName, int blockIndex)
 	{
 		this(blockFileName, blockIndex, NO_INDEX, NO_INDEX);
 	}
 
-	public Indexes(int blockIndex, int stageIndex)
+	public ChecklistState(int blockIndex, int stageIndex)
 	{
 		this(null, blockIndex, stageIndex, NO_INDEX);
 	}
 
-	public Indexes(int blockIndex, int stageIndex, int checkpointIndex)
+	public ChecklistState(int blockIndex, int stageIndex, int checkpointIndex)
 	{
 		this(null, blockIndex, stageIndex, checkpointIndex);
 	}
 
-	private Indexes(String blockFileName, int blockIndex, int stageIndex, int checkpointIndex)
+	private ChecklistState(String blockFileName, int blockIndex, int stageIndex, int checkpointIndex)
 	{
 		this.blockFileName = blockFileName;
 		this.blockIndex = blockIndex;
@@ -44,13 +45,13 @@ public class Indexes
 		this.checkpointIndex = checkpointIndex;
 	}
 
-	public static boolean hasBlockIndex(@Nullable Indexes indexes)
+	public static boolean hasBlockIndex(@Nullable ChecklistState state)
 	{
-		return indexes != null && indexes.blockIndex != NO_INDEX;
+		return state != null && state.blockIndex != NO_INDEX;
 	}
 
-	public static boolean hasBlockAndStageIndex(@Nullable Indexes indexes)
+	public static boolean hasBlockAndStageIndex(@Nullable ChecklistState state)
 	{
-		return indexes != null && indexes.blockIndex != NO_INDEX && indexes.stageIndex != NO_INDEX;
+		return state != null && state.blockIndex != NO_INDEX && state.stageIndex != NO_INDEX;
 	}
 }
