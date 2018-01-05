@@ -1,9 +1,8 @@
 package org.oregongoestocollege.itsaplan;
 
-import java.lang.ref.WeakReference;
-
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -22,23 +21,16 @@ import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
  */
 public class CheckpointFragment extends Fragment
 {
-	private WeakReference<OnChecklistInteraction> listener;
+	private static final String LOG_TAG = "GearUpCheckpointFragment";
+	private OnFragmentInteractionListener listener;
 	private CheckpointViewModel checkpointViewModel;
-	private int blockIndex;
-	private int stageIndex;
-	private int checkpointIndex;
+	private int blockIndex = Utils.NO_INDEX;
+	private int stageIndex = Utils.NO_INDEX;
+	private int checkpointIndex = Utils.NO_INDEX;
 
 	public CheckpointFragment()
 	{
 		// Required empty public constructor
-	}
-
-	public void init(OnChecklistInteraction listener, int blockIndex, int stageIndex, int checkpointIndex)
-	{
-		this.listener = new WeakReference<>(listener);
-		this.blockIndex = blockIndex;
-		this.stageIndex = stageIndex;
-		this.checkpointIndex = checkpointIndex;
 	}
 
 	/**
@@ -46,9 +38,39 @@ public class CheckpointFragment extends Fragment
 	 *
 	 * @return A new instance of fragment CheckpointFragment.
 	 */
-	public static CheckpointFragment newInstance()
+	public static CheckpointFragment newInstance(int blockIndex, int stageIndex, int checkpointIndex)
 	{
-		return new CheckpointFragment();
+		CheckpointFragment fragment = new CheckpointFragment();
+		Bundle args = new Bundle();
+		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		args.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
+		args.putInt(Utils.PARAM_CHECKPOINT_INDEX, checkpointIndex);
+		fragment.setArguments(args);
+		return fragment;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+
+		outState.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		outState.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
+		outState.putInt(Utils.PARAM_CHECKPOINT_INDEX, checkpointIndex);
+	}
+
+
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		if (getArguments() != null)
+		{
+			blockIndex = getArguments().getInt(Utils.PARAM_BLOCK_INDEX);
+			stageIndex = getArguments().getInt(Utils.PARAM_STAGE_INDEX);
+			checkpointIndex = getArguments().getInt(Utils.PARAM_CHECKPOINT_INDEX);
+		}
 	}
 
 	@Override
@@ -60,6 +82,13 @@ public class CheckpointFragment extends Fragment
 			DataBindingUtil.inflate(inflater, R.layout.fragment_checkpoint, container, false);
 		View v = binding.getRoot();
 
+		if (savedInstanceState != null)
+		{
+			blockIndex = savedInstanceState.getInt(Utils.PARAM_BLOCK_INDEX, Utils.NO_INDEX);
+			stageIndex = savedInstanceState.getInt(Utils.PARAM_STAGE_INDEX, Utils.NO_INDEX);
+			checkpointIndex = savedInstanceState.getInt(Utils.PARAM_CHECKPOINT_INDEX, Utils.NO_INDEX);
+		}
+
 		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
 		checkpointViewModel = ViewModelProviders.of(this, factory).get(CheckpointViewModel.class);
 		binding.setUxContext(checkpointViewModel);
@@ -70,7 +99,7 @@ public class CheckpointFragment extends Fragment
 			public void onChanged(@Nullable ChecklistState state)
 			{
 				if (listener != null && state != null)
-					listener.get().onShowStage(state.blockIndex, state.stageIndex);
+					listener.onShowStage(state.blockIndex, state.stageIndex);
 			}
 		});
 
@@ -80,7 +109,7 @@ public class CheckpointFragment extends Fragment
 			public void onChanged(@Nullable ChecklistState state)
 			{
 				if (listener != null && state != null)
-					listener.get().onShowBlock(state.blockIndex, state.blockFileName);
+					listener.onShowBlock(state.blockIndex, state.blockFileName);
 			}
 		});
 
@@ -88,19 +117,29 @@ public class CheckpointFragment extends Fragment
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		if (getArguments() != null)
-		{
-			//description = getArguments().getString(CHECKPOINT_DESC);
-		}
-	}
-
-	@Override
 	public void onResume()
 	{
 		super.onResume();
 		checkpointViewModel.start(blockIndex, stageIndex, checkpointIndex);
+	}
+
+	@Override
+	public void onAttach(Context context)
+	{
+		super.onAttach(context);
+
+		if (context instanceof OnFragmentInteractionListener)
+			listener = (OnFragmentInteractionListener)context;
+		else
+			throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
+
+		Utils.d(LOG_TAG, "onAttach");
+	}
+
+	@Override
+	public void onDetach()
+	{
+		super.onDetach();
+		listener = null;
 	}
 }

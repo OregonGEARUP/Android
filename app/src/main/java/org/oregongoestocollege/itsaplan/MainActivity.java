@@ -10,7 +10,6 @@ import android.view.MenuItem;
 
 import org.oregongoestocollege.itsaplan.support.BottomBarAdapter;
 import org.oregongoestocollege.itsaplan.support.NoSwipePager;
-import org.oregongoestocollege.itsaplan.support.Utils;
 
 /**
  * MainActivity
@@ -105,6 +104,28 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 	public void onFragmentInteraction()
 	{
 		// no-op for now
+	}
+
+	@Override
+	public void onShowBlock(int blockIndex, String blockFileName)
+	{
+		if (lastSelectedPosition != -1)
+		{
+			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
+			if (fragment instanceof ChecklistFragment)
+				((ChecklistFragment)fragment).onShowBlock(blockIndex, blockFileName);
+		}
+	}
+
+	@Override
+	public void onShowStage(int blockIndex, int stageIndex)
+	{
+		if (lastSelectedPosition != -1)
+		{
+			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
+			if (fragment instanceof ChecklistFragment)
+				((ChecklistFragment)fragment).onShowStage(blockIndex, stageIndex);
+		}
 	}
 
 	@Override

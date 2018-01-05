@@ -1,9 +1,9 @@
 package org.oregongoestocollege.itsaplan;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -20,12 +20,13 @@ import org.oregongoestocollege.itsaplan.data.Stage;
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class StepStageFragment extends Fragment
+public class StepStageFragment extends Fragment implements ViewPager.OnPageChangeListener
 {
+	private static final String LOG_TAG = "GearUpStepStageFragment";
 	private final int MAX_CHECKPOINTS = 6;
-	private WeakReference<OnChecklistInteraction> listener;
-	private int blockIndex;
-	private int stageIndex;
+	private OnFragmentInteractionListener listener;
+	private int blockIndex = Utils.NO_INDEX;
+	private int stageIndex = Utils.NO_INDEX;
 	private ViewPager viewPager;
 	private CheckpointPagerAdapter pagerAdapter;
 
@@ -34,21 +35,39 @@ public class StepStageFragment extends Fragment
 		// Required empty public constructor
 	}
 
-	public void init(OnChecklistInteraction listener, int blockIndex, int stageIndex)
-	{
-		this.listener = new WeakReference<>(listener);
-		this.blockIndex = blockIndex;
-		this.stageIndex = stageIndex;
-	}
-
 	/**
 	 * Use this factory method to create a new instance of this fragment.
 	 *
 	 * @return A new instance of fragment StepStageFragment.
 	 */
-	public static StepStageFragment newInstance()
+	public static StepStageFragment newInstance(int blockIndex, int stageIndex)
 	{
-		return new StepStageFragment();
+		StepStageFragment fragment = new StepStageFragment();
+		Bundle args = new Bundle();
+		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		args.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
+		fragment.setArguments(args);
+		return fragment;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+
+		outState.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		outState.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		if (getArguments() != null)
+		{
+			blockIndex = getArguments().getInt(Utils.PARAM_BLOCK_INDEX);
+			stageIndex = getArguments().getInt(Utils.PARAM_STAGE_INDEX);
+		}
 	}
 
 	@Override
@@ -58,7 +77,13 @@ public class StepStageFragment extends Fragment
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_step_stage, container, false);
 
-		List<Fragment> fragments = new ArrayList<>();
+		if (savedInstanceState != null)
+		{
+			blockIndex = savedInstanceState.getInt(Utils.PARAM_BLOCK_INDEX, Utils.NO_INDEX);
+			stageIndex = savedInstanceState.getInt(Utils.PARAM_STAGE_INDEX, Utils.NO_INDEX);
+		}
+
+		List<CheckpointFragment> fragments = new ArrayList<>();
 
 		// we only use Stage/Checkpoint model classes to make sure all is valid and setup indexes
 		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
@@ -68,10 +93,12 @@ public class StepStageFragment extends Fragment
 
 			for (int i = 0; i < size && i < MAX_CHECKPOINTS; i++)
 			{
-				CheckpointFragment fragment = CheckpointFragment.newInstance();
-				fragment.init(listener.get(), blockIndex, stageIndex, i);
+				CheckpointFragment fragment = CheckpointFragment.newInstance(blockIndex, stageIndex, i);
 				fragments.add(fragment);
 			}
+
+			if (!TextUtils.isEmpty(stage.title))
+				getActivity().setTitle(stage.title);
 		}
 
 		Resources resources = getResources();
@@ -84,11 +111,47 @@ public class StepStageFragment extends Fragment
 		viewPager.setPadding(padding, padding, padding, padding);
 		viewPager.setClipToPadding(false);
 		viewPager.setPageMargin(margin);
+		viewPager.addOnPageChangeListener(this);
 		viewPager.setAdapter(pagerAdapter);
 
-		if (!TextUtils.isEmpty(stage.title))
-			getActivity().setTitle(stage.title);
-
 		return v;
+	}
+
+	@Override
+	public void onAttach(Context context)
+	{
+		super.onAttach(context);
+
+		if (context instanceof OnFragmentInteractionListener)
+			listener = (OnFragmentInteractionListener)context;
+		else
+			throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
+
+		Utils.d(LOG_TAG, "onAttach");
+	}
+
+	@Override
+	public void onDetach()
+	{
+		super.onDetach();
+		listener = null;
+	}
+
+	@Override
+	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+	{
+		// no-op
+	}
+
+	@Override
+	public void onPageSelected(int position)
+	{
+		Utils.d("GearUpStepStageFragment", "onPageSelected position:%d", position);
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int state)
+	{
+		// no-op
 	}
 }

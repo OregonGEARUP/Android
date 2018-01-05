@@ -18,7 +18,8 @@ public interface CheckpointInterface
 
 	void resumeCheckpoints(@NonNull Application context, @NonNull CheckpointCallback callback);
 
-	void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex, String blockFileName);
+	void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex,
+		String blockFileName);
 
 	int getCountOfBlocks();
 
@@ -31,6 +32,8 @@ public interface CheckpointInterface
 	Checkpoint getCheckpoint(int blockIndex, int stageIndex, int checkpointIndex);
 
 	String keyForBlockIndex(int blockIndex, int stageIndex, int checkpointIndex);
+
+	void markVisited(int blockIndex, int stageIndex, int checkpointIndex);
 
 	/**
 	 * Keeps a list of trace statments that can be used to debug the app in the field.

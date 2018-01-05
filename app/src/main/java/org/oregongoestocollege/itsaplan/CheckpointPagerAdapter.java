@@ -14,9 +14,9 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 public class CheckpointPagerAdapter extends FragmentPagerAdapter
 {
-	private List<Fragment> fragments;
+	private List<CheckpointFragment> fragments;
 
-	public CheckpointPagerAdapter(FragmentManager fm, List<Fragment> fragments)
+	CheckpointPagerAdapter(FragmentManager fm, List<CheckpointFragment> fragments)
 	{
 		super(fm);
 
@@ -24,14 +24,12 @@ public class CheckpointPagerAdapter extends FragmentPagerAdapter
 	}
 
 	@Override
-
 	public Fragment getItem(int position)
 	{
 		return this.fragments.get(position);
 	}
 
 	@Override
-
 	public int getCount()
 	{
 		return this.fragments.size();

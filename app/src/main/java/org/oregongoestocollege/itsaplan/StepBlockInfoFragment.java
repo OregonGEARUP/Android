@@ -1,7 +1,5 @@
 package org.oregongoestocollege.itsaplan;
 
-import java.lang.ref.WeakReference;
-
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -26,7 +24,8 @@ import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel;
  */
 public class StepBlockInfoFragment extends Fragment
 {
-	private WeakReference<OnChecklistInteraction> listener;
+	private static final String LOG_TAG = "GearUpStepBlockInfoFrag";
+	private OnFragmentInteractionListener listener;
 	private RecyclerView recyclerView;
 	private BindingItemsAdapter adapter;
 	private BlockInfoListViewModel blockInfoListViewModel;
@@ -34,11 +33,6 @@ public class StepBlockInfoFragment extends Fragment
 	public StepBlockInfoFragment()
 	{
 		// Required empty public constructor
-	}
-
-	public void init(OnChecklistInteraction listener)
-	{
-		this.listener = new WeakReference<>(listener);
 	}
 
 	/**
@@ -90,7 +84,7 @@ public class StepBlockInfoFragment extends Fragment
 			public void onChanged(@Nullable ChecklistState state)
 			{
 				if (listener != null && state != null)
-					listener.get().onShowBlock(state.blockIndex, state.blockFileName);
+					listener.onShowBlock(state.blockIndex, state.blockFileName);
 			}
 		});
 
@@ -108,11 +102,19 @@ public class StepBlockInfoFragment extends Fragment
 	public void onAttach(Context context)
 	{
 		super.onAttach(context);
+
+		if (context instanceof OnFragmentInteractionListener)
+			listener = (OnFragmentInteractionListener)context;
+		else
+			throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
+
+		Utils.d(LOG_TAG, "onAttach");
 	}
 
 	@Override
 	public void onDetach()
 	{
 		super.onDetach();
+		listener = null;
 	}
 }
