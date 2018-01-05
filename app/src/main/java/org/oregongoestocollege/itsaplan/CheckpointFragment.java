@@ -1,9 +1,8 @@
 package org.oregongoestocollege.itsaplan;
 
-import java.lang.ref.WeakReference;
-
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +13,7 @@ import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
+import org.oregongoestocollege.itsaplan.support.Utils;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
 /**
@@ -22,7 +22,8 @@ import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
  */
 public class CheckpointFragment extends Fragment
 {
-	private WeakReference<OnChecklistInteraction> listener;
+	private static final String LOG_TAG = "GearUpCheckpointFragment";
+	private OnFragmentInteractionListener listener;
 	private CheckpointViewModel checkpointViewModel;
 	private int blockIndex;
 	private int stageIndex;
@@ -33,9 +34,8 @@ public class CheckpointFragment extends Fragment
 		// Required empty public constructor
 	}
 
-	public void init(OnChecklistInteraction listener, int blockIndex, int stageIndex, int checkpointIndex)
+	public void init(int blockIndex, int stageIndex, int checkpointIndex)
 	{
-		this.listener = new WeakReference<>(listener);
 		this.blockIndex = blockIndex;
 		this.stageIndex = stageIndex;
 		this.checkpointIndex = checkpointIndex;
@@ -70,7 +70,7 @@ public class CheckpointFragment extends Fragment
 			public void onChanged(@Nullable ChecklistState state)
 			{
 				if (listener != null && state != null)
-					listener.get().onShowStage(state.blockIndex, state.stageIndex);
+					listener.onShowStage(state.blockIndex, state.stageIndex);
 			}
 		});
 
@@ -80,7 +80,7 @@ public class CheckpointFragment extends Fragment
 			public void onChanged(@Nullable ChecklistState state)
 			{
 				if (listener != null && state != null)
-					listener.get().onShowBlock(state.blockIndex, state.blockFileName);
+					listener.onShowBlock(state.blockIndex, state.blockFileName);
 			}
 		});
 
@@ -102,5 +102,25 @@ public class CheckpointFragment extends Fragment
 	{
 		super.onResume();
 		checkpointViewModel.start(blockIndex, stageIndex, checkpointIndex);
+	}
+
+	@Override
+	public void onAttach(Context context)
+	{
+		super.onAttach(context);
+
+		if (context instanceof OnFragmentInteractionListener)
+			listener = (OnFragmentInteractionListener)context;
+		else
+			throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
+
+		Utils.d(LOG_TAG, "onAttach");
+	}
+
+	@Override
+	public void onDetach()
+	{
+		super.onDetach();
+		listener = null;
 	}
 }

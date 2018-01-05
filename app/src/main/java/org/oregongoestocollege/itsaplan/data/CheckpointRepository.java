@@ -106,7 +106,8 @@ public class CheckpointRepository implements CheckpointInterface
 	}
 
 	@Override
-	public void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex, String blockFileName)
+	public void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex,
+		String blockFileName)
 	{
 		checkNotNull(callback);
 
@@ -453,7 +454,12 @@ public class CheckpointRepository implements CheckpointInterface
 
 	public void markVisited(int blockIndex, int stageIndex, int checkpointIndex)
 	{
-		visited.add(keyForBlockIndex(blockIndex, stageIndex, checkpointIndex));
+		String key = keyForBlockIndex(blockIndex, stageIndex, checkpointIndex);
+
+		if (Utils.DEBUG)
+			Utils.d(TAG, String.format("visited %s", key));
+
+		visited.add(key);
 	}
 
 	public boolean hasVisited(int blockIndex, int stageIndex, int checkpointIndex)

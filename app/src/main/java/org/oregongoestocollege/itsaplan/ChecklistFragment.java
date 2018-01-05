@@ -3,7 +3,6 @@ package org.oregongoestocollege.itsaplan;
 import java.util.Locale;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -15,18 +14,19 @@ import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
+import org.oregongoestocollege.itsaplan.support.Utils;
 
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class ChecklistFragment extends Fragment implements OnChecklistInteraction
+public class ChecklistFragment extends Fragment implements OnFragmentInteractionListener
 {
 	private static final String LOG_TAG = "GearUpChecklistFrag";
 	private static final String PARAM_BLOCK_FILE_NAME = "blockFileName";
 	private static final String PARAM_BLOCK_INDEX = "blockIndex";
 	private static final String PARAM_STAGE_INDEX = "stageIndex";
-	private OnFragmentInteractionListener mListener;
+	private OnFragmentInteractionListener listener;
 	private int identifier;
 	private String currentBlockFileName;
 	private int currentBlockIndex = -1;
@@ -35,16 +35,6 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 	public ChecklistFragment()
 	{
 		// Required empty public constructor
-	}
-
-	/**
-	 * Use this factory method to create a new instance of this fragment.
-	 *
-	 * @return A new instance of fragment ChecklistFragment.
-	 */
-	public static ChecklistFragment newInstance()
-	{
-		return new ChecklistFragment();
 	}
 
 	@Override
@@ -66,17 +56,21 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 
 		if (savedInstanceState != null)
 		{
+			// if we have state than our current fragment will get re-created
 			currentBlockFileName = savedInstanceState.getString(PARAM_BLOCK_FILE_NAME);
 			currentBlockIndex = savedInstanceState.getInt(PARAM_BLOCK_INDEX);
 			currentStageIndex = savedInstanceState.getInt(PARAM_STAGE_INDEX);
 		}
-
-		if (currentBlockIndex >= 0 && currentStageIndex >= 0)
-			showStepStage(currentBlockIndex, currentStageIndex);
-		else if (currentBlockIndex >= 0)
-			showStepBlock(currentBlockIndex, currentBlockFileName);
 		else
-			showStepBlockInfo();
+		{
+			// TODO - start where we left off...
+			if (currentBlockIndex >= 0 && currentStageIndex >= 0)
+				showStepStage(currentBlockIndex, currentStageIndex);
+			else if (currentBlockIndex >= 0)
+				showStepBlock(currentBlockIndex, currentBlockFileName);
+			else
+				showStepBlockInfo();
+		}
 
 		return v;
 	}
@@ -84,7 +78,6 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 	private void showStepBlockInfo()
 	{
 		StepBlockInfoFragment newFragment = StepBlockInfoFragment.newInstance();
-		newFragment.init(this);
 
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container, newFragment);
@@ -99,10 +92,10 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 	}
 
-	private void showStepBlock(int blockIndex, String blockFileName)
+	public void showStepBlock(int blockIndex, String blockFileName)
 	{
 		StepBlockFragment newFragment = StepBlockFragment.newInstance();
-		newFragment.init(this, blockIndex, blockFileName);
+		newFragment.init(blockIndex, blockFileName);
 
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container, newFragment);
@@ -117,7 +110,7 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
-	private void showStepStage(int blockIndex, int stageIndex)
+	public void showStepStage(int blockIndex, int stageIndex)
 	{
 		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
 		if (stage == null)
@@ -128,7 +121,7 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		}
 
 		StepStageFragment newFragment = StepStageFragment.newInstance();
-		newFragment.init(this, blockIndex, stageIndex);
+		newFragment.init(blockIndex, stageIndex);
 
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container, newFragment);
@@ -142,35 +135,30 @@ public class ChecklistFragment extends Fragment implements OnChecklistInteractio
 		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
-	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed(Uri uri)
-	{
-		if (mListener != null)
-		{
-			mListener.onFragmentInteraction();
-		}
-	}
-
 	@Override
 	public void onAttach(Context context)
 	{
 		super.onAttach(context);
+
 		if (context instanceof OnFragmentInteractionListener)
-		{
-			mListener = (OnFragmentInteractionListener)context;
-		}
+			listener = (OnFragmentInteractionListener)context;
 		else
-		{
-			throw new RuntimeException(context.toString()
-				+ " must implement OnFragmentInteractionListener");
-		}
+			throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
+
+		Utils.d(LOG_TAG, "onAttach");
 	}
 
 	@Override
 	public void onDetach()
 	{
 		super.onDetach();
-		mListener = null;
+		listener = null;
+	}
+
+	@Override
+	public void onFragmentInteraction()
+	{
+		// no-op for now
 	}
 
 	@Override
