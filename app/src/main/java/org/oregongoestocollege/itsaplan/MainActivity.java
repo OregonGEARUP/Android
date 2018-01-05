@@ -10,7 +10,6 @@ import android.view.MenuItem;
 
 import org.oregongoestocollege.itsaplan.support.BottomBarAdapter;
 import org.oregongoestocollege.itsaplan.support.NoSwipePager;
-import org.oregongoestocollege.itsaplan.support.Utils;
 
 /**
  * MainActivity

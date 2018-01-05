@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +15,6 @@ import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
-import org.oregongoestocollege.itsaplan.support.Utils;
 
 /**
  * Oregon GEAR UP App
@@ -23,9 +23,6 @@ import org.oregongoestocollege.itsaplan.support.Utils;
 public class ChecklistFragment extends Fragment implements OnFragmentInteractionListener
 {
 	private static final String LOG_TAG = "GearUpChecklistFrag";
-	private static final String PARAM_BLOCK_FILE_NAME = "blockFileName";
-	private static final String PARAM_BLOCK_INDEX = "blockIndex";
-	private static final String PARAM_STAGE_INDEX = "stageIndex";
 	private OnFragmentInteractionListener listener;
 	private int identifier;
 	private String currentBlockFileName;
@@ -42,9 +39,12 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	{
 		super.onSaveInstanceState(outState);
 
-		outState.putString(PARAM_BLOCK_FILE_NAME, currentBlockFileName);
-		outState.putInt(PARAM_BLOCK_INDEX, currentBlockIndex);
-		outState.putInt(PARAM_STAGE_INDEX, currentStageIndex);
+		if (!TextUtils.isEmpty(currentBlockFileName))
+			outState.putString(Utils.PARAM_BLOCK_FILE_NAME, currentBlockFileName);
+		if (currentBlockIndex != Utils.NO_INDEX)
+			outState.putInt(Utils.PARAM_BLOCK_INDEX, currentBlockIndex);
+		if (currentStageIndex != Utils.NO_INDEX)
+			outState.putInt(Utils.PARAM_STAGE_INDEX, currentStageIndex);
 	}
 
 	@Override
@@ -57,9 +57,9 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		if (savedInstanceState != null)
 		{
 			// if we have state than our current fragment will get re-created
-			currentBlockFileName = savedInstanceState.getString(PARAM_BLOCK_FILE_NAME);
-			currentBlockIndex = savedInstanceState.getInt(PARAM_BLOCK_INDEX);
-			currentStageIndex = savedInstanceState.getInt(PARAM_STAGE_INDEX);
+			currentBlockFileName = savedInstanceState.getString(Utils.PARAM_BLOCK_FILE_NAME);
+			currentBlockIndex = savedInstanceState.getInt(Utils.PARAM_BLOCK_INDEX, Utils.NO_INDEX);
+			currentStageIndex = savedInstanceState.getInt(Utils.PARAM_STAGE_INDEX, Utils.NO_INDEX);
 		}
 		else
 		{
@@ -94,9 +94,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 
 	public void showStepBlock(int blockIndex, String blockFileName)
 	{
-		StepBlockFragment newFragment = StepBlockFragment.newInstance();
-		newFragment.init(blockIndex, blockFileName);
-
+		StepBlockFragment newFragment = StepBlockFragment.newInstance(blockIndex, blockFileName);
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container, newFragment);
 		transaction.commit();
@@ -120,9 +118,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 			return;
 		}
 
-		StepStageFragment newFragment = StepStageFragment.newInstance();
-		newFragment.init(blockIndex, stageIndex);
-
+		StepStageFragment newFragment = StepStageFragment.newInstance(blockIndex, stageIndex);
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container, newFragment);
 		transaction.commit();

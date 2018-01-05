@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
-import org.oregongoestocollege.itsaplan.support.Utils;
 
 /**
  * Oregon GEAR UP App
@@ -26,8 +25,8 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	private static final String LOG_TAG = "GearUpStepStageFragment";
 	private final int MAX_CHECKPOINTS = 6;
 	private OnFragmentInteractionListener listener;
-	private int blockIndex;
-	private int stageIndex;
+	private int blockIndex = Utils.NO_INDEX;
+	private int stageIndex = Utils.NO_INDEX;
 	private ViewPager viewPager;
 	private CheckpointPagerAdapter pagerAdapter;
 
@@ -36,20 +35,39 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 		// Required empty public constructor
 	}
 
-	public void init(int blockIndex, int stageIndex)
-	{
-		this.blockIndex = blockIndex;
-		this.stageIndex = stageIndex;
-	}
-
 	/**
 	 * Use this factory method to create a new instance of this fragment.
 	 *
 	 * @return A new instance of fragment StepStageFragment.
 	 */
-	public static StepStageFragment newInstance()
+	public static StepStageFragment newInstance(int blockIndex, int stageIndex)
 	{
-		return new StepStageFragment();
+		StepStageFragment fragment = new StepStageFragment();
+		Bundle args = new Bundle();
+		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		args.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
+		fragment.setArguments(args);
+		return fragment;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+
+		outState.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		outState.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		if (getArguments() != null)
+		{
+			blockIndex = getArguments().getInt(Utils.PARAM_BLOCK_INDEX);
+			stageIndex = getArguments().getInt(Utils.PARAM_STAGE_INDEX);
+		}
 	}
 
 	@Override
@@ -58,6 +76,12 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	{
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_step_stage, container, false);
+
+		if (savedInstanceState != null)
+		{
+			blockIndex = savedInstanceState.getInt(Utils.PARAM_BLOCK_INDEX, Utils.NO_INDEX);
+			stageIndex = savedInstanceState.getInt(Utils.PARAM_STAGE_INDEX, Utils.NO_INDEX);
+		}
 
 		List<CheckpointFragment> fragments = new ArrayList<>();
 
@@ -69,8 +93,7 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 
 			for (int i = 0; i < size && i < MAX_CHECKPOINTS; i++)
 			{
-				CheckpointFragment fragment = CheckpointFragment.newInstance();
-				fragment.init(blockIndex, stageIndex, i);
+				CheckpointFragment fragment = CheckpointFragment.newInstance(blockIndex, stageIndex, i);
 				fragments.add(fragment);
 			}
 

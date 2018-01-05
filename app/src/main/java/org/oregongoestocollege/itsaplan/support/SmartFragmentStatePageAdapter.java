@@ -7,6 +7,7 @@ import android.util.SparseArray;
 import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.MainActivity;
+import org.oregongoestocollege.itsaplan.Utils;
 
 /**
  * SmartFragmentStatePageAdapter - extension of FragmentStatePagerAdapter which intelligently

@@ -8,6 +8,7 @@ import org.oregongoestocollege.itsaplan.InfoFragment;
 import org.oregongoestocollege.itsaplan.MainActivity;
 import org.oregongoestocollege.itsaplan.MyPlanFragment;
 import org.oregongoestocollege.itsaplan.PasswordsFragment;
+import org.oregongoestocollege.itsaplan.Utils;
 
 /**
  * BottomBarAdapter

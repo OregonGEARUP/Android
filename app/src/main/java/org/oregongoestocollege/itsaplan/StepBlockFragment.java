@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,6 @@ import android.view.ViewGroup;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentStepBlockBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
-import org.oregongoestocollege.itsaplan.support.Utils;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockViewModel;
 
 /**
@@ -27,7 +27,7 @@ public class StepBlockFragment extends Fragment
 {
 	private static final String LOG_TAG = "GearUpStepBlockFragment";
 	private OnFragmentInteractionListener listener;
-	private int blockIndex;
+	private int blockIndex = Utils.NO_INDEX;
 	private String blockFileName;
 	private RecyclerView recyclerView;
 	private BindingItemsAdapter adapter;
@@ -38,20 +38,42 @@ public class StepBlockFragment extends Fragment
 		// Required empty public constructor
 	}
 
-	public void init(int blockIndex, String blockFileName)
-	{
-		this.blockIndex = blockIndex;
-		this.blockFileName = blockFileName;
-	}
-
 	/**
 	 * Use this factory method to create a new instance of this fragment.
 	 *
 	 * @return A new instance of fragment StepBlockFragment.
 	 */
-	public static StepBlockFragment newInstance()
+	public static StepBlockFragment newInstance(int blockIndex, String blockFileName)
 	{
-		return new StepBlockFragment();
+		StepBlockFragment fragment = new StepBlockFragment();
+		Bundle args = new Bundle();
+		args.putString(Utils.PARAM_BLOCK_FILE_NAME, blockFileName);
+		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		fragment.setArguments(args);
+		return fragment;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+
+		if (!TextUtils.isEmpty(blockFileName))
+			outState.putString(Utils.PARAM_BLOCK_FILE_NAME, blockFileName);
+		if (blockIndex != Utils.NO_INDEX)
+			outState.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+		if (getArguments() != null)
+		{
+			blockFileName = getArguments().getString(Utils.PARAM_BLOCK_FILE_NAME);
+			blockIndex = getArguments().getInt(Utils.PARAM_BLOCK_INDEX);
+		}
 	}
 
 	@Override
@@ -62,6 +84,12 @@ public class StepBlockFragment extends Fragment
 		FragmentStepBlockBinding binding =
 			DataBindingUtil.inflate(inflater, R.layout.fragment_step_block, container, false);
 		View v = binding.getRoot();
+
+		if (savedInstanceState != null)
+		{
+			blockFileName = savedInstanceState.getString(Utils.PARAM_BLOCK_FILE_NAME);
+			blockIndex = savedInstanceState.getInt(Utils.PARAM_BLOCK_INDEX, Utils.NO_INDEX);
+		}
 
 		adapter = new BindingItemsAdapter();
 

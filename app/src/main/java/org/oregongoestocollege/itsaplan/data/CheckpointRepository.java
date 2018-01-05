@@ -28,7 +28,7 @@ import android.util.Pair;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.oregongoestocollege.itsaplan.support.Utils;
+import org.oregongoestocollege.itsaplan.Utils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentStepBlockInfoBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
-import org.oregongoestocollege.itsaplan.support.Utils;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel;
 
 /**

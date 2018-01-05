@@ -1,4 +1,4 @@
-package org.oregongoestocollege.itsaplan.support;
+package org.oregongoestocollege.itsaplan;
 
 import android.util.Log;
 
@@ -8,6 +8,15 @@ import android.util.Log;
  */
 public class Utils
 {
+	static final String PARAM_BLOCK_FILE_NAME = "blockFileName";
+	static final String PARAM_BLOCK_INDEX = "blockIndex";
+	static final String PARAM_STAGE_INDEX = "stageIndex";
+	static final String PARAM_CHECKPOINT_INDEX = "checkpointIndex";
+	/**
+	 * Default value when an index has not been set.
+	 */
+	public static final int NO_INDEX = -1;
+
 	/**
 	 * Set to true ONLY when developing. Using flag versus Log.isLoggable().
 	 */

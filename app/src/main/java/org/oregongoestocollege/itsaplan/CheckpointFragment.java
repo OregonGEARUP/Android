@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
-import org.oregongoestocollege.itsaplan.support.Utils;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
 /**
@@ -25,20 +24,13 @@ public class CheckpointFragment extends Fragment
 	private static final String LOG_TAG = "GearUpCheckpointFragment";
 	private OnFragmentInteractionListener listener;
 	private CheckpointViewModel checkpointViewModel;
-	private int blockIndex;
-	private int stageIndex;
-	private int checkpointIndex;
+	private int blockIndex = Utils.NO_INDEX;
+	private int stageIndex = Utils.NO_INDEX;
+	private int checkpointIndex = Utils.NO_INDEX;
 
 	public CheckpointFragment()
 	{
 		// Required empty public constructor
-	}
-
-	public void init(int blockIndex, int stageIndex, int checkpointIndex)
-	{
-		this.blockIndex = blockIndex;
-		this.stageIndex = stageIndex;
-		this.checkpointIndex = checkpointIndex;
 	}
 
 	/**
@@ -46,9 +38,39 @@ public class CheckpointFragment extends Fragment
 	 *
 	 * @return A new instance of fragment CheckpointFragment.
 	 */
-	public static CheckpointFragment newInstance()
+	public static CheckpointFragment newInstance(int blockIndex, int stageIndex, int checkpointIndex)
 	{
-		return new CheckpointFragment();
+		CheckpointFragment fragment = new CheckpointFragment();
+		Bundle args = new Bundle();
+		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		args.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
+		args.putInt(Utils.PARAM_CHECKPOINT_INDEX, checkpointIndex);
+		fragment.setArguments(args);
+		return fragment;
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+
+		outState.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		outState.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
+		outState.putInt(Utils.PARAM_CHECKPOINT_INDEX, checkpointIndex);
+	}
+
+
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		if (getArguments() != null)
+		{
+			blockIndex = getArguments().getInt(Utils.PARAM_BLOCK_INDEX);
+			stageIndex = getArguments().getInt(Utils.PARAM_STAGE_INDEX);
+			checkpointIndex = getArguments().getInt(Utils.PARAM_CHECKPOINT_INDEX);
+		}
 	}
 
 	@Override
@@ -59,6 +81,13 @@ public class CheckpointFragment extends Fragment
 		FragmentCheckpointBinding binding =
 			DataBindingUtil.inflate(inflater, R.layout.fragment_checkpoint, container, false);
 		View v = binding.getRoot();
+
+		if (savedInstanceState != null)
+		{
+			blockIndex = savedInstanceState.getInt(Utils.PARAM_BLOCK_INDEX, Utils.NO_INDEX);
+			stageIndex = savedInstanceState.getInt(Utils.PARAM_STAGE_INDEX, Utils.NO_INDEX);
+			checkpointIndex = savedInstanceState.getInt(Utils.PARAM_CHECKPOINT_INDEX, Utils.NO_INDEX);
+		}
 
 		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
 		checkpointViewModel = ViewModelProviders.of(this, factory).get(CheckpointViewModel.class);
@@ -85,16 +114,6 @@ public class CheckpointFragment extends Fragment
 		});
 
 		return v;
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		if (getArguments() != null)
-		{
-			//description = getArguments().getString(CHECKPOINT_DESC);
-		}
 	}
 
 	@Override
