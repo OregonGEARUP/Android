@@ -31,9 +31,11 @@ public interface CheckpointInterface
 
 	Checkpoint getCheckpoint(int blockIndex, int stageIndex, int checkpointIndex);
 
-	String keyForBlockIndex(int blockIndex, int stageIndex, int checkpointIndex);
+	boolean stageCompleted(int stageIndex);
 
-	void markVisited(int blockIndex, int stageIndex, int checkpointIndex);
+	String keyForBlockIndex(int stageIndex, int checkpointIndex);
+
+	void markVisited(int stageIndex, int checkpointIndex);
 
 	/**
 	 * Keeps a list of trace statments that can be used to debug the app in the field.

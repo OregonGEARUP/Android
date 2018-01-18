@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
+
 /**
  * CheckpointPagerAdapter
  *
@@ -15,12 +17,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 public class CheckpointPagerAdapter extends FragmentPagerAdapter
 {
 	private List<CheckpointFragment> fragments;
+	private int size;
 
 	CheckpointPagerAdapter(FragmentManager fm, List<CheckpointFragment> fragments)
 	{
 		super(fm);
 
 		this.fragments = fragments;
+		this.size = fragments != null ? fragments.size() : 0;
 	}
 
 	@Override
@@ -33,5 +37,13 @@ public class CheckpointPagerAdapter extends FragmentPagerAdapter
 	public int getCount()
 	{
 		return this.fragments.size();
+	}
+
+	public CheckpointViewModel getCurrentViewModel(int position)
+	{
+		if (fragments != null && position >= 0 && position < size)
+			return fragments.get(position).getCheckpointViewModel();
+
+		return null;
 	}
 }

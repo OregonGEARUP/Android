@@ -1,4 +1,5 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
@@ -13,21 +14,31 @@
 	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:background="@drawable/button_background"
+		android:background="@{viewModel.isCompleted ? @drawable/button_background_green : @drawable/button_background_blue}"
 		android:minHeight="@dimen/gearup_min_button_height"
 		android:padding="@dimen/baseline_unit_1_half"
 		android:layout_marginBottom="@dimen/baseline_unit_2x"
 		android:orientation="vertical"
-		android:onClick="@{(view) -> viewModel.onStageClick(view)}">
+		android:onClick="@{(view) -> viewModel.onStageClick(view)}"
+		tools:background="@drawable/button_background_blue">
 
 		<TextView
 			android:id="@+id/textview_title"
+			style="@style/GearUpTextAppearance.Title"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_centerVertical="true"
-			style="@style/GearUpTextAppearance.Title"
-			android:textColor="@color/white"
 			android:text="@{viewModel.title}"
-			tools:text="Why go to colleg?" />
+			android:textColor="@color/white"
+			tools:text="Why go to college?" />
+
+		<ImageView
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:layout_alignParentEnd="true"
+			android:tint="@color/white"
+			app:srcCompat="@drawable/ic_check_black_24dp"
+			android:visibility="@{viewModel.isCompleted ? View.VISIBLE : View.GONE, default=gone}"/>
+
 	</RelativeLayout>
 </layout>

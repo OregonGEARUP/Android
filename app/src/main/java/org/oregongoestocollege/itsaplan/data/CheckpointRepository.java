@@ -358,7 +358,7 @@ public class CheckpointRepository implements CheckpointInterface
 		{
 			for (int i = 0; i < stages.size(); i++)
 			{
-				completed += stageCompleted(block, i) ? 1 : 0;
+				completed += stageCompleted(i) ? 1 : 0;
 				total += 1;
 			}
 		}
@@ -366,36 +366,76 @@ public class CheckpointRepository implements CheckpointInterface
 		return new Pair<>(completed, total);
 	}
 
-	private boolean stageCompleted(@NonNull Block block, int stageIndex)
+	public boolean stageCompleted(int stageIndex)
 	{
 		boolean completed = true;
 
-		List<Checkpoint> checkpoints = block.stages.get(stageIndex).checkpoints;
-		if (checkpoints != null)
+		List<Stage> stages = currentBlock.stages;
+		if (stages != null && stageIndex >= 0 && stageIndex < stages.size())
 		{
-			for (int i = 0; i < checkpoints.size(); i++)
+			Stage stage = stages.get(stageIndex);
+			if (stage != null)
 			{
-				completed = completed && checkpointCompleted(i, stageIndex);
+				List<Checkpoint> checkpoints = stage.checkpoints;
+				if (checkpoints != null)
+				{
+					for (int i = 0; i < checkpoints.size(); i++)
+					{
+						completed = completed && checkpointCompleted(i, stageIndex, stage);
 
-				// check for completed route cp at the end of the stage, as soon as we find one visited
-				// route cp then we are good for the stage (this assumes that route cps are always at the end of a stage)
-				if (completed && currentBlock.stages.get(stageIndex).checkpoints.get(i).entryType == EntryType.info)
-					break;
+						// check for completed route cp at the end of the stage, as soon as we find one visited
+						// route cp then we are good for the stage (this assumes that route cps are always at the end of a stage)
+						if (completed && checkpoints.get(i).entryType == EntryType.route)
+							break;
+					}
+				}
 			}
 		}
 
 		return completed;
 	}
 
-	private boolean checkpointCompleted(int checkpointIndex, int stageIndex)
+//	private boolean stageCompleted(@NonNull Stage stage)
+//	{
+//		boolean completed = true;
+//
+//		List<Checkpoint> checkpoints = stage.checkpoints;
+//		if (checkpoints != null)
+//		{
+//			for (int i = 0; i < checkpoints.size(); i++)
+//			{
+//				completed = completed && checkpointCompleted(i, stageIndex);
+//
+//				// check for completed route cp at the end of the stage, as soon as we find one visited
+//				// route cp then we are good for the stage (this assumes that route cps are always at the end of a stage)
+//				if (completed && currentBlock.stages.get(stageIndex).checkpoints.get(i).entryType == EntryType.info)
+//					break;
+//			}
+//		}
+//
+//		return completed;
+//	}
+
+//	private boolean checkpointCompleted(int checkpointIndex, int stageIndex)
+//	{
+//		boolean completed = hasVisited(0, stageIndex, checkpointIndex);
+//		if (!completed)
+//			return false;
+//
+//		// check to see if checkpoint is completed
+//		Checkpoint cp = currentBlock.stages.get(stageIndex).checkpoints.get(checkpointIndex);
+//		return cp.isCompleted(0, stageIndex, checkpointIndex);
+//	}
+
+	private boolean checkpointCompleted(int checkpointIndex, int stageIndex, Stage stage)
 	{
-		boolean completed = hasVisited(0, stageIndex, checkpointIndex);
+		boolean completed = hasVisited(stageIndex, checkpointIndex);
 		if (!completed)
 			return false;
 
 		// check to see if checkpoint is completed
-		Checkpoint cp = currentBlock.stages.get(stageIndex).checkpoints.get(checkpointIndex);
-		return cp.isCompleted(0, stageIndex, checkpointIndex);
+		Checkpoint cp = stage.checkpoints.get(checkpointIndex);
+		return cp.isCompleted(stageIndex, checkpointIndex);
 	}
 
 	@Override
@@ -411,6 +451,20 @@ public class CheckpointRepository implements CheckpointInterface
 			return cachedBlockInfos.get(blockIndex);
 
 		return null;
+	}
+
+	public void persistBlockCompletionInfo(int blockIndex)
+	{
+		Block block = getBlock(blockIndex);
+		if (block != null)
+		{
+			Pair<Integer, Integer> status = blockStagesStatus(block);
+			cachedBlockInfos.get(blockIndex).stagesCompleted = status.first;
+			cachedBlockInfos.get(blockIndex).stageCount = status.second;
+			//cachedBlockInfos.get(blockIndex).blockFileName = blockFileName;
+
+			// TODO persist block infos (ROOM ?)
+		}
 	}
 
 	@Override
@@ -452,9 +506,10 @@ public class CheckpointRepository implements CheckpointInterface
 		return null;
 	}
 
-	public void markVisited(int blockIndex, int stageIndex, int checkpointIndex)
+	@Override
+	public void markVisited(int stageIndex, int checkpointIndex)
 	{
-		String key = keyForBlockIndex(blockIndex, stageIndex, checkpointIndex);
+		String key = keyForBlockIndex(stageIndex, checkpointIndex);
 
 		if (Utils.DEBUG)
 			Utils.d(TAG, String.format("visited %s", key));
@@ -462,12 +517,12 @@ public class CheckpointRepository implements CheckpointInterface
 		visited.add(key);
 	}
 
-	public boolean hasVisited(int blockIndex, int stageIndex, int checkpointIndex)
+	public boolean hasVisited(int stageIndex, int checkpointIndex)
 	{
-		return visited.contains(keyForBlockIndex(blockIndex, stageIndex, checkpointIndex));
+		return visited.contains(keyForBlockIndex(stageIndex, checkpointIndex));
 	}
 
-	public String keyForBlockIndex(int blockIndex, int stageIndex, int checkpointIndex)
+	public String keyForBlockIndex(int stageIndex, int checkpointIndex)
 	{
 		Block block = currentBlock;
 		Stage stage = currentBlock.stages.get(stageIndex);

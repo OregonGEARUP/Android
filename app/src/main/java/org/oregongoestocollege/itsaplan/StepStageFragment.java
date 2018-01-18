@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
+import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
 /**
  * Oregon GEAR UP App
@@ -114,7 +115,17 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 		viewPager.addOnPageChangeListener(this);
 		viewPager.setAdapter(pagerAdapter);
 
+		setAsVisited(0);
+		CheckpointRepository.getInstance().markVisited(stageIndex, 0);
+
 		return v;
+	}
+
+	private void setAsVisited(int position)
+	{
+		CheckpointViewModel viewModel = pagerAdapter.getCurrentViewModel(position);
+		if (viewModel != null)
+			viewModel.checkpointSelected();
 	}
 
 	@Override
@@ -146,7 +157,8 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	@Override
 	public void onPageSelected(int position)
 	{
-		Utils.d("GearUpStepStageFragment", "onPageSelected position:%d", position);
+		setAsVisited(position);
+		//Utils.d(LOG_TAG, "onPageSelected position:%d", position);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -28,6 +29,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	private String currentBlockFileName;
 	private int currentBlockIndex = -1;
 	private int currentStageIndex = -1;
+	boolean firstBlockInfoAppearance = true;
 
 	public ChecklistFragment()
 	{
@@ -75,6 +77,13 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		return v;
 	}
 
+	private void setHomeAsUpEnabled(boolean enabled)
+	{
+		ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+		if (actionBar != null)
+			actionBar.setDisplayHomeAsUpEnabled(enabled);
+	}
+
 	private void showStepBlockInfo()
 	{
 		StepBlockInfoFragment newFragment = StepBlockInfoFragment.newInstance();
@@ -83,16 +92,21 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		transaction.replace(R.id.fragment_container, newFragment);
 		transaction.commit();
 
+		if (!firstBlockInfoAppearance)
+		{
+			CheckpointRepository.getInstance().persistBlockCompletionInfo(currentBlockIndex);
+		}
+
 		identifier = 1;
 		currentBlockFileName = null;
 		currentBlockIndex = -1;
 		currentStageIndex = -1;
 
-		AppCompatActivity activity = (AppCompatActivity)getActivity();
-		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+		setHomeAsUpEnabled(false);
+		firstBlockInfoAppearance = false;
 	}
 
-	public void showStepBlock(int blockIndex, String blockFileName)
+	private void showStepBlock(int blockIndex, String blockFileName)
 	{
 		StepBlockFragment newFragment = StepBlockFragment.newInstance(blockIndex, blockFileName);
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -104,11 +118,10 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		currentBlockIndex = blockIndex;
 		currentStageIndex = -1;
 
-		AppCompatActivity activity = (AppCompatActivity)getActivity();
-		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		setHomeAsUpEnabled(true);
 	}
 
-	public void showStepStage(int blockIndex, int stageIndex)
+	private void showStepStage(int blockIndex, int stageIndex)
 	{
 		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
 		if (stage == null)
@@ -127,8 +140,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		currentBlockIndex = blockIndex;
 		currentStageIndex = stageIndex;
 
-		AppCompatActivity activity = (AppCompatActivity)getActivity();
-		activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		setHomeAsUpEnabled(true);
 	}
 
 	@Override
