@@ -142,4 +142,9 @@ public class CheckpointFragment extends Fragment
 		super.onDetach();
 		listener = null;
 	}
+
+	public CheckpointViewModel getCheckpointViewModel()
+	{
+		return checkpointViewModel;
+	}
 }

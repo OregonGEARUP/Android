@@ -27,7 +27,7 @@ public class StageItemViewModel implements BindingItem
 	// view data
 	private final CheckpointInterface repository;
 	public String title;
-	public final ObservableBoolean isComplete = new ObservableBoolean();
+	public final ObservableBoolean isCompleted = new ObservableBoolean();
 
 	public StageItemViewModel(@NonNull Application context, @NonNull CheckpointInterface repository,
 		int blockIndex, int stageIndex,
@@ -44,6 +44,8 @@ public class StageItemViewModel implements BindingItem
 		model = repository.getStage(blockIndex, stageIndex);
 		if (model != null)
 			title = model.title;
+
+		isCompleted.set(repository.stageCompleted(stageIndex));
 	}
 
 	@Override

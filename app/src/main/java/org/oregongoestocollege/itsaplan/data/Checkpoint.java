@@ -40,7 +40,7 @@ public class Checkpoint
 		return "yes".equals(requiredCP);
 	}
 
-	public boolean isCompleted(int blockIndex, int stageIndex, int checkpointIndex)
+	public boolean isCompleted(int stageIndex, int checkpointIndex)
 	{
 		if (!required())
 			return true;
@@ -65,6 +65,6 @@ public class Checkpoint
 			break;
 		}
 
-		return false;
+		return true;
 	}
 }

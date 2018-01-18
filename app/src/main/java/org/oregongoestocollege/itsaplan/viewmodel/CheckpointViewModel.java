@@ -182,7 +182,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			Stage nextStage = repository.getStage(blockIndex, stageIndex + 1);
 			if (nextStage != null)
 			{
-				repository.addTrace(repository.keyForBlockIndex(blockIndex, stageIndex + 1, 0));
+				repository.addTrace(repository.keyForBlockIndex(stageIndex + 1, 0));
 
 				ChecklistState state = new ChecklistState(blockIndex, stageIndex + 1);
 				nextStageEvent.setValue(state);
@@ -193,10 +193,15 @@ public class CheckpointViewModel extends AndroidViewModel
 	public boolean onShowDebug(View view)
 	{
 		Toast.makeText(view.getContext(),
-			String.format(Locale.US, "Checkpoint key %s", repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex)),
+			String.format(Locale.US, "Checkpoint key %s", repository.keyForBlockIndex(stageIndex, checkpointIndex)),
 			Toast.LENGTH_LONG).
 			show();
 
 		return true;
+	}
+
+	public void checkpointSelected()
+	{
+		repository.markVisited(stageIndex, checkpointIndex);
 	}
 }
