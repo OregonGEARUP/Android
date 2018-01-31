@@ -15,7 +15,7 @@ import org.oregongoestocollege.itsaplan.support.NoSwipePager;
  * MainActivity
  * Oregon GEAR UP App
  * <p>
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener
 {
