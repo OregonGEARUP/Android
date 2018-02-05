@@ -38,4 +38,32 @@
 		<item name="android:layout_width">wrap_content</item>
 		<item name="android:layout_height">wrap_content</item>
 	</style>
+
+	<!-- password control styles -->
+	<style name="GearUpPasswordLayout">
+		<item name="android:paddingStart">@dimen/baseline_unit_2x</item>
+		<item name="android:paddingEnd">@dimen/baseline_unit_2x</item>
+		<item name="android:paddingTop">@dimen/baseline_unit_2x</item>
+		<item name="android:paddingBottom">@dimen/baseline_unit_2x</item>
+		<item name="android:orientation">vertical</item>
+	</style>
+	<style name="GearUpPasswordTitle">
+		<item name="android:background">@color/colorPrimaryDark</item>
+		<item name="android:textColor">@color/white</item>
+		<item name="android:textSize">16sp</item>
+		<item name="android:paddingStart">@dimen/baseline_unit_2x</item>
+		<item name="android:paddingEnd">@dimen/baseline_unit_2x</item>
+		<item name="android:paddingTop">@dimen/baseline_unit_2x</item>
+		<item name="android:paddingBottom">@dimen/baseline_unit_2x</item>
+		<item name="android:layout_marginTop">@dimen/baseline_unit</item>
+	</style>
+	<style name="GearUpPasswordSubTitle">
+		<item name="android:background">@color/colorPrimayLightBlue</item>
+		<item name="android:textSize">16sp</item>
+		<item name="android:paddingStart">@dimen/baseline_unit_2x</item>
+		<item name="android:paddingEnd">@dimen/baseline_unit_2x</item>
+		<item name="android:paddingTop">@dimen/baseline_unit</item>
+		<item name="android:paddingBottom">@dimen/baseline_unit</item>
+	</style>
+
 </resources>
