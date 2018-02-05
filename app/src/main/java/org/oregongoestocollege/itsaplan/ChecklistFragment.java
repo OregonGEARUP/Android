@@ -66,13 +66,14 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		else
 		{
 			// TODO - start where we left off...
-			if (currentBlockIndex >= 0 && currentStageIndex >= 0)
-				showStepStage(currentBlockIndex, currentStageIndex);
-			else if (currentBlockIndex >= 0)
-				showStepBlock(currentBlockIndex, currentBlockFileName);
-			else
-				showStepBlockInfo();
 		}
+
+		if (currentBlockIndex >= 0 && currentStageIndex >= 0)
+			showStepStage(currentBlockIndex, currentStageIndex);
+		else if (currentBlockIndex >= 0)
+			showStepBlock(currentBlockIndex, currentBlockFileName);
+		else
+			showStepBlockInfo();
 
 		return v;
 	}
