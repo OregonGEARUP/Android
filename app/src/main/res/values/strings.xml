@@ -11,6 +11,8 @@
     <string name="checkpoint_next_keep_going">Let\'s Keep Going!</string>
     <string name="checkpoint_next_onward">Onward to Step %d</string>
     <string name="error_data">Data unavailable. Please try later.</string>
+    <string name="lock">Lock</string>
+    <string name="unlock">Unlock</string>
     <string name="password_message">Store user names and passwords securely on your phone; this information will not be shared.</string>
     <string name="financial_aid_info">Financial Aid Info</string>
     <string name="ssn_title">Enter your and your parent/guardian(s) Social Security numbers (SSN).</string>
