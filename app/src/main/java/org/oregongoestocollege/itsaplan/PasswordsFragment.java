@@ -1,70 +1,79 @@
 package org.oregongoestocollege.itsaplan;
 
+import java.util.Arrays;
+import java.util.List;
+
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
- * PasswordsFragment
+ * PasswordsFragment - handles data entry for password fields. Uses Butterknife library.
+ *
+ * @see "https://github.com/JakeWharton/butterknife"
+ * @see "http://jakewharton.github.io/butterknife/"
+ *
  * Oregon GEAR UP App
- *
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
- *
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link PasswordsFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
 public class PasswordsFragment extends Fragment
 {
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
-	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
+	private static final String LOG_TAG = "GearUpPasswordsFrag";
 	private OnFragmentInteractionListener mListener;
+	// tracks the locked / unlocked state of the controls
+	private boolean locked = true;
+	// holds list of all views we need to show/hide text
+	List<EditText> editableViews;
+	// bind to views using Butterknife, need to unbind when used in Fragment
+	private Unbinder unbinder;
+	@BindView(R.id.edit_ssn)
+	EditText editSsn;
+	@BindView(R.id.edit_ssn1)
+	EditText editSsn1;
+	@BindView(R.id.edit_ssn2)
+	EditText editSsn2;
+	@BindView(R.id.edit_driver_lic)
+	EditText editDriverLic;
+
+
+	// TODO
+	// setup controls in layout for all the fields
+	// validate data and perhaps use the TextInputLayout error message to show invalid fields
+	// when typing SSN number we only allow numbers, nice to format as XXX-XX-XXXX once control looses focus
+	// create a manager to hold data, iOS calls it MyPlanDataManager
+	// 		- this manager must persist / encrypt data
+	// rotation should remember lock state / current data entry changes
+	// correctly lock/unlock with pin
+	// when we first come into fragment with no data entered then show fields unlocked / force PIN creating
+	// support fingerprint id as iOS does
+	// make sure all fields can be viewed when scrolling, with/without keyboard visible
+	// other ??
 
 	public PasswordsFragment()
 	{
 		// Required empty public constructor
 	}
 
-	/**
-	 * Use this factory method to create a new instance of
-	 * this fragment using the provided parameters.
-	 *
-	 * @param param1 Parameter 1.
-	 * @param param2 Parameter 2.
-	 * @return A new instance of fragment PasswordsFragment.
-	 */
-	// TODO: Rename and change types and number of parameters
-	public static PasswordsFragment newInstance(String param1, String param2)
-	{
-		PasswordsFragment fragment = new PasswordsFragment();
-		Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		args.putString(ARG_PARAM2, param2);
-		fragment.setArguments(args);
-		return fragment;
-	}
-
 	@Override
-	public void onCreate(Bundle savedInstanceState)
+	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		if (getArguments() != null)
-		{
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
-		}
+
+		// enable the action Lock/Unlock
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -72,16 +81,58 @@ public class PasswordsFragment extends Fragment
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_passwords, container, false);
+		View view = inflater.inflate(R.layout.fragment_passwords, container, false);
+		unbinder = ButterKnife.bind(this, view);
+
+		// keep a list of all edit controls so we can show/hide values when we lock/unlock
+		editableViews = Arrays.asList(editSsn, editSsn1, editSsn2, editDriverLic);
+
+		// TODO: setup controls with current values
+
+		return view;
 	}
 
-	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed(Uri uri)
+	@Override
+	public void onDestroyView()
 	{
-		if (mListener != null)
+		super.onDestroyView();
+		unbinder.unbind();
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+	{
+		inflater.inflate(R.menu.menu_lock, menu);
+
+		if (locked)
+			menu.getItem(0).setTitle(R.string.unlock);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		if (item.getItemId() == R.id.action_toggle_lock)
 		{
-			mListener.onFragmentInteraction();
+			if (locked)
+			{
+				// 'unlock' so we see our values
+				toggleEditableValues(true);
+				locked = false;
+			}
+			else
+			{
+				// 'lock' so we hide our values
+				toggleEditableValues(false);
+				locked = true;
+			}
+
+			// force update of our menu
+			getActivity().invalidateOptionsMenu();
+
+			return true;
 		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -97,6 +148,8 @@ public class PasswordsFragment extends Fragment
 			throw new RuntimeException(context.toString()
 				+ " must implement OnFragmentInteractionListener");
 		}
+
+		Utils.d(LOG_TAG, "onAttach");
 	}
 
 	@Override
@@ -104,5 +157,19 @@ public class PasswordsFragment extends Fragment
 	{
 		super.onDetach();
 		mListener = null;
+	}
+
+	private void toggleEditableValues(boolean showCharacters)
+	{
+		if (editableViews != null)
+		{
+			for (EditText editableView : editableViews)
+			{
+				if (showCharacters)
+					editableView.setTransformationMethod(null);
+				else
+					editableView.setTransformationMethod(new PasswordTransformationMethod());
+			}
+		}
 	}
 }
