@@ -530,14 +530,13 @@ public class CheckpointRepository implements CheckpointInterface
 		return String.format(Locale.US, "%s_%s_%s", block.id, stage.id, cp.id);
 	}
 
-//	public String keyForBlockIndex(int blockIndex, int stageIndex, int checkpointIndex, int instanceIndex)
-//	{
-//		Block block = currentBlock;
-//		Stage stage = currentBlock.stages.get(stageIndex);
-//		Checkpoint cp = stage.checkpoints.get(checkpointIndex);
-//		//Instance instance = cp.instances.get(instanceIndex);
-//		return String.format(Locale.US, "%s_%s_%s_%s", block.id, stage.id, cp.id);
-//	}
+	public String keyForBlockIndex(int blockIndex, int stageIndex, int checkpointIndex, int instanceIndex)
+	{
+		Block block = currentBlock;
+		Stage stage = currentBlock.stages.get(stageIndex);
+		Checkpoint cp = stage.checkpoints.get(checkpointIndex);
+		return String.format(Locale.US, "%s_%s_%s_%s", block.id, stage.id, cp.id, instanceIndex);
+	}
 
 	@Override
 	public void addTrace(String trace)

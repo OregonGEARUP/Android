@@ -28,4 +28,6 @@
     <string name="application_title">The email address and password you will use for applications.</string>
     <string name="application_email">Email</string>
     <string name="application_password">Password</string>
+    <string name="hint_date_picker">Tap here to select date</string>
+
 </resources>

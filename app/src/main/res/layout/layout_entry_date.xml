@@ -1,0 +1,48 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context="org.oregongoestocollege.itsaplan.ChecklistFragment">
+
+	<data>
+
+		<variable
+			name="uxContent"
+			type="org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel" />
+	</data>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:focusable="true"
+		android:focusableInTouchMode="true"
+		android:orientation="vertical">
+
+		<TextView
+			android:id="@+id/title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@{uxContent.getInstancePrompt(0)}"
+			tools:text="Your birthdate"/>
+
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/view_date"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:errorEnabled="false"
+			app:hintAnimationEnabled="true">
+
+			<android.support.design.widget.TextInputEditText
+				android:id="@+id/view_date_content"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:focusable="false"
+				android:focusableInTouchMode="false"
+				android:imeOptions="flagNoExtractUi"
+				android:inputType="none"
+				android:lines="1"
+				android:onClick="@{(view) -> uxContent.onShowDatePicker(uxContent.getInstance(0))}"
+				android:text="@={uxContent.getInstance(0).textEntry}"
+				android:textIsSelectable="false"/>
+		</android.support.design.widget.TextInputLayout>
+	</LinearLayout>
+</layout>

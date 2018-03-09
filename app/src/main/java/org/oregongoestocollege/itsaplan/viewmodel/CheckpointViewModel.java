@@ -1,5 +1,6 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Toast;
 
@@ -19,9 +21,11 @@ import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
+import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.EntryType;
 import org.oregongoestocollege.itsaplan.data.Instance;
 import org.oregongoestocollege.itsaplan.data.Stage;
+import org.oregongoestocollege.itsaplan.data.UserEntries;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,6 +44,7 @@ public class CheckpointViewModel extends AndroidViewModel
 	private final CheckpointInterface repository;
 	private final SingleLiveEvent<ChecklistState> nextStageEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<ChecklistState> nextBlockEvent = new SingleLiveEvent<>();
+	private final SingleLiveEvent<Instance> showDatePicker = new SingleLiveEvent<>();
 	public String description;
 	public int descriptionTextColor;
 	public Drawable image;
@@ -47,6 +52,8 @@ public class CheckpointViewModel extends AndroidViewModel
 	private final int MAX_BUTTONS = 5;
 	private int instanceCount;
 	private List<Instance> instances;
+	// for info
+	public String urlText;
 	// for route / nextstage
 	public String nextText;
 	public boolean showNextText;
@@ -79,14 +86,17 @@ public class CheckpointViewModel extends AndroidViewModel
 			switch (model.entryType)
 			{
 			case info:
-				// no-op only uses description
+				if (!TextUtils.isEmpty(model.url))
+					urlText = model.urlText;
 				break;
 			case checkbox:
 			case radio:
 				setupCheckboxAndRadioEntry();
 				break;
 			case field:
+				break;
 			case dateOnly:
+				setupDateOnlyEntry();
 				break;
 			case dateAndText:
 				break;
@@ -108,6 +118,11 @@ public class CheckpointViewModel extends AndroidViewModel
 		return nextBlockEvent;
 	}
 
+	public SingleLiveEvent<Instance> getPickDateEvent()
+	{
+		return showDatePicker;
+	}
+
 	private void setupCheckboxAndRadioEntry()
 	{
 		List<Instance> modelInstances = model.instances;
@@ -119,7 +134,34 @@ public class CheckpointViewModel extends AndroidViewModel
 				// limit instances to our maximum
 				instanceCount = size > MAX_BUTTONS ? MAX_BUTTONS : size;
 				instances = modelInstances.subList(0, instanceCount);
+
+				CheckpointInterface repo = CheckpointRepository.getInstance();
+				UserEntries entries = UserEntries.getInstance();
+
+				for (int i = 0; i < instances.size(); i++)
+				{
+					instances.get(i).isChecked.set(
+						entries.getValueAsBoolean(repo.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i)));
+				}
 			}
+		}
+	}
+
+	private void setupDateOnlyEntry()
+	{
+		List<Instance> modelInstances = model.instances;
+		if (modelInstances != null && !modelInstances.isEmpty())
+		{
+			// we only use the first instance for date
+			instanceCount = 1;
+			instances = modelInstances;
+
+			CheckpointInterface repo = CheckpointRepository.getInstance();
+			UserEntries entries = UserEntries.getInstance();
+			Instance instance = instances.get(0);
+			String key = repo.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
+
+			instance.textEntry.set(entries.getValue(key));
 		}
 	}
 
@@ -156,6 +198,11 @@ public class CheckpointViewModel extends AndroidViewModel
 	public boolean showInstance(int instance)
 	{
 		return instances != null && instance >= 0 && instance < instanceCount;
+	}
+
+	public Instance getInstance(int instance)
+	{
+		return showInstance(instance) ? instances.get(instance) : null;
 	}
 
 	public String getInstancePrompt(int instance)
@@ -200,8 +247,92 @@ public class CheckpointViewModel extends AndroidViewModel
 		return true;
 	}
 
+	public void onShowDatePicker(Instance instance)
+	{
+		if (instance != null)
+			showDatePicker.setValue(instance);
+	}
+
+	public void setDate(@NonNull Context context, int year, int month, int day)
+	{
+		if (instances != null && !instances.isEmpty())
+		{
+			final Calendar calendar = Calendar.getInstance();
+			calendar.clear();
+			calendar.set(year, month, day);
+
+			Instance instance = instances.get(0);
+			instance.textEntry.set(DateFormat.getDateFormat(context).format(calendar.getTime()));
+		}
+	}
+
 	public void checkpointSelected()
 	{
 		repository.markVisited(stageIndex, checkpointIndex);
+	}
+
+	public void saveCheckpointEntries()
+	{
+		model = repository.getCheckpoint(blockIndex, stageIndex, checkpointIndex);
+		if (model != null)
+		{
+			switch (model.entryType)
+			{
+			case info:
+				// no-op
+				break;
+			case checkbox:
+			case radio:
+			{
+				if (instances != null)
+				{
+					CheckpointInterface repo = CheckpointRepository.getInstance();
+					UserEntries entries = UserEntries.getInstance();
+
+					for (int i = 0; i < instances.size(); i++)
+					{
+						entries.setValue(
+							repo.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i),
+							instances.get(i).isChecked.get());
+					}
+				}
+				break;
+			}
+			case field:
+				break;
+			case dateOnly:
+			{
+				if (instances != null && !instances.isEmpty())
+				{
+					CheckpointInterface repo = CheckpointRepository.getInstance();
+					UserEntries entries = UserEntries.getInstance();
+					Instance instance = instances.get(0);
+
+					String key = repo.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
+					entries.setValue(key, instance.textEntry.get());
+				}
+				break;
+			}
+			case dateAndText:
+				break;
+			case route:
+			case nextstage:
+				break;
+			}
+		}
+	}
+
+	public boolean showEntryType(EntryType entryType, boolean verifyInstances)
+	{
+		boolean show = false;
+
+		if (entryType != null && model != null)
+		{
+			show = entryType.equals(model.entryType);
+			if (show && verifyInstances)
+				show = (instances != null && !instances.isEmpty());
+		}
+
+		return show;
 	}
 }

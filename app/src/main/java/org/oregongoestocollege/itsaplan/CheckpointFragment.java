@@ -1,5 +1,8 @@
 package org.oregongoestocollege.itsaplan;
 
+import java.util.Calendar;
+
+import android.app.DatePickerDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -10,16 +13,19 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.DatePicker;
 
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
+import org.oregongoestocollege.itsaplan.data.Instance;
 import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
+import org.oregongoestocollege.itsaplan.support.DatePickerDialogFragment;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class CheckpointFragment extends Fragment
+public class CheckpointFragment extends Fragment implements DatePickerDialog.OnDateSetListener
 {
 	private static final String LOG_TAG = "GearUpCheckpointFragment";
 	private OnFragmentInteractionListener listener;
@@ -91,7 +97,7 @@ public class CheckpointFragment extends Fragment
 
 		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
 		checkpointViewModel = ViewModelProviders.of(this, factory).get(CheckpointViewModel.class);
-		binding.setUxContext(checkpointViewModel);
+		binding.setUxContent(checkpointViewModel);
 
 		checkpointViewModel.getNextStageEvent().observe(this, new Observer<ChecklistState>()
 		{
@@ -113,7 +119,36 @@ public class CheckpointFragment extends Fragment
 			}
 		});
 
+		checkpointViewModel.getPickDateEvent().observe(this, new Observer<Instance>()
+		{
+			@Override
+			public void onChanged(@Nullable Instance instance)
+			{
+				onShowDatePicker(instance);
+			}
+		});
+
 		return v;
+	}
+
+	private void onShowDatePicker(Instance instance)
+	{
+		final DatePickerDialogFragment.Builder datePickerBuilder = new DatePickerDialogFragment.Builder();
+
+		final Calendar now = Calendar.getInstance();
+		datePickerBuilder.setYear(now.get(Calendar.YEAR));
+		datePickerBuilder.setMonth(now.get(Calendar.MONTH));
+		datePickerBuilder.setDay(now.get(Calendar.DAY_OF_MONTH));
+
+		datePickerBuilder.createFromFragment(20, this)
+			.show(getFragmentManager(), "datePickerInstance");
+	}
+
+	@Override
+	public void onDateSet(DatePicker datePicker, int year, int month, int day)
+	{
+		if (checkpointViewModel != null)
+			checkpointViewModel.setDate(getContext(), year, month, day);
 	}
 
 	@Override
