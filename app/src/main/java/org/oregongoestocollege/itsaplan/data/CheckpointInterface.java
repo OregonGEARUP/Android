@@ -34,6 +34,7 @@ public interface CheckpointInterface
 	boolean stageCompleted(int stageIndex);
 
 	String keyForBlockIndex(int stageIndex, int checkpointIndex);
+	String keyForBlockIndex(int blockIndex, int stageIndex, int checkpointIndex, int instanceIndex);
 
 	void markVisited(int stageIndex, int checkpointIndex);
 

@@ -30,6 +30,7 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	private int stageIndex = Utils.NO_INDEX;
 	private ViewPager viewPager;
 	private CheckpointPagerAdapter pagerAdapter;
+	private int lastVisitedPosition;
 
 	public StepStageFragment()
 	{
@@ -126,6 +127,14 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 		CheckpointViewModel viewModel = pagerAdapter.getCurrentViewModel(position);
 		if (viewModel != null)
 			viewModel.checkpointSelected();
+
+		if (lastVisitedPosition != position)
+		{
+			viewModel = pagerAdapter.getCurrentViewModel(lastVisitedPosition);
+			if (viewModel != null)
+				viewModel.saveCheckpointEntries();
+			lastVisitedPosition = position;
+		}
 	}
 
 	@Override

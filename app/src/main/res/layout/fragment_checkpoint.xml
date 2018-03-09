@@ -1,4 +1,5 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	tools:context="org.oregongoestocollege.itsaplan.ChecklistFragment">
 
@@ -6,8 +7,10 @@
 
 		<import type="android.view.View" />
 
+		<import type="org.oregongoestocollege.itsaplan.data.EntryType" />
+
 		<variable
-			name="uxContext"
+			name="uxContent"
 			type="org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel" />
 	</data>
 
@@ -15,68 +18,40 @@
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:background="@drawable/checkpoint_background"
+		android:onLongClick="@{(view) -> uxContent.onShowDebug(view)}"
 		android:orientation="vertical"
 		android:paddingBottom="@dimen/activity_horizontal_margin"
 		android:paddingEnd="@dimen/activity_vertical_margin"
 		android:paddingStart="@dimen/activity_vertical_margin"
-		android:paddingTop="@dimen/activity_horizontal_margin"
-		android:onLongClick="@{(view) -> uxContext.onShowDebug(view)}">
+		android:paddingTop="@dimen/activity_horizontal_margin">
 
 		<TextView
 			android:id="@+id/text"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="@{uxContext.description}"
-			android:textColor="@{uxContext.descriptionTextColor}"
+			android:text="@{uxContent.description}"
+			android:textColor="@{uxContent.descriptionTextColor}"
 			tools:text="You have reached the end of this section." />
 
-		<RadioGroup
+		<include
+			layout="@layout/layout_entry_radio"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@id/text"
 			android:layout_marginTop="@dimen/baseline_unit_2x"
-			android:orientation="vertical"
-			android:visibility="@{uxContext.showInstances() ? View.VISIBLE : View.GONE, default=gone}">
+			android:visibility="@{uxContent.showEntryType(EntryType.radio, true) ? View.VISIBLE : View.GONE, default=gone}"
+			app:uxContent="@{uxContent}"
+			tools:visibility="gone" />
 
-			<RadioButton
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@{uxContext.getInstancePrompt(0)}"
-				tools:text="instance option 1" />
-
-			<RadioButton
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@{uxContext.getInstancePrompt(1)}"
-				android:visibility="@{uxContext.showInstance(1) ? View.VISIBLE : View.GONE}"
-				tools:text="instance option 2"
-				tools:visibility="visible"/>
-
-			<RadioButton
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@{uxContext.getInstancePrompt(2)}"
-				android:visibility="@{uxContext.showInstance(2) ? View.VISIBLE : View.GONE}"
-				tools:text="instance option 3"
-				tools:visibility="visible"/>
-
-			<RadioButton
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@{uxContext.getInstancePrompt(3)}"
-				android:visibility="@{uxContext.showInstance(3) ? View.VISIBLE : View.GONE}"
-				tools:text="instance option 4"
-				tools:visibility="visible"/>
-
-			<RadioButton
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:text="@{uxContext.getInstancePrompt(4)}"
-				android:visibility="@{uxContext.showInstance(4) ? View.VISIBLE : View.GONE}"
-				tools:text="instance option 5"
-				tools:visibility="visible"/>
-
-		</RadioGroup>
+		<include
+			layout="@layout/layout_entry_date"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/text"
+			android:layout_marginTop="@dimen/baseline_unit_2x"
+			android:visibility="@{uxContent.showEntryType(EntryType.dateOnly, true) ? View.VISIBLE : View.GONE, default=gone}"
+			app:uxContent="@{uxContent}"
+			tools:visibility="visible" />
 
 		<Button
 			style="@style/GearUpButton"
@@ -84,10 +59,22 @@
 			android:layout_height="wrap_content"
 			android:layout_below="@id/text"
 			android:layout_marginTop="@dimen/baseline_unit_5x"
-			android:text="@{uxContext.nextText}"
-			android:visibility="@{uxContext.showNextText ? View.VISIBLE : View.GONE, default=gone}"
-			android:onClick="@{() -> uxContext.onNextClick()}"
+			android:onClick="@{() -> uxContent.onNextClick()}"
+			android:text="@{uxContent.nextText}"
+			android:visibility="@{uxContent.showNextText ? View.VISIBLE : View.GONE, default=gone}"
 			tools:text="Let's keep going"
+			tools:visibility="gone" />
+
+		<Button
+			style="@style/GearUpButtonBorderless"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"
+			android:layout_centerVertical="false"
+			android:text="@{uxContent.urlText}"
+			android:visibility="@{uxContent.urlText != null ? View.VISIBLE : View.GONE, default=gone}"
+			tools:text="Get more information"
 			tools:visibility="visible" />
 
 		<ImageView
@@ -95,8 +82,9 @@
 			android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
 			android:scaleType="fitCenter"
-			android:src="@{uxContext.image}"
-			android:visibility="@{uxContext.showStars ? View.VISIBLE : View.GONE, default=gone}" />
+			android:src="@{uxContent.image}"
+			android:visibility="@{uxContent.showStars ? View.VISIBLE : View.GONE, default=gone}"
+			tools:visibility="visible" />
 
 	</RelativeLayout>
 </layout>
