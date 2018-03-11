@@ -67,7 +67,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		this.repository = checkNotNull(repository);
 	}
 
-	public void start(int blockIndex, int stageIndex, int checkpointIndex)
+	public void start(Context context, int blockIndex, int stageIndex, int checkpointIndex)
 	{
 		this.blockIndex = blockIndex;
 		this.stageIndex = stageIndex;
@@ -76,8 +76,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		model = repository.getCheckpoint(blockIndex, stageIndex, checkpointIndex);
 		if (model != null)
 		{
-			Context context = getApplication();
-			Resources resources = getApplication().getResources();
+			Resources resources = context.getResources();
 
 			// setup defaults
 			description = model.description;
@@ -96,7 +95,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			case field:
 				break;
 			case dateOnly:
-				setupDateOnlyEntry();
+				setupDateOnlyEntry(context);
 				break;
 			case dateAndText:
 				break;
@@ -147,7 +146,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		}
 	}
 
-	private void setupDateOnlyEntry()
+	private void setupDateOnlyEntry(Context context)
 	{
 		List<Instance> modelInstances = model.instances;
 		if (modelInstances != null && !modelInstances.isEmpty())
@@ -160,8 +159,15 @@ public class CheckpointViewModel extends AndroidViewModel
 			UserEntries entries = UserEntries.getInstance();
 			Instance instance = instances.get(0);
 			String key = repo.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
+			long value = entries.getValueAsLong(key);
 
-			instance.textEntry.set(entries.getValue(key));
+			if (value > 0)
+			{
+				final Calendar calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(value);
+				// update UX
+				instance.textEntry.set(DateFormat.getLongDateFormat(context).format(calendar.getTime()));
+			}
 		}
 	}
 
@@ -262,7 +268,10 @@ public class CheckpointViewModel extends AndroidViewModel
 			calendar.set(year, month, day);
 
 			Instance instance = instances.get(0);
-			instance.textEntry.set(DateFormat.getDateFormat(context).format(calendar.getTime()));
+			// update UX
+			instance.textEntry.set(DateFormat.getLongDateFormat(context).format(calendar.getTime()));
+			// update stored value
+			instance.dateValue = calendar.getTimeInMillis();
 		}
 	}
 
@@ -309,7 +318,7 @@ public class CheckpointViewModel extends AndroidViewModel
 					Instance instance = instances.get(0);
 
 					String key = repo.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
-					entries.setValue(key, instance.textEntry.get());
+					entries.setValue(key, instance.dateValue);
 				}
 				break;
 			}

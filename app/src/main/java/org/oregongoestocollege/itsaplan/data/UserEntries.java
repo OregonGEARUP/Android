@@ -49,9 +49,26 @@ public class UserEntries
 
 	public boolean getValueAsBoolean(String key)
 	{
-		if (!TextUtils.isEmpty(key))
-			return "true".equals(values.get(key));
+		return !TextUtils.isEmpty(key) && "true".equals(values.get(key));
+	}
 
-		return false;
+	public void setValue(String key, long value)
+	{
+		if (value > 0)
+			values.put(key, Long.toString(value));
+		else
+			values.remove(key);
+	}
+
+	public long getValueAsLong(String key)
+	{
+		if (!TextUtils.isEmpty(key))
+		{
+			String value = values.get(key);
+			if (!TextUtils.isEmpty(value))
+				return Long.parseLong(value);
+		}
+
+		return 0;
 	}
 }

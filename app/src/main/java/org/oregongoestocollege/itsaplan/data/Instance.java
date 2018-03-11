@@ -12,9 +12,11 @@ import android.databinding.ObservableField;
 public class Instance
 {
 	// data returned by network request
-	protected String id;
-	protected String prompt;
-	protected String placeholder;
+	private String id;
+	private String prompt;
+	private String placeholder;
+	// stored data
+	public long dateValue;
 	// fields to support UX display
 	public final ObservableBoolean isChecked = new ObservableBoolean();
 	public final ObservableField<String> textEntry = new ObservableField<>();
