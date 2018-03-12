@@ -44,12 +44,42 @@
 			tools:visibility="gone" />
 
 		<include
+			layout="@layout/layout_entry_checkbox"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/text"
+			android:layout_marginTop="@dimen/baseline_unit_2x"
+			android:visibility="@{uxContent.showEntryType(EntryType.checkbox, true) ? View.VISIBLE : View.GONE, default=gone}"
+			app:uxContent="@{uxContent}"
+			tools:visibility="gone" />
+
+		<include
 			layout="@layout/layout_entry_date"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@id/text"
 			android:layout_marginTop="@dimen/baseline_unit_2x"
 			android:visibility="@{uxContent.showEntryType(EntryType.dateOnly, true) ? View.VISIBLE : View.GONE, default=gone}"
+			app:uxContent="@{uxContent}"
+			tools:visibility="visible" />
+
+		<include
+			layout="@layout/layout_entry_date_text"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/text"
+			android:layout_marginTop="@dimen/baseline_unit_2x"
+			android:visibility="@{uxContent.showEntryType(EntryType.dateAndText, true) ? View.VISIBLE : View.GONE, default=gone}"
+			app:uxContent="@{uxContent}"
+			tools:visibility="visible" />
+
+		<include
+			layout="@layout/layout_entry_field"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/text"
+			android:layout_marginTop="@dimen/baseline_unit_2x"
+			android:visibility="@{uxContent.showEntryType(EntryType.field, true) ? View.VISIBLE : View.GONE, default=gone}"
 			app:uxContent="@{uxContent}"
 			tools:visibility="visible" />
 

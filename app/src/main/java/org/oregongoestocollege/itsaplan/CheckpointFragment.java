@@ -65,8 +65,6 @@ public class CheckpointFragment extends Fragment implements DatePickerDialog.OnD
 		outState.putInt(Utils.PARAM_CHECKPOINT_INDEX, checkpointIndex);
 	}
 
-
-
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -134,11 +132,11 @@ public class CheckpointFragment extends Fragment implements DatePickerDialog.OnD
 	private void onShowDatePicker(Instance instance)
 	{
 		final DatePickerDialogFragment.Builder datePickerBuilder = new DatePickerDialogFragment.Builder();
+		final Calendar calendar = instance.getDate();
 
-		final Calendar now = Calendar.getInstance();
-		datePickerBuilder.setYear(now.get(Calendar.YEAR));
-		datePickerBuilder.setMonth(now.get(Calendar.MONTH));
-		datePickerBuilder.setDay(now.get(Calendar.DAY_OF_MONTH));
+		datePickerBuilder.setYear(calendar.get(Calendar.YEAR));
+		datePickerBuilder.setMonth(calendar.get(Calendar.MONTH));
+		datePickerBuilder.setDay(calendar.get(Calendar.DAY_OF_MONTH));
 
 		datePickerBuilder.createFromFragment(20, this)
 			.show(getFragmentManager(), "datePickerInstance");
@@ -155,7 +153,7 @@ public class CheckpointFragment extends Fragment implements DatePickerDialog.OnD
 	public void onResume()
 	{
 		super.onResume();
-		checkpointViewModel.start(blockIndex, stageIndex, checkpointIndex);
+		checkpointViewModel.start(getContext(), blockIndex, stageIndex, checkpointIndex);
 	}
 
 	@Override

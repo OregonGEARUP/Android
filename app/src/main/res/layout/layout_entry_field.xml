@@ -1,0 +1,100 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context="org.oregongoestocollege.itsaplan.ChecklistFragment">
+
+	<data>
+
+		<import type="android.view.View" />
+
+		<variable
+			name="uxContent"
+			type="org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel" />
+	</data>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<!-- hint will not move up above EditText when user has valued,
+		 seems to be a binding issue -->
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<android.support.design.widget.TextInputEditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@{uxContent.getInstance(0).getPlaceholder()}"
+				android:inputType="text"
+				android:text="@={uxContent.getInstance(0).textEntry}" />
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:visibility="@{uxContent.showInstance(1) ? View.VISIBLE : View.GONE}">
+
+			<android.support.design.widget.TextInputEditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@{uxContent.getInstance(1).getPlaceholder()}"
+				android:inputType="text"
+				android:text="@={uxContent.getInstance(1).textEntry}" />
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:visibility="@{uxContent.showInstance(2) ? View.VISIBLE : View.GONE}">
+
+			<android.support.design.widget.TextInputEditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@{uxContent.getInstance(2).getPlaceholder()}"
+				android:inputType="text"
+				android:text="@={uxContent.getInstance(2).textEntry}" />
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:visibility="@{uxContent.showInstance(3) ? View.VISIBLE : View.GONE}">
+
+			<android.support.design.widget.TextInputEditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@{uxContent.getInstance(3).getPlaceholder()}"
+				android:inputType="text"
+				android:text="@={uxContent.getInstance(3).textEntry}" />
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:visibility="@{uxContent.showInstance(4) ? View.VISIBLE : View.GONE}">
+
+			<android.support.design.widget.TextInputEditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@{uxContent.getInstance(4).getPlaceholder()}"
+				android:inputType="text"
+				android:text="@={uxContent.getInstance(4).textEntry}" />
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:visibility="@{uxContent.showInstance(5) ? View.VISIBLE : View.GONE}">
+
+			<android.support.design.widget.TextInputEditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@{uxContent.getInstance(5).getPlaceholder()}"
+				android:inputType="text"
+				android:text="@={uxContent.getInstance(5).textEntry}" />
+		</android.support.design.widget.TextInputLayout>
+
+	</LinearLayout>
+</layout>

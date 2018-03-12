@@ -1,6 +1,5 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -12,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Toast;
 
@@ -21,7 +19,6 @@ import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
-import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.EntryType;
 import org.oregongoestocollege.itsaplan.data.Instance;
 import org.oregongoestocollege.itsaplan.data.Stage;
@@ -48,13 +45,15 @@ public class CheckpointViewModel extends AndroidViewModel
 	public String description;
 	public int descriptionTextColor;
 	public Drawable image;
-	// for checkboxes / radio buttons
-	private final int MAX_BUTTONS = 5;
 	private int instanceCount;
 	private List<Instance> instances;
+	// for fields
+	private final int MAX_FIELDS = 5;
+	// for checkboxes / radio buttons
+	private final int MAX_BUTTONS = 5;
 	// for info
 	public String urlText;
-	// for route / nextstage
+	// for route / next stage
 	public String nextText;
 	public boolean showNextText;
 	public boolean showStars;
@@ -67,7 +66,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		this.repository = checkNotNull(repository);
 	}
 
-	public void start(int blockIndex, int stageIndex, int checkpointIndex)
+	public void start(Context context, int blockIndex, int stageIndex, int checkpointIndex)
 	{
 		this.blockIndex = blockIndex;
 		this.stageIndex = stageIndex;
@@ -76,29 +75,31 @@ public class CheckpointViewModel extends AndroidViewModel
 		model = repository.getCheckpoint(blockIndex, stageIndex, checkpointIndex);
 		if (model != null)
 		{
-			Context context = getApplication();
-			Resources resources = getApplication().getResources();
+			Resources resources = context.getResources();
 
 			// setup defaults
 			description = model.description;
 			descriptionTextColor = ContextCompat.getColor(context, R.color.text_primary);
+			// url / help
+			urlText = model.urlText;
 
 			switch (model.entryType)
 			{
 			case info:
-				if (!TextUtils.isEmpty(model.url))
-					urlText = model.urlText;
+				// url only for now
+				break;
+			case field:
+				setupFieldEntry();
 				break;
 			case checkbox:
 			case radio:
 				setupCheckboxAndRadioEntry();
 				break;
-			case field:
-				break;
 			case dateOnly:
-				setupDateOnlyEntry();
+				setupDateOnlyEntry(context);
 				break;
 			case dateAndText:
+				setupDateAndTextEntry(context);
 				break;
 			case route:
 			case nextstage:
@@ -123,6 +124,29 @@ public class CheckpointViewModel extends AndroidViewModel
 		return showDatePicker;
 	}
 
+	private void setupFieldEntry()
+	{
+		List<Instance> modelInstances = model.instances;
+		if (modelInstances != null)
+		{
+			int size = modelInstances.size();
+			if (size > 0)
+			{
+				// limit instances to our maximum
+				instanceCount = size > MAX_FIELDS ? MAX_FIELDS : size;
+				instances = modelInstances.subList(0, instanceCount);
+
+				UserEntries entries = UserEntries.getInstance();
+
+				for (int i = 0; i < instances.size(); i++)
+				{
+					instances.get(i).textEntry.set(
+						entries.getValue(repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i)));
+				}
+			}
+		}
+	}
+
 	private void setupCheckboxAndRadioEntry()
 	{
 		List<Instance> modelInstances = model.instances;
@@ -135,19 +159,19 @@ public class CheckpointViewModel extends AndroidViewModel
 				instanceCount = size > MAX_BUTTONS ? MAX_BUTTONS : size;
 				instances = modelInstances.subList(0, instanceCount);
 
-				CheckpointInterface repo = CheckpointRepository.getInstance();
 				UserEntries entries = UserEntries.getInstance();
 
 				for (int i = 0; i < instances.size(); i++)
 				{
 					instances.get(i).isChecked.set(
-						entries.getValueAsBoolean(repo.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i)));
+						entries.getValueAsBoolean(
+							repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i)));
 				}
 			}
 		}
 	}
 
-	private void setupDateOnlyEntry()
+	private void setupDateOnlyEntry(Context context)
 	{
 		List<Instance> modelInstances = model.instances;
 		if (modelInstances != null && !modelInstances.isEmpty())
@@ -156,12 +180,32 @@ public class CheckpointViewModel extends AndroidViewModel
 			instanceCount = 1;
 			instances = modelInstances;
 
-			CheckpointInterface repo = CheckpointRepository.getInstance();
 			UserEntries entries = UserEntries.getInstance();
 			Instance instance = instances.get(0);
-			String key = repo.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
+			String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
+			long value = entries.getValueAsLong(key);
 
-			instance.textEntry.set(entries.getValue(key));
+			instance.setDate(context, value);
+		}
+	}
+
+	private void setupDateAndTextEntry(Context context)
+	{
+		List<Instance> modelInstances = model.instances;
+		if (modelInstances != null && !modelInstances.isEmpty())
+		{
+			// we only use the first instance for date
+			instanceCount = 1;
+			instances = modelInstances;
+
+			UserEntries entries = UserEntries.getInstance();
+			Instance instance = instances.get(0);
+			String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
+			long value = entries.getValueAsLong(key);
+
+			instance.setDate(context, value);
+			instance.textEntry.set(
+				entries.getValue(repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0)));
 		}
 	}
 
@@ -190,11 +234,6 @@ public class CheckpointViewModel extends AndroidViewModel
 			blockIndex != repository.getCountOfBlocks() - 1);
 	}
 
-	public boolean showInstances()
-	{
-		return instances != null;
-	}
-
 	public boolean showInstance(int instance)
 	{
 		return instances != null && instance >= 0 && instance < instanceCount;
@@ -219,7 +258,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			{
 				repository.addTrace(String.format(Locale.US, "nextBlockEvent routing to %s", model.routeFileName));
 
-				ChecklistState state  = new ChecklistState(model.routeFileName, blockIndex + 1);
+				ChecklistState state = new ChecklistState(model.routeFileName, blockIndex + 1);
 				nextBlockEvent.setValue(state);
 			}
 		}
@@ -257,12 +296,8 @@ public class CheckpointViewModel extends AndroidViewModel
 	{
 		if (instances != null && !instances.isEmpty())
 		{
-			final Calendar calendar = Calendar.getInstance();
-			calendar.clear();
-			calendar.set(year, month, day);
-
 			Instance instance = instances.get(0);
-			instance.textEntry.set(DateFormat.getDateFormat(context).format(calendar.getTime()));
+			instance.setDate(context, year, month, day);
 		}
 	}
 
@@ -281,40 +316,63 @@ public class CheckpointViewModel extends AndroidViewModel
 			case info:
 				// no-op
 				break;
-			case checkbox:
-			case radio:
+			case field:
 			{
 				if (instances != null)
 				{
-					CheckpointInterface repo = CheckpointRepository.getInstance();
 					UserEntries entries = UserEntries.getInstance();
 
 					for (int i = 0; i < instances.size(); i++)
 					{
 						entries.setValue(
-							repo.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i),
+							repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i),
+							instances.get(i).textEntry.get());
+					}
+				}
+				break;
+			}
+			case checkbox:
+			case radio:
+			{
+				if (instances != null)
+				{
+					UserEntries entries = UserEntries.getInstance();
+
+					for (int i = 0; i < instances.size(); i++)
+					{
+						entries.setValue(
+							repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i),
 							instances.get(i).isChecked.get());
 					}
 				}
 				break;
 			}
-			case field:
-				break;
 			case dateOnly:
 			{
 				if (instances != null && !instances.isEmpty())
 				{
-					CheckpointInterface repo = CheckpointRepository.getInstance();
 					UserEntries entries = UserEntries.getInstance();
 					Instance instance = instances.get(0);
 
-					String key = repo.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
-					entries.setValue(key, instance.textEntry.get());
+					String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
+					entries.setValue(key, instance.dateValue);
 				}
 				break;
 			}
 			case dateAndText:
+			{
+				if (instances != null && !instances.isEmpty())
+				{
+					UserEntries entries = UserEntries.getInstance();
+					Instance instance = instances.get(0);
+
+					String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0);
+					entries.setValue(key, instance.textEntry.get());
+					key += "_date";
+					entries.setValue(key, instance.dateValue);
+				}
 				break;
+			}
 			case route:
 			case nextstage:
 				break;
