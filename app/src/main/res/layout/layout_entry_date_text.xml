@@ -1,0 +1,56 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context="org.oregongoestocollege.itsaplan.ChecklistFragment">
+
+	<data>
+
+		<variable
+			name="uxContent"
+			type="org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel" />
+	</data>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@{uxContent.getInstancePrompt(0)}"
+			tools:text="Your birthdate" />
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<android.support.design.widget.TextInputEditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:hint="@{uxContent.getInstance(0).getPlaceholder()}"
+				android:inputType="text"
+				android:text="@={uxContent.getInstance(0).textEntry}" />
+		</android.support.design.widget.TextInputLayout>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:clickable="true"
+			android:focusable="true"
+			android:onClick="@{(view) -> uxContent.onShowDatePicker(uxContent.getInstance(0))}"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/baseline_unit_half"
+				android:layout_marginTop="@dimen/baseline_unit_half"
+				android:background="@drawable/button_outline"
+				android:padding="@dimen/baseline_unit"
+				android:text="@{uxContent.getInstance(0).dateText}"
+				android:textSize="16sp"
+				tools:text="March 17, 2000" />
+		</LinearLayout>
+
+	</LinearLayout>
+</layout>

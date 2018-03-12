@@ -11,19 +11,21 @@
 			type="org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel" />
 	</data>
 
-	<RadioGroup
+	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical">
 
-		<RadioButton
+		<CheckBox
+			android:id="@+id/check_instance_0"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:checked="@={uxContent.getInstance(0).isChecked}"
 			android:text="@{uxContent.getInstancePrompt(0)}"
 			tools:text="instance option 1" />
 
-		<RadioButton
+		<CheckBox
+			android:id="@+id/check_instance_1"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:checked="@={uxContent.getInstance(1).isChecked}"
@@ -31,7 +33,8 @@
 			android:visibility="@{uxContent.showInstance(1) ? View.VISIBLE : View.GONE}"
 			tools:text="instance option 2" />
 
-		<RadioButton
+		<CheckBox
+			android:id="@+id/check_instance_2"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:checked="@={uxContent.getInstance(2).isChecked}"
@@ -39,7 +42,8 @@
 			android:visibility="@{uxContent.showInstance(2) ? View.VISIBLE : View.GONE}"
 			tools:text="instance option 3" />
 
-		<RadioButton
+		<CheckBox
+			android:id="@+id/check_instance_3"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:checked="@={uxContent.getInstance(3).isChecked}"
@@ -47,7 +51,8 @@
 			android:visibility="@{uxContent.showInstance(3) ? View.VISIBLE : View.GONE}"
 			tools:text="instance option 4" />
 
-		<RadioButton
+		<CheckBox
+			android:id="@+id/check_instance_4"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:checked="@={uxContent.getInstance(4).isChecked}"
@@ -55,5 +60,5 @@
 			android:visibility="@{uxContent.showInstance(4) ? View.VISIBLE : View.GONE}"
 			tools:text="instance option 5" />
 
-	</RadioGroup>
+	</LinearLayout>
 </layout>
