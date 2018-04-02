@@ -2,6 +2,7 @@ package org.oregongoestocollege.itsaplan;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -13,7 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
+import org.oregongoestocollege.itsaplan.data.EntryType;
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
@@ -24,7 +27,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 public class StepStageFragment extends Fragment implements ViewPager.OnPageChangeListener
 {
 	private static final String LOG_TAG = "GearUpStepStageFragment";
-	private final int MAX_CHECKPOINTS = 6;
+	private final int MAX_CHECKPOINTS = 7;
 	private OnFragmentInteractionListener listener;
 	private int blockIndex = Utils.NO_INDEX;
 	private int stageIndex = Utils.NO_INDEX;
@@ -91,12 +94,66 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
 		if (stage != null && stage.checkpoints != null)
 		{
+			int count = 0;
 			int size = stage.checkpoints.size();
-
-			for (int i = 0; i < size && i < MAX_CHECKPOINTS; i++)
+			for (int i = 0; i < size; i++)
 			{
-				CheckpointFragment fragment = CheckpointFragment.newInstance(blockIndex, stageIndex, i);
-				fragments.add(fragment);
+				Checkpoint checkpoint = stage.checkpoints.get(i);
+
+				if (checkpoint.entryType == EntryType.route)
+				{
+					boolean meetsCriteria = checkpoint.meetsCriteria();
+					if (meetsCriteria)
+					{
+						if (!TextUtils.isEmpty(checkpoint.routeFileName))
+						{
+							String log =
+								String.format(Locale.US, "nextCheckpoint does meet criteria for %s, will route to %s",
+									CheckpointRepository.getInstance().keyForBlockIndex(stageIndex, i),
+									checkpoint.routeFileName);
+							Utils.d(LOG_TAG, log);
+						}
+						else
+						{
+							String log = String.format(Locale.US,
+								"nextCheckpoint does meet criteria for %s,  but is MISSING a routeFileName for route checkpoint %s",
+								CheckpointRepository.getInstance().keyForBlockIndex(stageIndex, i),
+								checkpoint.routeFileName);
+							Utils.d(LOG_TAG, log);
+
+							meetsCriteria = false;
+						}
+					}
+					else
+					{
+						String log =
+							String.format(Locale.US, "nextCheckpoint does NOT meet criteria for %s",
+								CheckpointRepository.getInstance().keyForBlockIndex(stageIndex, i));
+						Utils.d(LOG_TAG, log);
+					}
+
+					if (!meetsCriteria)
+					{
+						// unmet criteria == visited
+						CheckpointRepository.getInstance().markVisited(stageIndex, i);
+
+						// skip this checkpoint
+						continue;
+					}
+
+					CheckpointFragment fragment = CheckpointFragment.newInstance(blockIndex, stageIndex, i);
+					fragments.add(fragment);
+					count++;
+				}
+				else
+				{
+					CheckpointFragment fragment = CheckpointFragment.newInstance(blockIndex, stageIndex, i);
+					fragments.add(fragment);
+					count++;
+				}
+
+				if (count > MAX_CHECKPOINTS)
+					break;
 			}
 
 			if (!TextUtils.isEmpty(stage.title))

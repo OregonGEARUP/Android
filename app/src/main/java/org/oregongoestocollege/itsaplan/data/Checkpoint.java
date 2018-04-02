@@ -2,6 +2,8 @@ package org.oregongoestocollege.itsaplan.data;
 
 import java.util.List;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -66,5 +68,37 @@ public class Checkpoint
 		}
 
 		return true;
+	}
+
+	public boolean meetsCriteria()
+	{
+		boolean meets = true;
+
+		if (criteria != null)
+		{
+			// check to see that all criteria are met
+			for (KeyValue criterion : criteria)
+			{
+				// empty keys are a match
+				if (TextUtils.isEmpty(criterion.key))
+					continue;
+
+				// check that value for the key matches the expected value
+				UserEntries entries = UserEntries.getInstance();
+				String expectedValue = criterion.value;
+				String actualValue = entries.getValue(criterion.key);
+
+				meets = TextUtils.isEmpty(expectedValue) || (!TextUtils.isEmpty(actualValue) && expectedValue.compareToIgnoreCase(actualValue) == 0);
+
+				if (!meets)
+					break;
+			}
+		}
+
+		// make sure we have a route destination
+		if (meets && TextUtils.isEmpty(routeFileName))
+			meets = false;
+
+		return meets;
 	}
 }
