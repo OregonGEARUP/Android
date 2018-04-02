@@ -19,7 +19,7 @@ import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class BlockInfoListViewModel extends AndroidViewModel implements CheckpointInterface.CheckpointCallback
+public class AllBlocksViewModel extends AndroidViewModel implements CheckpointInterface.CheckpointCallback
 {
 	private final CheckpointInterface repository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
@@ -28,7 +28,7 @@ public class BlockInfoListViewModel extends AndroidViewModel implements Checkpoi
 	// These observable fields will update Views automatically
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
 
-	public BlockInfoListViewModel(@NonNull Application context, @NonNull CheckpointInterface repository)
+	public AllBlocksViewModel(@NonNull Application context, @NonNull CheckpointInterface repository)
 	{
 		// To avoid leaks, force use of application context
 		super(context);

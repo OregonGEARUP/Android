@@ -6,7 +6,7 @@
 		<!-- not used / bound yet
 		<variable
 			name="viewModel"
-			type="org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel" />-->
+			tyorg.oregongoestocollege.itsaplan.viewmodel.AllBlocksViewModel" />-->
 	</data>
 
 	<RelativeLayout

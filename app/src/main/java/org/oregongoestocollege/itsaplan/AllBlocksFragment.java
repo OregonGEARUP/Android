@@ -14,23 +14,23 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
-import org.oregongoestocollege.itsaplan.databinding.FragmentStepBlockInfoBinding;
+import org.oregongoestocollege.itsaplan.databinding.FragmentAllBlocksBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
-import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.AllBlocksViewModel;
 
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class StepBlockInfoFragment extends Fragment
+public class AllBlocksFragment extends Fragment
 {
-	private static final String LOG_TAG = "GearUpStepBlockInfoFrag";
+	private static final String LOG_TAG = "GearUpAllBlocksFrag";
 	private OnFragmentInteractionListener listener;
 	private RecyclerView recyclerView;
 	private BindingItemsAdapter adapter;
-	private BlockInfoListViewModel blockInfoListViewModel;
+	private AllBlocksViewModel allBlocksViewModel;
 
-	public StepBlockInfoFragment()
+	public AllBlocksFragment()
 	{
 		// Required empty public constructor
 	}
@@ -38,11 +38,11 @@ public class StepBlockInfoFragment extends Fragment
 	/**
 	 * Use this factory method to create a new instance of this fragment.
 	 *
-	 * @return A new instance of fragment StepBlockInfoFragment.
+	 * @return A new instance of fragment AllBlocksFragment.
 	 */
-	public static StepBlockInfoFragment newInstance()
+	public static AllBlocksFragment newInstance()
 	{
-		return new StepBlockInfoFragment();
+		return new AllBlocksFragment();
 	}
 
 	@Override
@@ -50,8 +50,8 @@ public class StepBlockInfoFragment extends Fragment
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		FragmentStepBlockInfoBinding
-			binding = DataBindingUtil.inflate(inflater, R.layout.fragment_step_block_info, container, false);
+		FragmentAllBlocksBinding
+			binding = DataBindingUtil.inflate(inflater, R.layout.fragment_all_blocks, container, false);
 		View v = binding.getRoot();
 
 		adapter = new BindingItemsAdapter();
@@ -61,10 +61,10 @@ public class StepBlockInfoFragment extends Fragment
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
 		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
-		blockInfoListViewModel = ViewModelProviders.of(this, factory).get(BlockInfoListViewModel.class);
-		binding.setUxContext(blockInfoListViewModel);
+		allBlocksViewModel = ViewModelProviders.of(this, factory).get(AllBlocksViewModel.class);
+		binding.setUxContext(allBlocksViewModel);
 
-		blockInfoListViewModel.getUpdateListEvent().observe(this, new Observer<Void>()
+		allBlocksViewModel.getUpdateListEvent().observe(this, new Observer<Void>()
 		{
 			@Override
 			public void onChanged(@Nullable Void aVoid)
@@ -72,13 +72,13 @@ public class StepBlockInfoFragment extends Fragment
 				if (adapter.getItemCount() != 0)
 					adapter.clear();
 
-				adapter.addAll(blockInfoListViewModel.getItems());
+				adapter.addAll(allBlocksViewModel.getItems());
 
 				getActivity().setTitle(R.string.app_name);
 			}
 		});
 
-		blockInfoListViewModel.getOpenBlockEvent().observe(this, new Observer<ChecklistState>()
+		allBlocksViewModel.getOpenBlockEvent().observe(this, new Observer<ChecklistState>()
 		{
 			@Override
 			public void onChanged(@Nullable ChecklistState state)
@@ -95,7 +95,7 @@ public class StepBlockInfoFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-		blockInfoListViewModel.start();
+		allBlocksViewModel.start();
 	}
 
 	@Override

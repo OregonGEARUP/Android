@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
-import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.AllBlocksViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
@@ -54,10 +54,10 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory
 	@Override
 	public <T extends ViewModel> T create(@NonNull Class<T> modelClass)
 	{
-		if (modelClass.isAssignableFrom(BlockInfoListViewModel.class))
+		if (modelClass.isAssignableFrom(AllBlocksViewModel.class))
 		{
 			//noinspection unchecked
-			return (T)new BlockInfoListViewModel(application, CheckpointRepository.getInstance());
+			return (T)new AllBlocksViewModel(application, CheckpointRepository.getInstance());
 		}
 		if (modelClass.isAssignableFrom(BlockViewModel.class))
 		{

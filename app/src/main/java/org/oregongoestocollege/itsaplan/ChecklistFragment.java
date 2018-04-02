@@ -73,7 +73,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		else if (currentBlockIndex >= 0)
 			showStepBlock(currentBlockIndex, currentBlockFileName);
 		else
-			showStepBlockInfo();
+			showAllBlocks();
 
 		return v;
 	}
@@ -85,9 +85,9 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 			actionBar.setDisplayHomeAsUpEnabled(enabled);
 	}
 
-	private void showStepBlockInfo()
+	private void showAllBlocks()
 	{
-		StepBlockInfoFragment newFragment = StepBlockInfoFragment.newInstance();
+		AllBlocksFragment newFragment = AllBlocksFragment.newInstance();
 
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container, newFragment);
@@ -191,7 +191,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		}
 		if (identifier == 2)
 		{
-			showStepBlockInfo();
+			showAllBlocks();
 			return true;
 		}
 		return false;

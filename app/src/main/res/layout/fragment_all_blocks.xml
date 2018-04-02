@@ -8,7 +8,7 @@
 
 		<variable
 			name="uxContext"
-			type="org.oregongoestocollege.itsaplan.viewmodel.BlockInfoListViewModel" />
+			type="org.oregongoestocollege.itsaplan.viewmodel.AllBlocksViewModel" />
 	</data>
 
 	<RelativeLayout
