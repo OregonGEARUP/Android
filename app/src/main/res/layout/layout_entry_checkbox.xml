@@ -20,44 +20,49 @@
 			android:id="@+id/check_instance_0"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:checked="@={uxContent.getInstance(0).isChecked}"
+			android:checked="@{uxContent.getInstance(0).isChecked}"
 			android:text="@{uxContent.getInstancePrompt(0)}"
+			android:onCheckedChanged="@{(view, checked) -> uxContent.getInstance(0).onInstanceChecked(checked)}"
 			tools:text="instance option 1" />
 
-		<CheckBox
+		<android.support.v7.widget.AppCompatCheckBox
 			android:id="@+id/check_instance_1"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:checked="@={uxContent.getInstance(1).isChecked}"
+			android:checked="@{uxContent.getInstance(1).isChecked}"
 			android:text="@{uxContent.getInstancePrompt(1)}"
 			android:visibility="@{uxContent.showInstance(1) ? View.VISIBLE : View.GONE}"
+			android:onCheckedChanged="@{(view, checked) -> uxContent.getInstance(1).onInstanceChecked(checked)}"
 			tools:text="instance option 2" />
 
 		<CheckBox
 			android:id="@+id/check_instance_2"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:checked="@={uxContent.getInstance(2).isChecked}"
+			android:checked="@{uxContent.getInstance(2).isChecked}"
 			android:text="@{uxContent.getInstancePrompt(2)}"
 			android:visibility="@{uxContent.showInstance(2) ? View.VISIBLE : View.GONE}"
+			android:onCheckedChanged="@{(view, checked) -> uxContent.getInstance(2).onInstanceChecked(checked)}"
 			tools:text="instance option 3" />
 
 		<CheckBox
 			android:id="@+id/check_instance_3"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:checked="@={uxContent.getInstance(3).isChecked}"
+			android:checked="@{uxContent.getInstance(3).isChecked}"
 			android:text="@{uxContent.getInstancePrompt(3)}"
 			android:visibility="@{uxContent.showInstance(3) ? View.VISIBLE : View.GONE}"
+			android:onCheckedChanged="@{(view, checked) -> uxContent.getInstance(3).onInstanceChecked(checked)}"
 			tools:text="instance option 4" />
 
 		<CheckBox
 			android:id="@+id/check_instance_4"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:checked="@={uxContent.getInstance(4).isChecked}"
+			android:checked="@{uxContent.getInstance(4).isChecked}"
 			android:text="@{uxContent.getInstancePrompt(4)}"
 			android:visibility="@{uxContent.showInstance(4) ? View.VISIBLE : View.GONE}"
+			android:onCheckedChanged="@{(view, checked) -> uxContent.getInstance(4).onInstanceChecked(checked)}"
 			tools:text="instance option 5" />
 
 	</LinearLayout>

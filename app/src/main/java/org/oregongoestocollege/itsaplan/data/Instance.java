@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import android.content.Context;
-import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
@@ -30,7 +29,7 @@ public class Instance
 	// stored data
 	public long dateValue;
 	// fields to support UX display
-	public final ObservableBoolean isChecked = new ObservableBoolean();
+	public boolean isChecked;
 	public final ObservableField<String> textEntry = new ObservableField<>();
 	public final ObservableField<String> dateText = new ObservableField<>();
 
@@ -80,6 +79,11 @@ public class Instance
 			dateText.set(context.getResources().getString(R.string.hint_date_picker));
 
 		dateValue = date;
+	}
+
+	public void onInstanceChecked(boolean checked)
+	{
+		isChecked = checked;
 	}
 
 	// temporary - storing as string, will go away

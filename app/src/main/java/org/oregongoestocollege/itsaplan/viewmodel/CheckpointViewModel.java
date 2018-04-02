@@ -163,7 +163,7 @@ public class CheckpointViewModel extends AndroidViewModel
 
 				for (int i = 0; i < instances.size(); i++)
 				{
-					instances.get(i).isChecked.set(
+					instances.get(i).isChecked = (
 						entries.getValueAsBoolean(
 							repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i)));
 				}
@@ -342,7 +342,7 @@ public class CheckpointViewModel extends AndroidViewModel
 					{
 						entries.setValue(
 							repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i),
-							instances.get(i).isChecked.get());
+							instances.get(i).isChecked);
 					}
 				}
 				break;

@@ -153,6 +153,10 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	@Override
 	public void onDetach()
 	{
+		CheckpointViewModel viewModel = pagerAdapter.getCurrentViewModel(lastVisitedPosition);
+		if (viewModel != null)
+			viewModel.saveCheckpointEntries();
+
 		super.onDetach();
 		listener = null;
 	}
