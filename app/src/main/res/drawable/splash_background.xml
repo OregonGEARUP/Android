@@ -3,7 +3,7 @@
 
 	<item android:drawable="@color/white" />
 
-	<!-- temporarily comment out - crashing on Pixel 2
+	<!-- TODO temporarily comment out - crashing on Pixel 2
 	<item>
 		<bitmap
 			android:gravity="center"

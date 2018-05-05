@@ -39,7 +39,7 @@ public interface CheckpointInterface
 	void markVisited(int stageIndex, int checkpointIndex);
 
 	/**
-	 * Keeps a list of trace statments that can be used to debug the app in the field.
+	 * Keeps a list of trace statements that can be used to debug the app in the field.
 	 * This should be kept to simple / short messages since we keep them in memory.
 	 *
 	 * @param trace a simple message that traces the current checklist path
