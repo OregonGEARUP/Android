@@ -1,9 +1,14 @@
 package org.oregongoestocollege.itsaplan;
 
-import android.content.Context;
-import android.net.Uri;
+import android.arch.lifecycle.Observer;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,96 +18,140 @@ import android.view.ViewGroup;
  * Oregon GEAR UP App
  *
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
- *
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link MyPlanFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
-public class MyPlanFragment extends Fragment
+public class MyPlanFragment extends Fragment implements OnFragmentInteractionListener
 {
-	// TODO: Rename parameter arguments, choose names that match
-	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-	private static final String ARG_PARAM1 = "param1";
-	private static final String ARG_PARAM2 = "param2";
-	// TODO: Rename and change types of parameters
-	private String mParam1;
-	private String mParam2;
-	private OnFragmentInteractionListener mListener;
+	static final String MY_PLAN_COLLEGES = "colleges";
+	static final String MY_PLAN_SCHOLARSHIPS = "scholarships";
+	static final String MY_PLAN_ACTSAT = "actsat";
+	static final String MY_PLAN_RESIDENCY = "residency";
+	static final String MY_PLAN_CALENDAR = "calendar";
+
+	private String optionName;
 
 	public MyPlanFragment()
 	{
 		// Required empty public constructor
 	}
 
-	/**
-	 * Use this factory method to create a new instance of
-	 * this fragment using the provided parameters.
-	 *
-	 * @param param1 Parameter 1.
-	 * @param param2 Parameter 2.
-	 * @return A new instance of fragment MyPlanFragment.
-	 */
-	// TODO: Rename and change types and number of parameters
-	public static MyPlanFragment newInstance(String param1, String param2)
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState)
 	{
-		MyPlanFragment fragment = new MyPlanFragment();
-		Bundle args = new Bundle();
-		args.putString(ARG_PARAM1, param1);
-		args.putString(ARG_PARAM2, param2);
-		fragment.setArguments(args);
-		return fragment;
+		super.onSaveInstanceState(outState);
+
+		outState.putString(Utils.PARAM_OPTION_NAME, optionName);
 	}
 
 	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		if (getArguments() != null)
-		{
-			mParam1 = getArguments().getString(ARG_PARAM1);
-			mParam2 = getArguments().getString(ARG_PARAM2);
-		}
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-		Bundle savedInstanceState)
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+		@Nullable Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		return inflater.inflate(R.layout.fragment_my_plan, container, false);
-	}
+		View view = inflater.inflate(R.layout.fragment_my_plan, container, false);
 
-	// TODO: Rename method, update argument and hook method into UI event
-	public void onButtonPressed(Uri uri)
-	{
-		if (mListener != null)
-		{
-			mListener.onFragmentInteraction();
-		}
-	}
+		if (savedInstanceState != null)
+			optionName = savedInstanceState.getString(Utils.PARAM_OPTION_NAME);
 
-	@Override
-	public void onAttach(Context context)
-	{
-		super.onAttach(context);
-		if (context instanceof OnFragmentInteractionListener)
-		{
-			mListener = (OnFragmentInteractionListener)context;
-		}
+		if (!TextUtils.isEmpty(optionName))
+			showOption(optionName);
 		else
+			showAllOptions();
+
+		return view;
+	}
+
+	private void setHomeAsUpEnabled(boolean enabled)
+	{
+		ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
+		if (actionBar != null)
+			actionBar.setDisplayHomeAsUpEnabled(enabled);
+	}
+
+	private void showAllOptions()
+	{
+		MyPlanOptionsFragment fragment = new MyPlanOptionsFragment();
+		fragment.getClickOptionEvent().observe(this, new Observer<String>()
 		{
-			throw new RuntimeException(context.toString()
-				+ " must implement OnFragmentInteractionListener");
+			@Override
+			public void onChanged(@Nullable String s)
+			{
+				showOption(s);
+			}
+		});
+
+		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+		transaction.replace(R.id.fragment_container_myplan, fragment);
+		transaction.commit();
+
+		// hide the back button
+		setHomeAsUpEnabled(false);
+		optionName = null;
+	}
+
+	private void showOption(String name)
+	{
+		if (!TextUtils.isEmpty(name))
+		{
+			Fragment fragment = null;
+
+			switch (name)
+			{
+			case MY_PLAN_COLLEGES:
+				fragment = new MyPlanCollegesFragment();
+				break;
+			case MY_PLAN_SCHOLARSHIPS:
+				fragment = new MyPlanScholarshipsFragment();
+				break;
+			case MY_PLAN_ACTSAT:
+				fragment = new MyPlanActSatFragment();
+				break;
+			case MY_PLAN_RESIDENCY:
+				fragment = new MyPlanResidencyFragment();
+				break;
+			case MY_PLAN_CALENDAR:
+				fragment = new MyPlanCalendarFragment();
+				break;
+			}
+
+			if (fragment != null)
+			{
+				FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+				transaction.replace(R.id.fragment_container_myplan, fragment);
+				transaction.commit();
+
+				// show the back button
+				setHomeAsUpEnabled(true);
+				optionName = name;
+			}
 		}
 	}
 
 	@Override
-	public void onDetach()
+	public void onShowBlock(int blockIndex, String blockFileName)
 	{
-		super.onDetach();
-		mListener = null;
+		// no-op
+	}
+
+	@Override
+	public void onShowStage(int blockIndex, int stageIndex)
+	{
+		// no-op
+	}
+
+	@Override
+	public boolean handleBackPressed()
+	{
+		if (!TextUtils.isEmpty(optionName))
+		{
+			showAllOptions();
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean canHandleBackPressed()
+	{
+		return (!TextUtils.isEmpty(optionName));
 	}
 }

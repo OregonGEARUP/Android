@@ -4,6 +4,8 @@ import java.util.Locale;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -37,7 +39,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState)
+	public void onSaveInstanceState(@NonNull Bundle outState)
 	{
 		super.onSaveInstanceState(outState);
 
@@ -50,8 +52,8 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-		Bundle savedInstanceState)
+	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+		@Nullable Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_checklist, container, false);
@@ -90,7 +92,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		AllBlocksFragment newFragment = AllBlocksFragment.newInstance();
 
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.fragment_container, newFragment);
+		transaction.replace(R.id.fragment_container_checklist, newFragment);
 		transaction.commit();
 
 		if (!firstBlockInfoAppearance)
@@ -111,7 +113,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	{
 		StepBlockFragment newFragment = StepBlockFragment.newInstance(blockIndex, blockFileName);
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.fragment_container, newFragment);
+		transaction.replace(R.id.fragment_container_checklist, newFragment);
 		transaction.commit();
 
 		identifier = 2;
@@ -134,7 +136,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 
 		StepStageFragment newFragment = StepStageFragment.newInstance(blockIndex, stageIndex);
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.fragment_container, newFragment);
+		transaction.replace(R.id.fragment_container_checklist, newFragment);
 		transaction.commit();
 
 		identifier = 3;
@@ -165,12 +167,6 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	}
 
 	@Override
-	public void onFragmentInteraction()
-	{
-		// no-op for now
-	}
-
-	@Override
 	public void onShowBlock(int blockIndex, String blockFileName)
 	{
 		showStepBlock(blockIndex, blockFileName);
@@ -182,6 +178,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		showStepStage(blockIndex, stageIndex);
 	}
 
+	@Override
 	public boolean handleBackPressed()
 	{
 		if (identifier == 3)
@@ -197,6 +194,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		return false;
 	}
 
+	@Override
 	public boolean canHandleBackPressed()
 	{
 		return (identifier > 1);

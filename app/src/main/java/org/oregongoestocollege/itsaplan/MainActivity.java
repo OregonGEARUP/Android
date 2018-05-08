@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
 				Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
 				boolean showBack =
-					(fragment instanceof ChecklistFragment) && ((ChecklistFragment)fragment).canHandleBackPressed();
+					(fragment instanceof OnFragmentInteractionListener) && ((OnFragmentInteractionListener)fragment).canHandleBackPressed();
 				getSupportActionBar().setDisplayHomeAsUpEnabled(showBack);
 			}
 
@@ -101,19 +101,13 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 	}
 
 	@Override
-	public void onFragmentInteraction()
-	{
-		// no-op for now
-	}
-
-	@Override
 	public void onShowBlock(int blockIndex, String blockFileName)
 	{
 		if (lastSelectedPosition != -1)
 		{
 			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
-			if (fragment instanceof ChecklistFragment)
-				((ChecklistFragment)fragment).onShowBlock(blockIndex, blockFileName);
+			if (fragment instanceof OnFragmentInteractionListener)
+				((OnFragmentInteractionListener)fragment).onShowBlock(blockIndex, blockFileName);
 		}
 	}
 
@@ -123,9 +117,23 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		if (lastSelectedPosition != -1)
 		{
 			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
-			if (fragment instanceof ChecklistFragment)
-				((ChecklistFragment)fragment).onShowStage(blockIndex, stageIndex);
+			if (fragment instanceof OnFragmentInteractionListener)
+				((OnFragmentInteractionListener)fragment).onShowStage(blockIndex, stageIndex);
 		}
+	}
+
+	@Override
+	public boolean handleBackPressed()
+	{
+		// no-op
+		return false;
+	}
+
+	@Override
+	public boolean canHandleBackPressed()
+	{
+		// no-op
+		return false;
 	}
 
 	@Override
@@ -136,8 +144,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		if (lastSelectedPosition != -1)
 		{
 			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
-			if (fragment instanceof ChecklistFragment)
-				handled = ((ChecklistFragment)fragment).handleBackPressed();
+			if (fragment instanceof OnFragmentInteractionListener)
+				handled = ((OnFragmentInteractionListener)fragment).handleBackPressed();
 		}
 
 		if (!handled)
@@ -152,8 +160,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		if (item.getItemId() == android.R.id.home && lastSelectedPosition != -1)
 		{
 			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
-			if (fragment instanceof ChecklistFragment)
-				handled = ((ChecklistFragment)fragment).handleBackPressed();
+			if (fragment instanceof OnFragmentInteractionListener)
+				handled = ((OnFragmentInteractionListener)fragment).handleBackPressed();
 		}
 
 		return handled;

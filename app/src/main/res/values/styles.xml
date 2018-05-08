@@ -33,6 +33,24 @@
 		<item name="android:textColor">?android:textColorPrimary</item>
 	</style>
 
+	<style name="GearUpTextAppearance.Option">
+		<item name="android:textSize">24sp</item>
+		<item name="android:textColor">?android:colorPrimaryDark</item>
+		<item name="android:drawablePadding">@dimen/baseline_unit</item>
+		<item name="android:gravity">center_vertical</item>
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+	</style>
+
+	<style name="GearUpOptionSeparator">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:paddingTop">@dimen/baseline_unit</item>
+		<item name="android:paddingBottom">@dimen/baseline_unit</item>
+		<item name="android:src">@drawable/separator</item>
+		<item name="android:importantForAccessibility">no</item>
+	</style>
+
 	<style name="GearUpButton" parent="Widget.AppCompat.Button">
 		<item name="android:background">@drawable/button_normal</item>
 		<item name="android:layout_width">wrap_content</item>

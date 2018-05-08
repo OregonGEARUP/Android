@@ -14,9 +14,11 @@ package org.oregongoestocollege.itsaplan;
  */
 public interface OnFragmentInteractionListener
 {
-	void onFragmentInteraction();
-
 	void onShowBlock(int blockIndex, String blockFileName);
 
 	void onShowStage(int blockIndex, int stageIndex);
+
+	boolean handleBackPressed();
+
+	boolean canHandleBackPressed();
 }

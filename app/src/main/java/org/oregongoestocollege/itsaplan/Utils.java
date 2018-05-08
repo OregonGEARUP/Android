@@ -12,6 +12,7 @@ public class Utils
 	static final String PARAM_BLOCK_INDEX = "blockIndex";
 	static final String PARAM_STAGE_INDEX = "stageIndex";
 	static final String PARAM_CHECKPOINT_INDEX = "checkpointIndex";
+	static final String PARAM_OPTION_NAME = "optionName";
 	/**
 	 * Default value when an index has not been set.
 	 */

@@ -1,0 +1,68 @@
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingBottom="@dimen/activity_horizontal_margin"
+	android:paddingEnd="@dimen/activity_vertical_margin"
+	android:paddingStart="@dimen/activity_vertical_margin"
+	android:paddingTop="@dimen/activity_horizontal_margin"
+	tools:context="org.oregongoestocollege.itsaplan.MyPlanFragment">
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<TextView
+			style="@style/GearUpTextAppearance.SubTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="@dimen/activity_horizontal_margin"
+			android:text="@string/header_myplan" />
+
+		<ImageView
+			style="@style/GearUpOptionSeparator" />
+
+		<TextView
+			android:id="@+id/topic_colleges"
+			style="@style/GearUpTextAppearance.Option"
+			android:drawableStart="@mipmap/colleges"
+			android:text="@string/colleges" />
+
+		<ImageView style="@style/GearUpOptionSeparator" />
+
+		<TextView
+			android:id="@+id/topic_scholarships"
+			style="@style/GearUpTextAppearance.Option"
+			android:drawableStart="@mipmap/scholarships"
+			android:text="@string/scholarships" />
+
+		<ImageView style="@style/GearUpOptionSeparator" />
+
+		<TextView
+			android:id="@+id/topic_actsat"
+			style="@style/GearUpTextAppearance.Option"
+			android:drawableStart="@mipmap/actsat"
+			android:text="@string/actsat" />
+
+		<ImageView style="@style/GearUpOptionSeparator" />
+
+		<TextView
+			android:id="@+id/topic_residency"
+			style="@style/GearUpTextAppearance.Option"
+			android:drawableStart="@mipmap/residency"
+			android:text="@string/residency" />
+
+		<ImageView style="@style/GearUpOptionSeparator" />
+
+		<TextView
+			android:id="@+id/topic_calendar"
+			style="@style/GearUpTextAppearance.Option"
+			android:drawableStart="@mipmap/calendar"
+			android:text="@string/calendar" />
+
+		<ImageView style="@style/GearUpOptionSeparator" />
+
+	</LinearLayout>
+</ScrollView>
