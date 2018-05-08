@@ -1,6 +1,7 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
 import android.app.Application;
+import android.content.Context;
 import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -52,6 +53,12 @@ public class StageItemViewModel implements BindingItem
 	public int getLayoutId()
 	{
 		return R.layout.item_stage;
+	}
+
+	@Override
+	public void onBind(@NonNull Context context)
+	{
+
 	}
 
 	public void onStageClick(View view)

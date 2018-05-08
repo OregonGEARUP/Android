@@ -1,16 +1,10 @@
 package org.oregongoestocollege.itsaplan.data;
 
-import java.util.List;
+import java.util.Date;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.PrimaryKey;
-import android.arch.persistence.room.Query;
 import android.support.annotation.NonNull;
-
-import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
 /**
  * College
@@ -18,13 +12,13 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
  *
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-@Entity
+@Entity(tableName = "college_table")
 public class College
 {
-	@PrimaryKey @NonNull
-	private String uuid;
+	@PrimaryKey(autoGenerate = true)
+	private int uid;
 	private String name;
-	private long applicationDate;
+	private Date applicationDate;
 	private double averageNetPrice;
 	private double applicationCost;
 	private boolean essayDone;
@@ -36,14 +30,15 @@ public class College
 	private boolean feeDeferralDone;
 	private boolean applicationDone;
 
-	public String getUuid()
+	@NonNull
+	public int getUid()
 	{
-		return uuid;
+		return uid;
 	}
 
-	public void setUuid(String uuid)
+	public void setUid(int uid)
 	{
-		this.uuid = uuid;
+		this.uid = uid;
 	}
 
 	public String getName()
@@ -56,12 +51,12 @@ public class College
 		this.name = name;
 	}
 
-	public long getApplicationDate()
+	public Date getApplicationDate()
 	{
 		return applicationDate;
 	}
 
-	public void setApplicationDate(long applicationDate)
+	public void setApplicationDate(Date applicationDate)
 	{
 		this.applicationDate = applicationDate;
 	}
@@ -164,18 +159,5 @@ public class College
 	public void setApplicationDone(boolean applicationDone)
 	{
 		this.applicationDone = applicationDone;
-	}
-
-	@Dao
-	public interface CollegeDao
-	{
-		@Insert(onConflict = REPLACE)
-		void save(College college);
-
-		@Query("SELECT * FROM college WHERE name = :name")
-		LiveData<College> load(String name);
-
-		@Query("SELECT * from college")
-		LiveData<List<College>> getAll();
 	}
 }

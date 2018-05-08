@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools">
+
+	<data>
+
+		<import type="android.view.View" />
+
+		<variable
+			name="viewModel"
+			type="org.oregongoestocollege.itsaplan.viewmodel.CollegeViewModel" />
+	</data>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:paddingBottom="@dimen/baseline_unit_2x">
+
+		<TextView
+			android:id="@+id/textview_title"
+			style="@style/GearUpMyPlanTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="@dimen/baseline_unit"
+			android:text="@{viewModel.name}"
+			tools:text="my college pick" />
+
+		<LinearLayout
+			android:id="@+id/layout_1"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/textview_title"
+			android:orientation="vertical"
+			android:paddingEnd="@dimen/baseline_unit_2x"
+			android:paddingStart="@dimen/baseline_unit_2x">
+
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<android.support.design.widget.TextInputEditText
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:hint="@string/college_name_hint"
+					android:inputType="text"
+					android:text="@={viewModel.name}"
+					tools:text="my college" />
+			</android.support.design.widget.TextInputLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/baseline_unit_half"
+				android:layout_marginTop="@dimen/baseline_unit_half"
+				android:orientation="vertical">
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:clickable="false"
+					android:focusable="false"
+					android:text="@string/college_application_deadline" />
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="@dimen/baseline_unit_half"
+					android:layout_marginTop="@dimen/baseline_unit_half"
+					android:background="@drawable/button_outline"
+					android:clickable="true"
+					android:focusable="true"
+					android:onClick="@{(view) -> viewModel.onShowDatePicker(view)}"
+					android:padding="@dimen/baseline_unit"
+					android:text="@{viewModel.applicationDeadline}"
+					android:textSize="16sp"
+					tools:text="March 17, 2000" />
+			</LinearLayout>
+
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<android.support.design.widget.TextInputEditText
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:hint="@string/college_net_price_hint"
+					android:inputType="text"
+					tools:text="10,000" />
+			</android.support.design.widget.TextInputLayout>
+
+			<CheckBox
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_marginBottom="@dimen/baseline_unit"
+				android:layout_marginTop="@dimen/baseline_unit"
+				android:checked="@={viewModel.college.applicationDone}"
+				android:text="@string/college_apply_done" />
+		</LinearLayout>
+
+		<TextView
+			android:id="@+id/textview_subtitle"
+			style="@style/GearUpMyPlanSubTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/layout_1"
+			android:text="@string/college_apply_message" />
+
+		<LinearLayout
+			android:id="@+id/layout_2"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/textview_subtitle"
+			android:orientation="vertical"
+			android:paddingEnd="@dimen/baseline_unit_2x"
+			android:paddingStart="@dimen/baseline_unit_2x">
+
+			<CheckBox
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:checked="@={viewModel.college.essayDone}"
+				android:text="@string/college_apply_essay" />
+
+			<CheckBox
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:checked="@={viewModel.college.recommendationsDone}"
+				android:text="@string/college_apply_recommendations" />
+
+			<CheckBox
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:checked="@={viewModel.college.activitiesChartDone}"
+				android:text="@string/college_apply_activities_chart" />
+
+			<CheckBox
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:checked="@={viewModel.college.testsDone}"
+				android:text="@string/college_apply_tests" />
+
+			<CheckBox
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:checked="@={viewModel.college.addlFinancialAidDone}"
+				android:text="@string/college_apply_addl_aid" />
+
+			<CheckBox
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:checked="@={viewModel.college.addlScholarshipDone}"
+				android:text="@string/college_apply_addl_scholarship" />
+
+			<android.support.design.widget.TextInputLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content">
+
+				<android.support.design.widget.TextInputEditText
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:hint="@string/college_apply_cost_hint"
+					android:inputType="numberDecimal"
+					tools:text="10,000" />
+			</android.support.design.widget.TextInputLayout>
+		</LinearLayout>
+
+		<Button
+			style="@style/GearUpButtonBorderless"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/layout_2"
+			android:layout_gravity="center_horizontal"
+			android:onClick="@{(view) -> viewModel.onRemoveCollege(view)}"
+			android:text="@string/remove_college"
+			android:visibility="@{viewModel.isRemovable ? View.VISIBLE : View.GONE, default=gone}"
+			tools:visibility="visible" />
+
+	</RelativeLayout>
+</layout>

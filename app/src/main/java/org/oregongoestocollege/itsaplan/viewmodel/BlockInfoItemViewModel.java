@@ -65,6 +65,12 @@ public class BlockInfoItemViewModel implements BindingItem
 		return R.layout.item_block_info;
 	}
 
+	@Override
+	public void onBind(@NonNull Context context)
+	{
+
+	}
+
 	public void onBlockClick(View view)
 	{
 		if (model.blockFileName != null && !model.blockFileName.isEmpty())

@@ -3,7 +3,11 @@ package org.oregongoestocollege.itsaplan.data;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
+
+import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
+import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
 
 /**
  * MyPlanDatabase - persist data for My Plan tab
@@ -11,7 +15,8 @@ import android.content.Context;
  *
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-@Database(entities = { College.class }, version = 1)
+@Database(entities = { College.class }, version = 1, exportSchema = false)
+@TypeConverters(DateConverter.class)
 public abstract class MyPlanDatabase extends RoomDatabase
 {
 	private static MyPlanDatabase instance;
@@ -37,5 +42,5 @@ public abstract class MyPlanDatabase extends RoomDatabase
 		return instance;
 	}
 
-	public abstract College.CollegeDao collegeDao();
+	public abstract CollegeDao collegeDao();
 }

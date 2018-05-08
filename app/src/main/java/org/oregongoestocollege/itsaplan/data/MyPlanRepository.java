@@ -6,12 +6,15 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
+import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
+
 /**
- * Created by nataliealb on 5/8/18.
+ * Oregon GEAR UP App
+ * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
 public class MyPlanRepository
 {
-	private College.CollegeDao collegeDao;
+	private CollegeDao collegeDao;
 	private LiveData<List<College>> allColleges;
 
 	/**
@@ -26,9 +29,9 @@ public class MyPlanRepository
 
 	private static class insertAsyncTask extends AsyncTask<College, Void, Void>
 	{
-		private College.CollegeDao mAsyncTaskDao;
+		private CollegeDao mAsyncTaskDao;
 
-		insertAsyncTask(College.CollegeDao dao)
+		insertAsyncTask(CollegeDao dao)
 		{
 			mAsyncTaskDao = dao;
 		}
@@ -41,11 +44,28 @@ public class MyPlanRepository
 		}
 	}
 
+	private static class deleteAsyncTask extends AsyncTask<College, Void, Void>
+	{
+		private CollegeDao mAsyncTaskDao;
+
+		deleteAsyncTask(CollegeDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(final College... params)
+		{
+			mAsyncTaskDao.delete(params[0]);
+			return null;
+		}
+	}
+
 	/**
 	 * Wrapper to get all colleges from the database. Room executes all queries on a separate thread.
 	 * Observed LiveData will notify the observer when the data has changed.
 	 */
-	LiveData<List<College>> getAllColleges()
+	public LiveData<List<College>> getAllColleges()
 	{
 		return allColleges;
 	}
@@ -57,5 +77,14 @@ public class MyPlanRepository
 	public void save(College college)
 	{
 		new insertAsyncTask(collegeDao).execute(college);
+	}
+
+	/**
+	 * Wrapper to delete a college. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void delete(College college)
+	{
+		new deleteAsyncTask(collegeDao).execute(college);
 	}
 }

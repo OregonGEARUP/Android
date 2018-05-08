@@ -12,18 +12,21 @@ import org.oregongoestocollege.itsaplan.viewmodel.BindingItem;
  *
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class BindingItemViewHolder extends RecyclerView.ViewHolder
+class BindingItemViewHolder extends RecyclerView.ViewHolder
 {
 	private final ViewDataBinding viewDataBinding;
 
-	public BindingItemViewHolder(ViewDataBinding viewDataBinding)
+	BindingItemViewHolder(ViewDataBinding viewDataBinding)
 	{
 		super(viewDataBinding.getRoot());
 		this.viewDataBinding = viewDataBinding;
 	}
 
-	public void onBindView(int position, BindingItem item)
+	void onBindView(int position, BindingItem item)
 	{
+		// give the item a chance to do any initialization before it's displayed
+		item.onBind(viewDataBinding.getRoot().getContext());
+
 		viewDataBinding.setVariable(BR.viewModel, item);
 		viewDataBinding.executePendingBindings();
 	}

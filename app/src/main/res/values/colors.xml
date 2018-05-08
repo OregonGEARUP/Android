@@ -11,7 +11,8 @@
     <color name="colorPrimaryLimeGreen">#8CC63F</color>
     <color name="colorPrimayLightBlue">#C8F0FF</color>
     <color name="colorAccentLightGreen">#D0E8B2</color>
-    <color name="colorAccentGray">#BFBFBF</color>
+	<color name="colorAccentGray">#BFBFBF</color>
+	<color name="colorAccentLightGray">#1E000000</color>
     <color name="colorGearUpGreen">#007F42</color>
 
 	<color name="black">#000000</color>
