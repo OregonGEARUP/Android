@@ -27,6 +27,7 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 	static final String MY_PLAN_RESIDENCY = "residency";
 	static final String MY_PLAN_CALENDAR = "calendar";
 
+	private Fragment lastFragment;
 	private String optionName;
 
 	public MyPlanFragment()
@@ -103,7 +104,7 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 				fragment = new MyPlanScholarshipsFragment();
 				break;
 			case MY_PLAN_ACTSAT:
-				fragment = new MyPlanActSatFragment();
+				fragment = new MyPlanTestResultsFragment();
 				break;
 			case MY_PLAN_RESIDENCY:
 				fragment = new MyPlanResidencyFragment();

@@ -19,6 +19,7 @@ import org.oregongoestocollege.itsaplan.data.College;
 import org.oregongoestocollege.itsaplan.databinding.FragmentMyPlanCollegesBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
 import org.oregongoestocollege.itsaplan.viewmodel.BindingItem;
+import org.oregongoestocollege.itsaplan.viewmodel.CollegeViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.CollegesViewModel;
 
 /**
@@ -57,6 +58,8 @@ public class MyPlanCollegesFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable List<College> colleges)
 			{
+				Utils.d(CollegeViewModel.LOG_TAG, "All colleges changed");
+
 				List<BindingItem> items = viewModel.getItems(colleges);
 
 				if (adapter.getItemCount() != 0)
@@ -70,5 +73,14 @@ public class MyPlanCollegesFragment extends Fragment
 		binding.setUxContext(viewModel);
 
 		return v;
+	}
+
+	@Override
+	public void onDetach()
+	{
+		if (viewModel != null)
+			viewModel.update();
+
+		super.onDetach();
 	}
 }

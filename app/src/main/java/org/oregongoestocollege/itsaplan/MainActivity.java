@@ -167,3 +167,12 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		return handled;
 	}
 }
+
+/**
+ * TODO
+ * - room callback to add act/sat test results
+ * - double value binding in college
+ * - network error messages
+ * - scope view model to fragment, activity?
+ * - create act/sat test results when creating DB / callback
+ */

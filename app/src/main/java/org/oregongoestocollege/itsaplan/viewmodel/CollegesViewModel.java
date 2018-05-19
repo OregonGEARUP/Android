@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import org.oregongoestocollege.itsaplan.R;
+import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.data.College;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 
@@ -26,27 +27,35 @@ import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
  */
 public class CollegesViewModel extends AndroidViewModel
 {
+	static int count = 0;
+	int mycount;
 	private MyPlanRepository repository;
 	private LiveData<List<College>> allColleges;
-	private List<BindingItem> items;
+	private List<CollegeViewModel> allViewModels;
 
 	public CollegesViewModel(@NonNull Application application)
 	{
 		super(application);
 
+		mycount = ++count;
+		Utils.d(CollegeViewModel.LOG_TAG, "create %d", mycount);
+
 		repository = new MyPlanRepository(application);
 		allColleges = repository.getAllColleges();
 	}
 
-	protected void save(@Nullable String name)
+	@Override
+	protected void onCleared()
+	{
+		Utils.d(CollegeViewModel.LOG_TAG, "onCleared() %d", mycount);
+	}
+
+	private void save(@Nullable String name)
 	{
 		if (!TextUtils.isEmpty(name))
 		{
-			College college = new College();
-			college.setName(name);
-
 			// save it to our database which will trigger a reload
-			repository.save(college);
+			repository.insertCollege(name);
 		}
 	}
 
@@ -57,22 +66,28 @@ public class CollegesViewModel extends AndroidViewModel
 
 	public List<BindingItem> getItems(List<College> colleges)
 	{
+		List<BindingItem> itemViewModels;
+
 		if (colleges != null && !colleges.isEmpty())
 		{
 			int size = colleges.size();
-			List<BindingItem> viewModels = new ArrayList<>(size);
+			itemViewModels = new ArrayList<>(size);
+			allViewModels = new ArrayList<>(size);
 
 			for (int i = 0; i < size; i++)
 			{
-				viewModels.add(new CollegeViewModel(repository, colleges.get(i), size > 1));
+				CollegeViewModel vm = new CollegeViewModel(repository, colleges.get(i), size > 1);
+				itemViewModels.add(vm);
+				allViewModels.add(vm);
 			}
-
-			items = viewModels;
 		}
 		else
-			items = Collections.emptyList();
+		{
+			itemViewModels = Collections.emptyList();
+			allViewModels = null;
+		}
 
-		return items;
+		return itemViewModels;
 	}
 
 	public void onAddCollege(View view)
@@ -99,5 +114,14 @@ public class CollegesViewModel extends AndroidViewModel
 				}
 			})
 			.show();
+	}
+
+	public void update()
+	{
+		if (allViewModels != null)
+		{
+			for (CollegeViewModel allViewModel : allViewModels)
+				allViewModel.update();
+		}
 	}
 }

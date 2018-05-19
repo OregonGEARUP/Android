@@ -5,8 +5,11 @@ import java.util.List;
 import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
+import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
 
 /**
  * Oregon GEAR UP App
@@ -15,6 +18,7 @@ import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
 public class MyPlanRepository
 {
 	private CollegeDao collegeDao;
+	private TestResultDao testResultDao;
 	private LiveData<List<College>> allColleges;
 
 	/**
@@ -25,13 +29,14 @@ public class MyPlanRepository
 		MyPlanDatabase db = MyPlanDatabase.getDatabase(application);
 		collegeDao = db.collegeDao();
 		allColleges = collegeDao.getAll();
+		testResultDao = db.testResultDao();
 	}
 
-	private static class insertAsyncTask extends AsyncTask<College, Void, Void>
+	private static class InsertCollegeAsyncTask extends AsyncTask<College, Void, Void>
 	{
 		private CollegeDao mAsyncTaskDao;
 
-		insertAsyncTask(CollegeDao dao)
+		InsertCollegeAsyncTask(CollegeDao dao)
 		{
 			mAsyncTaskDao = dao;
 		}
@@ -39,16 +44,16 @@ public class MyPlanRepository
 		@Override
 		protected Void doInBackground(final College... params)
 		{
-			mAsyncTaskDao.save(params[0]);
+			mAsyncTaskDao.insert(params[0]);
 			return null;
 		}
 	}
 
-	private static class deleteAsyncTask extends AsyncTask<College, Void, Void>
+	private static class DeleteCollegeAsyncTask extends AsyncTask<College, Void, Void>
 	{
 		private CollegeDao mAsyncTaskDao;
 
-		deleteAsyncTask(CollegeDao dao)
+		DeleteCollegeAsyncTask(CollegeDao dao)
 		{
 			mAsyncTaskDao = dao;
 		}
@@ -57,6 +62,40 @@ public class MyPlanRepository
 		protected Void doInBackground(final College... params)
 		{
 			mAsyncTaskDao.delete(params[0]);
+			return null;
+		}
+	}
+
+	private static class UpdateCollegeAsyncTask extends AsyncTask<College, Void, Void>
+	{
+		private CollegeDao mAsyncTaskDao;
+
+		UpdateCollegeAsyncTask(CollegeDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(final College... params)
+		{
+			mAsyncTaskDao.update(params[0]);
+			return null;
+		}
+	}
+
+	private static class UpdateTestResultAsyncTask extends AsyncTask<TestResult, Void, Void>
+	{
+		private TestResultDao mAsyncTaskDao;
+
+		UpdateTestResultAsyncTask(TestResultDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(final TestResult... params)
+		{
+			mAsyncTaskDao.update(params[0]);
 			return null;
 		}
 	}
@@ -71,12 +110,17 @@ public class MyPlanRepository
 	}
 
 	/**
-	 * Wrapper to save a college. You must call this on a non-UI thread or your app will crash.
+	 * Wrapper to insert a new college. You must call this on a non-UI thread or your app will crash.
 	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
 	 */
-	public void save(College college)
+	public void insertCollege(@NonNull String name)
 	{
-		new insertAsyncTask(collegeDao).execute(college);
+		if (TextUtils.isEmpty(name))
+			return;
+
+		College college = new College();
+		college.setName(name);
+		new InsertCollegeAsyncTask(collegeDao).execute(college);
 	}
 
 	/**
@@ -85,6 +129,24 @@ public class MyPlanRepository
 	 */
 	public void delete(College college)
 	{
-		new deleteAsyncTask(collegeDao).execute(college);
+		new DeleteCollegeAsyncTask(collegeDao).execute(college);
+	}
+
+	/**
+	 * Wrapper to update a college. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void update(College college)
+	{
+		new UpdateCollegeAsyncTask(collegeDao).execute(college);
+	}
+
+	/**
+	 * Wrapper to update a test result. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void update(TestResult testResult)
+	{
+		new UpdateTestResultAsyncTask(testResultDao).execute(testResult);
 	}
 }

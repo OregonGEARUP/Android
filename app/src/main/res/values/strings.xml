@@ -57,4 +57,19 @@
 	<string name="college_apply_fee_deferral">Fee deferral or waiver</string>
 	<string name="college_apply_cost">Application Cost</string>
 	<string name="college_apply_cost_hint">cost to apply</string>
+	<string name="tests_act">ACT</string>
+	<string name="tests_act_message">If you have taken the ACT, enter the date and your best scores.</string>
+	<string name="tests_act_date">Date</string>
+	<string name="tests_act_composite">Composite Score</string>
+	<string name="tests_act_math">Math Score</string>
+	<string name="tests_act_sciece">Science Score</string>
+	<string name="tests_act_reading">Reading Score</string>
+	<string name="tests_act_writing">Writing Score</string>
+	<string name="tests_sat">SAT</string>
+	<string name="tests_sat_message">If you have taken the SAT, enter the date and your best scores.</string>
+	<string name="tests_sat_date">Date</string>
+	<string name="tests_sat_total">Total Score</string>
+	<string name="tests_sat_reading">Reading/Writing Score</string>
+	<string name="tests_sat_math">Math Score</string>
+	<string name="tests_sat_essay">Essay Score</string>
 </resources>

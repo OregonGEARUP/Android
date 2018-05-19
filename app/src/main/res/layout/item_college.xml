@@ -69,9 +69,9 @@
 					android:background="@drawable/button_outline"
 					android:clickable="true"
 					android:focusable="true"
-					android:onClick="@{(view) -> viewModel.onShowDatePicker(view)}"
+					android:onClick="@{(view) -> viewModel.onChangeApplicationDate(view)}"
 					android:padding="@dimen/baseline_unit"
-					android:text="@{viewModel.applicationDeadline}"
+					android:text="@{viewModel.applicationDateText}"
 					android:textSize="16sp"
 					tools:text="March 17, 2000" />
 			</LinearLayout>
@@ -93,7 +93,7 @@
 				android:layout_height="wrap_content"
 				android:layout_marginBottom="@dimen/baseline_unit"
 				android:layout_marginTop="@dimen/baseline_unit"
-				android:checked="@={viewModel.college.applicationDone}"
+				android:checked="@={viewModel.applicationDone}"
 				android:text="@string/college_apply_done" />
 		</LinearLayout>
 
@@ -117,37 +117,37 @@
 			<CheckBox
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:checked="@={viewModel.college.essayDone}"
+				android:checked="@={viewModel.essayDone}"
 				android:text="@string/college_apply_essay" />
 
 			<CheckBox
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:checked="@={viewModel.college.recommendationsDone}"
+				android:checked="@={viewModel.recommendationsDone}"
 				android:text="@string/college_apply_recommendations" />
 
 			<CheckBox
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:checked="@={viewModel.college.activitiesChartDone}"
+				android:checked="@={viewModel.activitiesChartDone}"
 				android:text="@string/college_apply_activities_chart" />
 
 			<CheckBox
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:checked="@={viewModel.college.testsDone}"
+				android:checked="@={viewModel.testsDone}"
 				android:text="@string/college_apply_tests" />
 
 			<CheckBox
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:checked="@={viewModel.college.addlFinancialAidDone}"
+				android:checked="@={viewModel.addlFinancialAidDone}"
 				android:text="@string/college_apply_addl_aid" />
 
 			<CheckBox
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:checked="@={viewModel.college.addlScholarshipDone}"
+				android:checked="@={viewModel.addlScholarshipDone}"
 				android:text="@string/college_apply_addl_scholarship" />
 
 			<android.support.design.widget.TextInputLayout
