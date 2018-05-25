@@ -14,8 +14,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.EditText;
 
+import org.oregongoestocollege.itsaplan.AddLayoutView;
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.data.College;
@@ -93,18 +93,17 @@ public class CollegesViewModel extends AndroidViewModel
 	public void onAddCollege(View view)
 	{
 		final Context context = view.getContext();
-		final EditText editText = new EditText(context);
-		editText.setHint(R.string.college_name_hint);
+		final AddLayoutView addView = new AddLayoutView(context, R.string.college_name_hint);
 
 		new AlertDialog.Builder(context)
 			.setTitle(context.getString(R.string.add_college))
 			.setMessage(context.getString(R.string.add_college_message))
-			.setView(editText)
+			.setView(addView)
 			.setPositiveButton(context.getString(R.string.add), new DialogInterface.OnClickListener()
 			{
 				public void onClick(DialogInterface dialog, int whichButton)
 				{
-					save(editText.getText().toString());
+					save(addView.getAddedText());
 				}
 			})
 			.setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener()

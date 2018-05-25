@@ -6,6 +6,7 @@ import java.util.List;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
@@ -36,17 +37,17 @@ public class PasswordsFragment extends Fragment
 	// tracks the locked / unlocked state of the controls
 	private boolean locked = true;
 	// holds list of all views we need to show/hide text
-	List<EditText> editableViews;
+	List<TextInputEditText> editableViews;
 	// bind to views using Butterknife, need to unbind when used in Fragment
 	private Unbinder unbinder;
 	@BindView(R.id.edit_ssn)
-	EditText editSsn;
+	TextInputEditText editSsn;
 	@BindView(R.id.edit_ssn1)
-	EditText editSsn1;
+	TextInputEditText editSsn1;
 	@BindView(R.id.edit_ssn2)
-	EditText editSsn2;
+	TextInputEditText editSsn2;
 	@BindView(R.id.edit_driver_lic)
-	EditText editDriverLic;
+	TextInputEditText editDriverLic;
 
 
 	// TODO
