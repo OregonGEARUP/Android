@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
+import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
 import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
 
 /**
@@ -18,8 +19,10 @@ import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
 public class MyPlanRepository
 {
 	private CollegeDao collegeDao;
+	private ScholarshipDao scholarshipDao;
 	private TestResultDao testResultDao;
 	private LiveData<List<College>> allColleges;
+	private LiveData<List<Scholarship>> allScholarships;
 
 	/**
 	 * Constructor to initialize the database and variables
@@ -29,6 +32,8 @@ public class MyPlanRepository
 		MyPlanDatabase db = MyPlanDatabase.getDatabase(application);
 		collegeDao = db.collegeDao();
 		allColleges = collegeDao.getAll();
+		scholarshipDao = db.scholarshipDao();
+		allScholarships = scholarshipDao.getAll();
 		testResultDao = db.testResultDao();
 	}
 
@@ -77,6 +82,57 @@ public class MyPlanRepository
 
 		@Override
 		protected Void doInBackground(final College... params)
+		{
+			mAsyncTaskDao.update(params[0]);
+			return null;
+		}
+	}
+
+	private static class InsertScholarshipAsyncTask extends AsyncTask<Scholarship, Void, Void>
+	{
+		private ScholarshipDao mAsyncTaskDao;
+
+		InsertScholarshipAsyncTask(ScholarshipDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(final Scholarship... params)
+		{
+			mAsyncTaskDao.insert(params[0]);
+			return null;
+		}
+	}
+
+	private static class DeleteScholarshipAsyncTask extends AsyncTask<Scholarship, Void, Void>
+	{
+		private ScholarshipDao mAsyncTaskDao;
+
+		DeleteScholarshipAsyncTask(ScholarshipDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(final Scholarship... params)
+		{
+			mAsyncTaskDao.delete(params[0]);
+			return null;
+		}
+	}
+
+	private static class UpdateScholarshipAsyncTask extends AsyncTask<Scholarship, Void, Void>
+	{
+		private ScholarshipDao mAsyncTaskDao;
+
+		UpdateScholarshipAsyncTask(ScholarshipDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(final Scholarship... params)
 		{
 			mAsyncTaskDao.update(params[0]);
 			return null;
@@ -139,6 +195,47 @@ public class MyPlanRepository
 	public void update(College college)
 	{
 		new UpdateCollegeAsyncTask(collegeDao).execute(college);
+	}
+
+	/**
+	 * Wrapper to get all scholarships from the database. Room executes all queries on a separate thread.
+	 * Observed LiveData will notify the observer when the data has changed.
+	 */
+	public LiveData<List<Scholarship>> getAllScholarships()
+	{
+		return allScholarships;
+	}
+
+	/**
+	 * Wrapper to insert a new scholarship. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void insertScholarship(@NonNull String name)
+	{
+		if (TextUtils.isEmpty(name))
+			return;
+
+		Scholarship scholarship = new Scholarship();
+		scholarship.setName(name);
+		new InsertScholarshipAsyncTask(scholarshipDao).execute(scholarship);
+	}
+
+	/**
+	 * Wrapper to delete a scholarship. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void delete(Scholarship scholarship)
+	{
+		new DeleteScholarshipAsyncTask(scholarshipDao).execute(scholarship);
+	}
+
+	/**
+	 * Wrapper to update a scholarship. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void update(Scholarship scholarship)
+	{
+		new UpdateScholarshipAsyncTask(scholarshipDao).execute(scholarship);
 	}
 
 	/**

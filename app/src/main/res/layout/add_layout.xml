@@ -14,7 +14,6 @@
 			android:id="@+id/add_edit_text"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:hint="@string/college_name_hint"
 			android:inputType="text"
 			android:maxLines="1"
 			android:maxLength="128"

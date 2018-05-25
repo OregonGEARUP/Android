@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
 import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
+import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
 import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
 
 /**
@@ -19,7 +20,7 @@ import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
  *
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-@Database(entities = { College.class, TestResult.class }, version = 1, exportSchema = false)
+@Database(entities = { College.class, Scholarship.class, TestResult.class }, version = 1, exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class MyPlanDatabase extends RoomDatabase
 {
@@ -80,6 +81,8 @@ public abstract class MyPlanDatabase extends RoomDatabase
 	}
 
 	public abstract CollegeDao collegeDao();
+
+	public abstract ScholarshipDao scholarshipDao();
 
 	public abstract TestResultDao testResultDao();
 }
