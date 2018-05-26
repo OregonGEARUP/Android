@@ -2,13 +2,13 @@ package org.oregongoestocollege.itsaplan.data;
 
 import java.util.List;
 
-import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
+import org.oregongoestocollege.itsaplan.data.dao.ResidencyDao;
 import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
 import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
 
@@ -18,23 +18,41 @@ import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
  */
 public class MyPlanRepository
 {
+	private static MyPlanRepository instance;
+	private final MyPlanDatabase database;
 	private CollegeDao collegeDao;
 	private ScholarshipDao scholarshipDao;
 	private TestResultDao testResultDao;
+	private ResidencyDao residencyDao;
 	private LiveData<List<College>> allColleges;
 	private LiveData<List<Scholarship>> allScholarships;
 
 	/**
 	 * Constructor to initialize the database and variables
 	 */
-	public MyPlanRepository(Application application)
+	private MyPlanRepository(final MyPlanDatabase database)
 	{
-		MyPlanDatabase db = MyPlanDatabase.getDatabase(application);
-		collegeDao = db.collegeDao();
+		this.database = database;
+
+		collegeDao = database.collegeDao();
 		allColleges = collegeDao.getAll();
-		scholarshipDao = db.scholarshipDao();
+		scholarshipDao = database.scholarshipDao();
 		allScholarships = scholarshipDao.getAll();
-		testResultDao = db.testResultDao();
+		testResultDao = database.testResultDao();
+		residencyDao = database.residencyDao();
+	}
+
+	public static MyPlanRepository getInstance(final MyPlanDatabase database)
+	{
+		if (instance == null)
+		{
+			synchronized (MyPlanRepository.class)
+			{
+				if (instance == null)
+					instance = new MyPlanRepository(database);
+			}
+		}
+		return instance;
 	}
 
 	private static class InsertCollegeAsyncTask extends AsyncTask<College, Void, Void>
@@ -156,6 +174,23 @@ public class MyPlanRepository
 		}
 	}
 
+	private static class UpdateResidencyAsyncTask extends AsyncTask<Residency, Void, Void>
+	{
+		private ResidencyDao mAsyncTaskDao;
+
+		UpdateResidencyAsyncTask(ResidencyDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(final Residency... params)
+		{
+			mAsyncTaskDao.update(params[0]);
+			return null;
+		}
+	}
+
 	/**
 	 * Wrapper to get all colleges from the database. Room executes all queries on a separate thread.
 	 * Observed LiveData will notify the observer when the data has changed.
@@ -245,5 +280,23 @@ public class MyPlanRepository
 	public void update(TestResult testResult)
 	{
 		new UpdateTestResultAsyncTask(testResultDao).execute(testResult);
+	}
+
+	/**
+	 * Wrapper to get a residency from the database. Room executes all queries on a separate thread.
+	 * Observed LiveData will notify the observer when the data has changed.
+	 */
+	public LiveData<Residency> getResidency()
+	{
+		return database.residencyDao().getResidency(Residency.NAME_PRIMARY);
+	}
+
+	/**
+	 * Wrapper to update a residency. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void update(Residency residency)
+	{
+		new UpdateResidencyAsyncTask(residencyDao).execute(residency);
 	}
 }

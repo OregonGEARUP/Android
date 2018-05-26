@@ -79,4 +79,15 @@
 	<string name="tests_sat_reading">Reading/Writing Score</string>
 	<string name="tests_sat_math">Math Score</string>
 	<string name="tests_sat_essay">Essay Score</string>
+	<string name="residency_page_message">If you apply to an Oregon public university you will need to answer questions about how long you and your parent/guardian have lived in the state.</string>
+	<string name="residency_message1">"How long have you lived here? If you were born in Oregon, list the month and year of your birthday.</string>
+	<string name="residency_message2">How long has your parent/guardian lived here?</string>
+	<string name="residency_start_date">Residency Start Date</string>
+	<string name="residency_end_date">Residency End Date</string>
+	<string name="employment">Employment</string>
+	<string name="employment_message">Do you or did you have a job? List your most recent or current job.</string>
+	<string name="employment_name">Employer Name</string>
+	<string name="employment_city">Employer City</string>
+	<string name="employment_start_date">Employer Start Date</string>
+	<string name="employment_end_date">Employer End Date</string>
 </resources>

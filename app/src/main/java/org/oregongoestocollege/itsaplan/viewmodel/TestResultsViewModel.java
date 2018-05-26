@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 
+import org.oregongoestocollege.itsaplan.data.MyPlanDatabase;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 
 /**
@@ -20,7 +21,7 @@ public class TestResultsViewModel extends AndroidViewModel
 	{
 		super(application);
 
-		repository = new MyPlanRepository(application);
+		repository = MyPlanRepository.getInstance(MyPlanDatabase.getDatabase(application));
 		actVm = new TestResultViewModel(repository);
 		satVm = new TestResultViewModel(repository);
 	}

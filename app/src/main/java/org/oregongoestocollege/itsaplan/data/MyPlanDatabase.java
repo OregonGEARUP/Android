@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
 import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
+import org.oregongoestocollege.itsaplan.data.dao.ResidencyDao;
 import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
 import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
 
@@ -20,7 +21,9 @@ import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
  *
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-@Database(entities = { College.class, Scholarship.class, TestResult.class }, version = 1, exportSchema = false)
+@Database(entities = { College.class, Scholarship.class, TestResult.class, Residency.class },
+	version = 1,
+	exportSchema = false)
 @TypeConverters(DateConverter.class)
 public abstract class MyPlanDatabase extends RoomDatabase
 {
@@ -62,10 +65,12 @@ public abstract class MyPlanDatabase extends RoomDatabase
 	private static class PopulateDbAsync extends AsyncTask<Void, Void, Void>
 	{
 		private final TestResultDao testResultDao;
+		private final ResidencyDao residencyDao;
 
 		PopulateDbAsync(MyPlanDatabase db)
 		{
 			testResultDao = db.testResultDao();
+			residencyDao = db.residencyDao();
 		}
 
 		@Override
@@ -76,6 +81,11 @@ public abstract class MyPlanDatabase extends RoomDatabase
 			testResultDao.insert(testResult);
 			testResult = new TestResult(TestResult.NAME_SAT);
 			testResultDao.insert(testResult);
+
+			// add our 1 supported residency
+			Residency residency = new Residency(Residency.NAME_PRIMARY);
+			residencyDao.insert(residency);
+
 			return null;
 		}
 	}
@@ -85,4 +95,6 @@ public abstract class MyPlanDatabase extends RoomDatabase
 	public abstract ScholarshipDao scholarshipDao();
 
 	public abstract TestResultDao testResultDao();
+
+	public abstract ResidencyDao residencyDao();
 }

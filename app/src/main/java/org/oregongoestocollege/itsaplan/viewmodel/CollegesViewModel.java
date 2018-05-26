@@ -19,6 +19,7 @@ import org.oregongoestocollege.itsaplan.AddLayoutView;
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.data.College;
+import org.oregongoestocollege.itsaplan.data.MyPlanDatabase;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 
 /**
@@ -40,7 +41,7 @@ public class CollegesViewModel extends AndroidViewModel
 		mycount = ++count;
 		Utils.d(CollegeViewModel.LOG_TAG, "create %d", mycount);
 
-		repository = new MyPlanRepository(application);
+		repository = MyPlanRepository.getInstance(MyPlanDatabase.getDatabase(application));
 		allColleges = repository.getAllColleges();
 	}
 
