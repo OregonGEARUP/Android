@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
@@ -45,34 +46,10 @@
 					android:layout_marginTop="@dimen/baseline_unit"
 					android:text="@string/tests_act_message" />
 
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit_half"
-					android:layout_marginTop="@dimen/baseline_unit_half"
-					android:orientation="vertical">
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:clickable="false"
-						android:focusable="false"
-						android:text="@string/tests_act_date" />
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="@dimen/baseline_unit_half"
-						android:layout_marginTop="@dimen/baseline_unit_half"
-						android:background="@drawable/button_outline"
-						android:clickable="true"
-						android:focusable="true"
-						android:onClick="@{(view) -> viewModel.actVm.onChangeTestDate(view)}"
-						android:padding="@dimen/baseline_unit"
-						android:text="@{viewModel.actVm.testDateText}"
-						android:textSize="16sp"
-						tools:text="March 17, 2000" />
-				</LinearLayout>
+				<include
+					layout="@layout/date_layout"
+					app:viewModel="@{viewModel.actVm.testDateVm}"
+					app:dateLabel="@{@string/tests_act_date}"/>
 
 				<android.support.design.widget.TextInputLayout
 					android:layout_width="match_parent"
@@ -156,34 +133,10 @@
 					android:layout_marginTop="@dimen/baseline_unit"
 					android:text="@string/tests_sat_message" />
 
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit_half"
-					android:layout_marginTop="@dimen/baseline_unit_half"
-					android:orientation="vertical">
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:clickable="false"
-						android:focusable="false"
-						android:text="@string/tests_sat_date" />
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="@dimen/baseline_unit_half"
-						android:layout_marginTop="@dimen/baseline_unit_half"
-						android:background="@drawable/button_outline"
-						android:clickable="true"
-						android:focusable="true"
-						android:onClick="@{(view) -> viewModel.satVm.onChangeTestDate(view)}"
-						android:padding="@dimen/baseline_unit"
-						android:text="@{viewModel.satVm.testDateText}"
-						android:textSize="16sp"
-						tools:text="March 21, 2000" />
-				</LinearLayout>
+				<include
+					layout="@layout/date_layout"
+					app:viewModel="@{viewModel.satVm.testDateVm}"
+					app:dateLabel="@{@string/tests_sat_date}"/>
 
 				<android.support.design.widget.TextInputLayout
 					android:layout_width="match_parent"

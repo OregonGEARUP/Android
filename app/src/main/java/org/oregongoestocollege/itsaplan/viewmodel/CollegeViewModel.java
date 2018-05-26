@@ -1,9 +1,5 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
-import java.util.Calendar;
-import java.util.Date;
-
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.ObservableBoolean;
@@ -12,9 +8,7 @@ import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.View;
-import android.widget.DatePicker;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
@@ -35,9 +29,8 @@ public class CollegeViewModel implements BindingItem
 	private final boolean removable;
 	// UX fields
 	private boolean initialized = false;
-	private Date applicationDate;
 	public final ObservableField<String> name = new ObservableField<>();
-	public final ObservableField<String> applicationDateText = new ObservableField<>();
+	public final ObservableField<DateViewModel> applicationDateVm = new ObservableField<>();
 	public final ObservableDouble averageNetPrice = new ObservableDouble();
 	public final ObservableDouble applicationCost = new ObservableDouble();
 	public final ObservableBoolean essayDone = new ObservableBoolean();
@@ -55,15 +48,12 @@ public class CollegeViewModel implements BindingItem
 		this.college = checkNotNull(college);
 		this.removable = removable;
 
-		this.applicationDate = college.getApplicationDate();
+		applicationDateVm.set(new DateViewModel(college.getApplicationDate()));
 	}
 
 	private boolean isDirty()
 	{
-		boolean dateOk = (applicationDate == null && college.getApplicationDate() == null) ||
-			(applicationDate != null && applicationDate.equals(college.getApplicationDate()));
-
-		return !dateOk ||
+		return applicationDateVm.get().isDirty() ||
 			!TextUtils.equals(name.get(), college.getName()) ||
 			averageNetPrice.get() != college.getAverageNetPrice() ||
 			applicationCost.get() != college.getApplicationCost() ||
@@ -94,9 +84,7 @@ public class CollegeViewModel implements BindingItem
 		if (initialized)
 			return;
 
-		// use local value we set in constructor / picker
-		if (applicationDate != null)
-			applicationDateText.set(DateFormat.getLongDateFormat(context).format(applicationDate));
+		applicationDateVm.get().onBind(context);
 
 		name.set(college.getName());
 		averageNetPrice.set(college.getAverageNetPrice());
@@ -121,7 +109,7 @@ public class CollegeViewModel implements BindingItem
 		Utils.d(LOG_TAG, "Saving %s to database", name.get());
 
 		college.setName(name.get());
-		college.setApplicationDate(applicationDate);
+		college.setApplicationDate(applicationDateVm.get().getSelectedDate());
 		college.setAverageNetPrice(averageNetPrice.get());
 		college.setApplicationCost(applicationCost.get());
 		college.setEssayDone(essayDone.get());
@@ -165,34 +153,5 @@ public class CollegeViewModel implements BindingItem
 				}
 			})
 			.show();
-	}
-
-	public void onChangeApplicationDate(View view)
-	{
-		final Context context = view.getContext();
-
-		final Calendar c = Calendar.getInstance();
-		Date initialDate = college.getApplicationDate();
-		if (initialDate != null)
-			c.setTime(initialDate);
-
-		DatePickerDialog datePickerDialog = new DatePickerDialog(context,
-			new DatePickerDialog.OnDateSetListener()
-			{
-				@Override
-				public void onDateSet(DatePicker view, int year, int month, int day)
-				{
-					final Calendar calendar = Calendar.getInstance();
-					calendar.clear();
-					calendar.set(year, month, day);
-
-					// update UX
-					applicationDate = calendar.getTime();
-					applicationDateText.set(DateFormat.getLongDateFormat(context).format(applicationDate));
-				}
-			},
-			c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-
-		datePickerDialog.show();
 	}
 }

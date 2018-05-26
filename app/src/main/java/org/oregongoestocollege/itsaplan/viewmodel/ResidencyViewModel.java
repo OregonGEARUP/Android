@@ -1,10 +1,6 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
-import java.util.Calendar;
-import java.util.Date;
-
 import android.app.Application;
-import android.app.DatePickerDialog;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
@@ -13,16 +9,11 @@ import android.content.Context;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
-import android.view.View;
-import android.widget.DatePicker;
 
 import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.data.MyPlanDatabase;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Residency;
-
-import static com.google.common.base.Verify.verifyNotNull;
 
 /**
  * Oregon GEAR UP App
@@ -33,12 +24,11 @@ public class ResidencyViewModel extends AndroidViewModel
 	public static final String LOG_TAG = "GearUpResidency";
 	private MyPlanRepository repository;
 	private final LiveData<Residency> residency;
-	private boolean dirty;
 	// UX fields
 	public final ObservableField<String> nameEmployer1 = new ObservableField<>();
 	public final ObservableField<String> cityEmployer1 = new ObservableField<>();
-	public final ObservableField<String> startEmployer1 = new ObservableField<>();
-	public final ObservableField<String> endEmployer1 = new ObservableField<>();
+	public final ObservableField<DateViewModel> startEmployer1DateVm = new ObservableField<>();
+	public final ObservableField<DateViewModel> endEmployer1DateVm = new ObservableField<>();
 
 	public ResidencyViewModel(@NonNull Application application, @NonNull MyPlanRepository repository)
 	{
@@ -46,6 +36,10 @@ public class ResidencyViewModel extends AndroidViewModel
 
 		this.repository = repository;
 		this.residency = repository.getResidency();
+
+		Residency residency = getResidency().getValue();
+		startEmployer1DateVm.set(new DateViewModel(residency.getStartEmployer1()));
+		endEmployer1DateVm.set(new DateViewModel(residency.getEndEmployer1()));
 	}
 
 	private boolean isDirty()
@@ -54,9 +48,10 @@ public class ResidencyViewModel extends AndroidViewModel
 		if (residency == null)
 			return false;
 
-		return dirty ||
-			!TextUtils.equals(nameEmployer1.get(), residency.getNameEmployer1()) ||
-			!TextUtils.equals(cityEmployer1.get(), residency.getCityEmployer1());
+		return !TextUtils.equals(nameEmployer1.get(), residency.getNameEmployer1()) ||
+			!TextUtils.equals(cityEmployer1.get(), residency.getCityEmployer1()) ||
+			startEmployer1DateVm.get().isDirty() ||
+			endEmployer1DateVm.get().isDirty();
 	}
 
 	public LiveData<Residency> getResidency()
@@ -64,22 +59,27 @@ public class ResidencyViewModel extends AndroidViewModel
 		return residency;
 	}
 
-	public void setResidency(@NonNull Residency residency, @NonNull Context context)
+	public void residencyChanged(@NonNull Context context)
 	{
-		verifyNotNull(residency);
+		Residency residency = getResidency().getValue();
+		if (residency == null)
+			return;
+
+		if (startEmployer1DateVm == null)
+		{
+
+		}
 
 		nameEmployer1.set(residency.getNameEmployer1());
 		cityEmployer1.set(residency.getCityEmployer1());
-		Date date = residency.getStartEmployer1();
-		if (date != null)
-			startEmployer1.set(DateFormat.getLongDateFormat(context).format(date));
-		else
-			startEmployer1.set(null);
-		date = residency.getEndEmployer1();
-		if (date != null)
-			endEmployer1.set(DateFormat.getLongDateFormat(context).format(date));
-		else
-			endEmployer1.set(null);
+		if (startEmployer1DateVm == null)
+			startEmployer1DateVm.set(new DateViewModel(residency.getStartEmployer1()));
+		else if (context != null)
+			startEmployer1DateVm.get().onBind(context);
+		if (endEmployer1DateVm == null)
+			endEmployer1DateVm.set(new DateViewModel(residency.getEndEmployer1()));
+		else if (context != null)
+			endEmployer1DateVm.get().onBind(context);
 	}
 
 	public void update()
@@ -94,36 +94,6 @@ public class ResidencyViewModel extends AndroidViewModel
 		residency.setCityEmployer1(cityEmployer1.get());
 
 		repository.update(residency);
-	}
-
-	public void onChangeDate(View view)
-	{
-		final Context context = view.getContext();
-
-		final Calendar c = Calendar.getInstance();
-		Date initialDate = residency.getValue().getStartEmployer1();
-		if (initialDate != null)
-			c.setTime(initialDate);
-
-		DatePickerDialog datePickerDialog = new DatePickerDialog(context,
-			new DatePickerDialog.OnDateSetListener()
-			{
-				@Override
-				public void onDateSet(DatePicker view, int year, int month, int day)
-				{
-					final Calendar calendar = Calendar.getInstance();
-					calendar.clear();
-					calendar.set(year, month, day);
-
-					// update UX
-					residency.getValue().setStartEmployer1(calendar.getTime());
-					startEmployer1.set(DateFormat.getLongDateFormat(context).format(calendar.getTime()));
-					dirty = true;
-				}
-			},
-			c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-
-		datePickerDialog.show();
 	}
 
 	/**

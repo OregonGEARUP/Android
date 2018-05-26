@@ -1,5 +1,5 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools">
+	xmlns:app="http://schemas.android.com/apk/res-auto">
 
 	<data>
 
@@ -47,63 +47,15 @@
 					android:layout_marginTop="@dimen/baseline_unit"
 					android:text="@string/residency_message1" />
 
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit_half"
-					android:layout_marginTop="@dimen/baseline_unit_half"
-					android:orientation="vertical">
+				<include
+					layout="@layout/date_layout"
+					app:viewModel="@{viewModel.startEmployer1DateVm}"
+					app:dateLabel="@{@string/residency_start_date}"/>
 
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:clickable="false"
-						android:focusable="false"
-						android:text="@string/residency_start_date" />
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="@dimen/baseline_unit_half"
-						android:layout_marginTop="@dimen/baseline_unit_half"
-						android:background="@drawable/button_outline"
-						android:clickable="true"
-						android:focusable="true"
-						android:onClick="@{(view) -> viewModel.onChangeDate(view)}"
-						android:padding="@dimen/baseline_unit"
-						android:text="@{viewModel.startEmployer1}"
-						android:textSize="16sp"
-						tools:text="March 17, 2000" />
-				</LinearLayout>
-
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit_half"
-					android:layout_marginTop="@dimen/baseline_unit_half"
-					android:orientation="vertical">
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:clickable="false"
-						android:focusable="false"
-						android:text="@string/residency_end_date" />
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="@dimen/baseline_unit_half"
-						android:layout_marginTop="@dimen/baseline_unit_half"
-						android:background="@drawable/button_outline"
-						android:clickable="true"
-						android:focusable="true"
-						android:onClick="@{(view) -> viewModel.onChangeDate(view)}"
-						android:padding="@dimen/baseline_unit"
-						android:text="@{viewModel.endEmployer1}"
-						android:textSize="16sp"
-						tools:text="March 30, 2010" />
-				</LinearLayout>
+				<include
+					layout="@layout/date_layout"
+					app:viewModel="@{viewModel.endEmployer1DateVm}"
+					app:dateLabel="@{@string/residency_end_date}"/>
 
 				<TextView
 					android:layout_width="match_parent"
@@ -112,63 +64,15 @@
 					android:layout_marginTop="@dimen/baseline_unit"
 					android:text="@string/residency_message2" />
 
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit_half"
-					android:layout_marginTop="@dimen/baseline_unit_half"
-					android:orientation="vertical">
+				<include
+					layout="@layout/date_layout"
+					app:viewModel="@{viewModel.startEmployer1DateVm}"
+					app:dateLabel="@{@string/residency_start_date}"/>
 
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:clickable="false"
-						android:focusable="false"
-						android:text="@string/residency_start_date" />
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="@dimen/baseline_unit_half"
-						android:layout_marginTop="@dimen/baseline_unit_half"
-						android:background="@drawable/button_outline"
-						android:clickable="true"
-						android:focusable="true"
-						android:onClick="@{(view) -> viewModel.onChangeDate(view)}"
-						android:padding="@dimen/baseline_unit"
-						android:text="@{viewModel.startEmployer1}"
-						android:textSize="16sp"
-						tools:text="March 17, 2000" />
-				</LinearLayout>
-
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit_half"
-					android:layout_marginTop="@dimen/baseline_unit_half"
-					android:orientation="vertical">
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:clickable="false"
-						android:focusable="false"
-						android:text="@string/residency_end_date" />
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="@dimen/baseline_unit_half"
-						android:layout_marginTop="@dimen/baseline_unit_half"
-						android:background="@drawable/button_outline"
-						android:clickable="true"
-						android:focusable="true"
-						android:onClick="@{(view) -> viewModel.onChangeDate(view)}"
-						android:padding="@dimen/baseline_unit"
-						android:text="@{viewModel.endEmployer1}"
-						android:textSize="16sp"
-						tools:text="March 30, 2010" />
-				</LinearLayout>
+				<include
+					layout="@layout/date_layout"
+					app:viewModel="@{viewModel.endEmployer1DateVm}"
+					app:dateLabel="@{@string/residency_end_date}"/>
 			</LinearLayout>
 
 			<TextView
@@ -217,63 +121,15 @@
 						android:text="@={viewModel.cityEmployer1}"/>
 				</android.support.design.widget.TextInputLayout>
 
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit_half"
-					android:layout_marginTop="@dimen/baseline_unit_half"
-					android:orientation="vertical">
+				<include
+					layout="@layout/date_layout"
+					app:viewModel="@{viewModel.startEmployer1DateVm}"
+					app:dateLabel="@{@string/employment_start_date}"/>
 
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:clickable="false"
-						android:focusable="false"
-						android:text="@string/employment_start_date" />
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="@dimen/baseline_unit_half"
-						android:layout_marginTop="@dimen/baseline_unit_half"
-						android:background="@drawable/button_outline"
-						android:clickable="true"
-						android:focusable="true"
-						android:onClick="@{(view) -> viewModel.onChangeDate(view)}"
-						android:padding="@dimen/baseline_unit"
-						android:text="@{viewModel.startEmployer1}"
-						android:textSize="16sp"
-						tools:text="March 17, 2000" />
-				</LinearLayout>
-
-				<LinearLayout
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit_half"
-					android:layout_marginTop="@dimen/baseline_unit_half"
-					android:orientation="vertical">
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:clickable="false"
-						android:focusable="false"
-						android:text="@string/application_deadline" />
-
-					<TextView
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_marginBottom="@dimen/baseline_unit_half"
-						android:layout_marginTop="@dimen/baseline_unit_half"
-						android:background="@drawable/button_outline"
-						android:clickable="true"
-						android:focusable="true"
-						android:onClick="@{(view) -> viewModel.onChangeDate(view)}"
-						android:padding="@dimen/baseline_unit"
-						android:text="@{viewModel.endEmployer1}"
-						android:textSize="16sp"
-						tools:text="March 30, 2010" />
-				</LinearLayout>
+				<include
+					layout="@layout/date_layout"
+					app:viewModel="@{viewModel.endEmployer1DateVm}"
+					app:dateLabel="@{@string/employment_end_date}"/>
 			</LinearLayout>
 		</RelativeLayout>
 	</ScrollView>

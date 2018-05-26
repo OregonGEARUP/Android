@@ -63,7 +63,7 @@ public class MyPlanResidencyFragment extends Fragment
 					residency != null ? "true" : "false"));
 
 				if (residency != null)
-					viewModel.setResidency(residency, getContext());
+					viewModel.residencyChanged(getContext());
 			}
 		});
 	}

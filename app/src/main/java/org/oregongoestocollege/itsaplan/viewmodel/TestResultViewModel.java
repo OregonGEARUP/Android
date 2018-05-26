@@ -1,18 +1,10 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
-import java.util.Calendar;
-import java.util.Date;
-
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
-import android.view.View;
-import android.widget.DatePicker;
 
-import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.TestResult;
@@ -30,8 +22,7 @@ public class TestResultViewModel implements BindingItem
 	private TestResult testResult;
 	// UX fields
 	private boolean initialized = false;
-	private Date testDate;
-	public final ObservableField<String> testDateText = new ObservableField<>();
+	public final ObservableField<DateViewModel> testDateVm = new ObservableField<>();
 	public final ObservableField<String> composite = new ObservableField<>();
 	public final ObservableField<String> math = new ObservableField<>();
 	public final ObservableField<String> science = new ObservableField<>();
@@ -48,10 +39,7 @@ public class TestResultViewModel implements BindingItem
 		if (testResult == null)
 			return false;
 
-		boolean dateEqual = (testDate == null && testResult.getDate() == null) ||
-			(testDate != null && testDate.equals(testResult.getDate()));
-
-		return !dateEqual ||
+		return testDateVm.get().isDirty() ||
 			TextUtils.equals(composite.get(), testResult.getComposite()) ||
 			TextUtils.equals(math.get(), testResult.getMath()) ||
 			TextUtils.equals(science.get(), testResult.getScience()) ||
@@ -63,13 +51,13 @@ public class TestResultViewModel implements BindingItem
 	{
 		this.testResult = checkNotNull(testResult);
 
-		this.testDate = testResult.getDate();
+		testDateVm.set(new DateViewModel(testResult.getDate()));
 	}
 
 	@Override
 	public int getLayoutId()
 	{
-		return R.layout.item_college;
+		return 0;
 	}
 
 	@Override
@@ -78,9 +66,7 @@ public class TestResultViewModel implements BindingItem
 		if (initialized || testResult == null)
 			return;
 
-		// use local value we set in constructor / picker
-		if (testDate != null)
-			testDateText.set(DateFormat.getLongDateFormat(context).format(testDate));
+		testDateVm.get().onBind(context);
 
 		composite.set(testResult.getComposite());
 		math.set(testResult.getMath());
@@ -98,6 +84,7 @@ public class TestResultViewModel implements BindingItem
 
 		Utils.d(LOG_TAG, "Saving %s to database", testResult.getName());
 
+		testResult.setDate(testDateVm.get().getSelectedDate());
 		testResult.setComposite(composite.get());
 		testResult.setMath(math.get());
 		testResult.setScience(science.get());
@@ -105,37 +92,5 @@ public class TestResultViewModel implements BindingItem
 		testResult.setWriting(writing.get());
 
 		repository.update(testResult);
-	}
-
-	public void onChangeTestDate(View view)
-	{
-		if (testResult == null)
-			return;
-
-		final Context context = view.getContext();
-
-		final Calendar c = Calendar.getInstance();
-		Date initialDate = testResult.getDate();
-		if (initialDate != null)
-			c.setTime(initialDate);
-
-		DatePickerDialog datePickerDialog = new DatePickerDialog(context,
-			new DatePickerDialog.OnDateSetListener()
-			{
-				@Override
-				public void onDateSet(DatePicker view, int year, int month, int day)
-				{
-					final Calendar calendar = Calendar.getInstance();
-					calendar.clear();
-					calendar.set(year, month, day);
-
-					// update UX
-					testDate = calendar.getTime();
-					testDateText.set(DateFormat.getLongDateFormat(context).format(testDate));
-				}
-			},
-			c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-
-		datePickerDialog.show();
 	}
 }

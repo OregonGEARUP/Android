@@ -173,4 +173,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
  * - double value binding in college
  * - network error messages
  * - scope view model to fragment, activity?
+ * - BindingItem default implementation of getLayout
+ * - Text input  https://issuetracker.google.com/issues/62834931
  */

@@ -1,0 +1,45 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools">
+
+	<data>
+
+		<variable
+			name="dateLabel"
+			type="java.lang.String" />
+
+		<variable
+			name="viewModel"
+			type="org.oregongoestocollege.itsaplan.viewmodel.DateViewModel" />
+	</data>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="@dimen/baseline_unit_half"
+		android:layout_marginTop="@dimen/baseline_unit_half">
+
+		<TextView
+			android:id="@+id/textview_label"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:clickable="false"
+			android:focusable="false"
+			android:text="@{dateLabel}"
+			tools:text="@string/residency_start_date" />
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/textview_label"
+			android:layout_marginBottom="@dimen/baseline_unit_half"
+			android:layout_marginTop="@dimen/baseline_unit_half"
+			android:background="@drawable/button_outline"
+			android:clickable="true"
+			android:focusable="true"
+			android:onClick="@{(view) -> viewModel.onChangeDate(view)}"
+			android:padding="@dimen/baseline_unit"
+			android:text="@{viewModel.value}"
+			android:textSize="16sp"
+			tools:text="March 30, 2010" />
+	</RelativeLayout>
+</layout>

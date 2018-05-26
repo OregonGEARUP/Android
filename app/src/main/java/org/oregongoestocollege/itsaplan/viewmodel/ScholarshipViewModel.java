@@ -1,9 +1,5 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
-import java.util.Calendar;
-import java.util.Date;
-
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.ObservableBoolean;
@@ -11,9 +7,7 @@ import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.View;
-import android.widget.DatePicker;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
@@ -34,9 +28,8 @@ public class ScholarshipViewModel implements BindingItem
 	private final boolean removable;
 	// UX fields
 	private boolean initialized = false;
-	private Date applicationDate;
 	public final ObservableField<String> name = new ObservableField<>();
-	public final ObservableField<String> applicationDateText = new ObservableField<>();
+	public final ObservableField<DateViewModel> applicationDateVm = new ObservableField<>();
 	public final ObservableField<String> website = new ObservableField<>();
 	public final ObservableField<String> otherInfo = new ObservableField<>();
 	public final ObservableBoolean essayDone = new ObservableBoolean();
@@ -51,15 +44,12 @@ public class ScholarshipViewModel implements BindingItem
 		this.scholarship = checkNotNull(scholarship);
 		this.removable = removable;
 
-		this.applicationDate = scholarship.getApplicationDate();
+		applicationDateVm.set(new DateViewModel(scholarship.getApplicationDate()));
 	}
 
 	private boolean isDirty()
 	{
-		boolean dateOk = (applicationDate == null && scholarship.getApplicationDate() == null) ||
-			(applicationDate != null && applicationDate.equals(scholarship.getApplicationDate()));
-
-		return !dateOk ||
+		return applicationDateVm.get().isDirty() ||
 			!TextUtils.equals(name.get(), scholarship.getName()) ||
 			!TextUtils.equals(website.get(), scholarship.getWebsite()) ||
 			!TextUtils.equals(otherInfo.get(), scholarship.getOtherInfo()) ||
@@ -87,9 +77,7 @@ public class ScholarshipViewModel implements BindingItem
 		if (initialized)
 			return;
 
-		// use local value we set in constructor / picker
-		if (applicationDate != null)
-			applicationDateText.set(DateFormat.getLongDateFormat(context).format(applicationDate));
+		applicationDateVm.get().onBind(context);
 
 		name.set(scholarship.getName());
 		website.set(scholarship.getWebsite());
@@ -111,7 +99,7 @@ public class ScholarshipViewModel implements BindingItem
 		Utils.d(LOG_TAG, "Saving %s to database", name.get());
 
 		scholarship.setName(name.get());
-		scholarship.setApplicationDate(applicationDate);
+		scholarship.setApplicationDate(applicationDateVm.get().getSelectedDate());
 		scholarship.setWebsite(website.get());
 		scholarship.setOtherInfo(otherInfo.get());
 		scholarship.setEssayDone(essayDone.get());
@@ -152,34 +140,5 @@ public class ScholarshipViewModel implements BindingItem
 				}
 			})
 			.show();
-	}
-
-	public void onChangeApplicationDate(View view)
-	{
-		final Context context = view.getContext();
-
-		final Calendar c = Calendar.getInstance();
-		Date initialDate = scholarship.getApplicationDate();
-		if (initialDate != null)
-			c.setTime(initialDate);
-
-		DatePickerDialog datePickerDialog = new DatePickerDialog(context,
-			new DatePickerDialog.OnDateSetListener()
-			{
-				@Override
-				public void onDateSet(DatePicker view, int year, int month, int day)
-				{
-					final Calendar calendar = Calendar.getInstance();
-					calendar.clear();
-					calendar.set(year, month, day);
-
-					// update UX
-					applicationDate = calendar.getTime();
-					applicationDateText.set(DateFormat.getLongDateFormat(context).format(applicationDate));
-				}
-			},
-			c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-
-		datePickerDialog.show();
 	}
 }
