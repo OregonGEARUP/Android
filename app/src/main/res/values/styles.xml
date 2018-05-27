@@ -76,7 +76,7 @@
 		<item name="android:paddingStart">@dimen/baseline_unit_2x</item>
 		<item name="android:paddingEnd">@dimen/baseline_unit_2x</item>
 		<item name="android:paddingTop">@dimen/baseline_unit_half</item>
-		<item name="android:paddingBottom">@dimen/baseline_unit_half</item>
+		<item name="android:paddingBottom">@dimen/baseline_unit</item>
 	</style>
 	<style name="GearUpMyPlanTitle">
 		<item name="android:textSize">16sp</item>
@@ -126,9 +126,8 @@
 	<style name="GearUpMyPlanTextInputScore">
 		<item name="android:layout_width">match_parent</item>
 		<item name="android:layout_height">wrap_content</item>
-		<item name="android:inputType">number</item>
 		<item name="android:maxLines">1</item>
-		<item name="android:maxLength">10</item>
+		<item name="android:maxLength">32</item>
 	</style>
 
 	<!-- password control styles -->

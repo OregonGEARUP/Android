@@ -1,5 +1,6 @@
 package org.oregongoestocollege.itsaplan;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -10,7 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.oregongoestocollege.itsaplan.data.TestResult;
 import org.oregongoestocollege.itsaplan.databinding.FragmentMyPlanTestResultsBinding;
+import org.oregongoestocollege.itsaplan.viewmodel.TestResultViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.TestResultsViewModel;
 
 /**
@@ -19,6 +22,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.TestResultsViewModel;
  */
 public class MyPlanTestResultsFragment extends Fragment
 {
+	private FragmentMyPlanTestResultsBinding binding;
 	private TestResultsViewModel viewModel;
 
 	public MyPlanTestResultsFragment()
@@ -30,24 +34,57 @@ public class MyPlanTestResultsFragment extends Fragment
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
 		@Nullable Bundle savedInstanceState)
 	{
-		// Inflate the layout for this fragment
-		FragmentMyPlanTestResultsBinding binding = DataBindingUtil
-			.inflate(inflater, R.layout.fragment_my_plan_test_results, container, false);
-		View v = binding.getRoot();
+		// Inflate this data binding layout
+		binding = DataBindingUtil.inflate(inflater, R.layout.fragment_my_plan_test_results, container, false);
+
+		return binding.getRoot();
+	}
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+
+		Utils.d(TestResultViewModel.LOG_TAG, "onActivityCreated");
 
 		viewModel = ViewModelProviders.of(this).get(TestResultsViewModel.class);
 
-		// bind to fragment to get onClick for floating actions
 		binding.setViewModel(viewModel);
 
-		return v;
+		// observe live data
+		viewModel.getActTestResultData().removeObservers(this);
+		viewModel.getActTestResultData().observe(this, new Observer<TestResult>()
+		{
+			@Override
+			public void onChanged(@Nullable TestResult testResult)
+			{
+				Utils.d(TestResultViewModel.LOG_TAG, String.format("ACT TestResult changed hasData:%s",
+					testResult != null ? "true" : "false"));
+
+				viewModel.setActTestResult(getContext(), testResult);
+			}
+		});
+
+		// observe live data
+		viewModel.getSatTestResultData().removeObservers(this);
+		viewModel.getSatTestResultData().observe(this, new Observer<TestResult>()
+		{
+			@Override
+			public void onChanged(@Nullable TestResult testResult)
+			{
+				Utils.d(TestResultViewModel.LOG_TAG, String.format("SAT TestResult changed hasData:%s",
+					testResult != null ? "true" : "false"));
+
+				viewModel.setSatTestResult(getContext(), testResult);
+			}
+		});
 	}
 
 	@Override
 	public void onDetach()
 	{
-//		if (viewModel != null)
-//			viewModel.update();
+		if (viewModel != null)
+			viewModel.update();
 
 		super.onDetach();
 	}

@@ -54,9 +54,9 @@ public class ResidencyViewModel extends AndroidViewModel
 
 	private boolean isDirty()
 	{
-		// make sure we have the original residency data
-		Residency oldResidency = residencyData.getValue();
-		if (oldResidency == null)
+		// compare against the original data value
+		Residency value = residencyData.getValue();
+		if (value == null)
 			return false;
 
 		// compare the residency data against the user entry fields
@@ -70,8 +70,8 @@ public class ResidencyViewModel extends AndroidViewModel
 			militaryServiceEndDateVm.get().isDirty() ||
 			parentMilitaryServiceStartDateVm.get().isDirty() ||
 			parentMilitaryServiceEndDateVm.get().isDirty() ||
-			!TextUtils.equals(nameEmployer1.get(), oldResidency.getNameEmployer1()) ||
-			!TextUtils.equals(cityEmployer1.get(), oldResidency.getCityEmployer1()) ||
+			!TextUtils.equals(nameEmployer1.get(), value.getNameEmployer1()) ||
+			!TextUtils.equals(cityEmployer1.get(), value.getCityEmployer1()) ||
 			startEmployer1DateVm.get().isDirty() ||
 			endEmployer1DateVm.get().isDirty();
 	}
@@ -110,28 +110,28 @@ public class ResidencyViewModel extends AndroidViewModel
 
 		Utils.d(LOG_TAG, "Saving Residency to database");
 
-		Residency newResidency = residencyData.getValue();
+		Residency value = residencyData.getValue();
 
-		newResidency.setResidencyStart(residencyStartDateVm.get().getSelectedDate());
-		newResidency.setResidencyEnd(residencyEndDateVm.get().getSelectedDate());
-		newResidency.setParentResidencyStart(parentResidencyStartDateVm.get().getSelectedDate());
-		newResidency.setParentResidencyEnd(parentResidencyEndDateVm.get().getSelectedDate());
-		newResidency.setRegisterToVote(registerToVoteDateVm.get().getSelectedDate());
-		newResidency.setParentsRegisterToVote(parentsRegisterToVoteDateVm.get().getSelectedDate());
-		newResidency.setMilitaryServiceStart(militaryServiceStartDateVm.get().getSelectedDate());
-		newResidency.setMilitaryServiceEnd(militaryServiceEndDateVm.get().getSelectedDate());
-		newResidency.setParentMilitaryServiceStart(parentMilitaryServiceStartDateVm.get().getSelectedDate());
-		newResidency.setParentMilitaryServiceEnd(parentMilitaryServiceEndDateVm.get().getSelectedDate());
-		newResidency.setFileOregonTaxesYear1(fileOregonTaxesYear1DateVm.get().getSelectedDate());
-		newResidency.setFileOregonTaxesYear2(fileOregonTaxesYear2DateVm.get().getSelectedDate());
-		newResidency.setParentsFileOregonTaxesYear1(parentsFileOregonTaxesYear1DateVm.get().getSelectedDate());
-		newResidency.setParentsFileOregonTaxesYear2(parentsFileOregonTaxesYear2DateVm.get().getSelectedDate());
-		newResidency.setNameEmployer1(nameEmployer1.get());
-		newResidency.setCityEmployer1(cityEmployer1.get());
-		newResidency.setStartEmployer1(startEmployer1DateVm.get().getSelectedDate());
-		newResidency.setEndEmployer1(endEmployer1DateVm.get().getSelectedDate());
+		value.setResidencyStart(residencyStartDateVm.get().getSelectedDate());
+		value.setResidencyEnd(residencyEndDateVm.get().getSelectedDate());
+		value.setParentResidencyStart(parentResidencyStartDateVm.get().getSelectedDate());
+		value.setParentResidencyEnd(parentResidencyEndDateVm.get().getSelectedDate());
+		value.setRegisterToVote(registerToVoteDateVm.get().getSelectedDate());
+		value.setParentsRegisterToVote(parentsRegisterToVoteDateVm.get().getSelectedDate());
+		value.setMilitaryServiceStart(militaryServiceStartDateVm.get().getSelectedDate());
+		value.setMilitaryServiceEnd(militaryServiceEndDateVm.get().getSelectedDate());
+		value.setParentMilitaryServiceStart(parentMilitaryServiceStartDateVm.get().getSelectedDate());
+		value.setParentMilitaryServiceEnd(parentMilitaryServiceEndDateVm.get().getSelectedDate());
+		value.setFileOregonTaxesYear1(fileOregonTaxesYear1DateVm.get().getSelectedDate());
+		value.setFileOregonTaxesYear2(fileOregonTaxesYear2DateVm.get().getSelectedDate());
+		value.setParentsFileOregonTaxesYear1(parentsFileOregonTaxesYear1DateVm.get().getSelectedDate());
+		value.setParentsFileOregonTaxesYear2(parentsFileOregonTaxesYear2DateVm.get().getSelectedDate());
+		value.setNameEmployer1(nameEmployer1.get());
+		value.setCityEmployer1(cityEmployer1.get());
+		value.setStartEmployer1(startEmployer1DateVm.get().getSelectedDate());
+		value.setEndEmployer1(endEmployer1DateVm.get().getSelectedDate());
 
-		repository.update(newResidency);
+		repository.update(value);
 	}
 
 	/**

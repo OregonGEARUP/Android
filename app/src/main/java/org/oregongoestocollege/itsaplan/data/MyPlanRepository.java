@@ -283,6 +283,24 @@ public class MyPlanRepository
 	}
 
 	/**
+	 * Wrapper to get ACT test result from the database. Room executes all queries on a separate thread.
+	 * Observed LiveData will notify the observer when the data has changed.
+	 */
+	public LiveData<TestResult> getActTestResult()
+	{
+		return database.testResultDao().getTestResult(TestResult.NAME_ACT);
+	}
+
+	/**
+	 * Wrapper to get SAT test result from the database. Room executes all queries on a separate thread.
+	 * Observed LiveData will notify the observer when the data has changed.
+	 */
+	public LiveData<TestResult> getSatTestResult()
+	{
+		return database.testResultDao().getTestResult(TestResult.NAME_SAT);
+	}
+
+	/**
 	 * Wrapper to get a residency from the database. Room executes all queries on a separate thread.
 	 * Observed LiveData will notify the observer when the data has changed.
 	 */

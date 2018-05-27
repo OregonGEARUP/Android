@@ -1,7 +1,6 @@
 package org.oregongoestocollege.itsaplan.data.dao;
 
-import java.util.List;
-
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
@@ -26,6 +25,6 @@ public interface TestResultDao
 	@Update
 	void update(TestResult testResult);
 
-	@Query("SELECT * from testresult_table")
-	List<TestResult> getAll();
+	@Query("SELECT * from testresult_table where name = :name")
+	LiveData<TestResult> getTestResult(String name);
 }

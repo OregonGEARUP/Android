@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
 				Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
 				boolean showBack =
-					(fragment instanceof OnFragmentInteractionListener) && ((OnFragmentInteractionListener)fragment).canHandleBackPressed();
+					(fragment instanceof OnFragmentInteractionListener) &&
+						((OnFragmentInteractionListener)fragment).canHandleBackPressed();
 				getSupportActionBar().setDisplayHomeAsUpEnabled(showBack);
 			}
 
@@ -170,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
 /**
  * TODO
- * - double value binding in college
+ * - scroll / focus issue, see @+id/focus_view
  * - network error messages
  * - scope view model to fragment, activity?
  * - BindingItem default implementation of getLayout

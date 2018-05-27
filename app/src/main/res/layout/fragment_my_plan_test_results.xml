@@ -22,34 +22,35 @@
 			android:layout_height="wrap_content"
 			android:paddingBottom="@dimen/baseline_unit_2x">
 
+			<!-- stops view from scrolling to / focusing on first EditText -->
+			<View
+				android:id="@+id/focus_view"
+				android:layout_width="fill_parent"
+				android:layout_height="0dp"
+				android:focusable="true"
+				android:focusableInTouchMode="true">
+
+				<requestFocus />
+			</View>
+
 			<TextView
 				android:id="@+id/textview_title_act"
 				style="@style/GearUpMyPlanTitle"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="@dimen/baseline_unit"
 				android:text="@string/tests_act" />
 
 			<LinearLayout
 				android:id="@+id/layout_1"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_below="@+id/textview_title_act"
-				android:orientation="vertical"
-				android:paddingEnd="@dimen/baseline_unit_2x"
-				android:paddingStart="@dimen/baseline_unit_2x">
+				style="@style/GearUpMyPlanGroupLayout"
+				android:layout_below="@+id/textview_title_act">
 
 				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit"
-					android:layout_marginTop="@dimen/baseline_unit"
+					style="@style/GearUpMyPlanMessage"
 					android:text="@string/tests_act_message" />
 
 				<include
 					layout="@layout/date_layout"
-					app:viewModel="@{viewModel.actVm.testDateVm}"
-					app:dateLabel="@{@string/tests_act_date}"/>
+					app:dateLabel="@{@string/tests_act_date}"
+					app:viewModel="@{viewModel.actVm.testDateVm}" />
 
 				<android.support.design.widget.TextInputLayout
 					android:layout_width="match_parent"
@@ -58,7 +59,7 @@
 					<android.support.design.widget.TextInputEditText
 						style="@style/GearUpMyPlanTextInputScore"
 						android:hint="@string/tests_act_composite"
-						android:text="@{viewModel.actVm.composite}"
+						android:text="@={viewModel.actVm.composite}"
 						tools:text="500" />
 				</android.support.design.widget.TextInputLayout>
 
@@ -69,7 +70,7 @@
 					<android.support.design.widget.TextInputEditText
 						style="@style/GearUpMyPlanTextInputScore"
 						android:hint="@string/tests_act_math"
-						android:text="@{viewModel.actVm.math}"
+						android:text="@={viewModel.actVm.math}"
 						tools:text="500" />
 				</android.support.design.widget.TextInputLayout>
 
@@ -80,7 +81,7 @@
 					<android.support.design.widget.TextInputEditText
 						style="@style/GearUpMyPlanTextInputScore"
 						android:hint="@string/tests_act_sciece"
-						android:text="@{viewModel.actVm.science}"
+						android:text="@={viewModel.actVm.science}"
 						tools:text="500" />
 				</android.support.design.widget.TextInputLayout>
 
@@ -91,7 +92,7 @@
 					<android.support.design.widget.TextInputEditText
 						style="@style/GearUpMyPlanTextInputScore"
 						android:hint="@string/tests_act_reading"
-						android:text="@{viewModel.actVm.reading}"
+						android:text="@={viewModel.actVm.reading}"
 						tools:text="500" />
 				</android.support.design.widget.TextInputLayout>
 
@@ -102,7 +103,7 @@
 					<android.support.design.widget.TextInputEditText
 						style="@style/GearUpMyPlanTextInputScore"
 						android:hint="@string/tests_act_writing"
-						android:text="@{viewModel.actVm.writing}"
+						android:text="@={viewModel.actVm.writing}"
 						tools:text="500" />
 				</android.support.design.widget.TextInputLayout>
 			</LinearLayout>
@@ -110,33 +111,22 @@
 			<TextView
 				android:id="@+id/textview_title_sat"
 				style="@style/GearUpMyPlanTitle"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
 				android:layout_below="@+id/layout_1"
-				android:layout_marginBottom="@dimen/baseline_unit"
-				android:layout_marginTop="@dimen/baseline_unit_2x"
 				android:text="@string/tests_sat" />
 
 			<LinearLayout
 				android:id="@+id/layout_2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_below="@+id/textview_title_sat"
-				android:orientation="vertical"
-				android:paddingEnd="@dimen/baseline_unit_2x"
-				android:paddingStart="@dimen/baseline_unit_2x">
+				style="@style/GearUpMyPlanGroupLayout"
+				android:layout_below="@+id/textview_title_sat">
 
 				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit"
-					android:layout_marginTop="@dimen/baseline_unit"
+					style="@style/GearUpMyPlanMessage"
 					android:text="@string/tests_sat_message" />
 
 				<include
 					layout="@layout/date_layout"
-					app:viewModel="@{viewModel.satVm.testDateVm}"
-					app:dateLabel="@{@string/tests_sat_date}"/>
+					app:dateLabel="@{@string/tests_sat_date}"
+					app:viewModel="@{viewModel.satVm.testDateVm}" />
 
 				<android.support.design.widget.TextInputLayout
 					android:layout_width="match_parent"
@@ -145,7 +135,7 @@
 					<android.support.design.widget.TextInputEditText
 						style="@style/GearUpMyPlanTextInputScore"
 						android:hint="@string/tests_sat_total"
-						android:text="@{viewModel.satVm.composite}"
+						android:text="@={viewModel.satVm.composite}"
 						tools:text="500" />
 				</android.support.design.widget.TextInputLayout>
 
@@ -156,7 +146,7 @@
 					<android.support.design.widget.TextInputEditText
 						style="@style/GearUpMyPlanTextInputScore"
 						android:hint="@string/tests_sat_reading"
-						android:text="@{viewModel.satVm.reading}"
+						android:text="@={viewModel.satVm.reading}"
 						tools:text="500" />
 				</android.support.design.widget.TextInputLayout>
 
@@ -167,7 +157,7 @@
 					<android.support.design.widget.TextInputEditText
 						style="@style/GearUpMyPlanTextInputScore"
 						android:hint="@string/tests_sat_math"
-						android:text="@{viewModel.satVm.math}"
+						android:text="@={viewModel.satVm.math}"
 						tools:text="500" />
 				</android.support.design.widget.TextInputLayout>
 
@@ -178,7 +168,7 @@
 					<android.support.design.widget.TextInputEditText
 						style="@style/GearUpMyPlanTextInputScore"
 						android:hint="@string/tests_sat_essay"
-						android:text="@{viewModel.satVm.writing}"
+						android:text="@={viewModel.satVm.writing}"
 						tools:text="500" />
 				</android.support.design.widget.TextInputLayout>
 			</LinearLayout>

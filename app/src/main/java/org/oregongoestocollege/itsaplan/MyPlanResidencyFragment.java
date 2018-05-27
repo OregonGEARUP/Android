@@ -52,7 +52,7 @@ public class MyPlanResidencyFragment extends Fragment
 
 		binding.setViewModel(viewModel);
 
-		// observe residency data / live data
+		// observe live data
 		viewModel.getResidencyData().removeObservers(this);
 		viewModel.getResidencyData().observe(this, new Observer<Residency>()
 		{
