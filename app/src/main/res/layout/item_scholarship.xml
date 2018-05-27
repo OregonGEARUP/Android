@@ -17,34 +17,36 @@
 		android:layout_height="wrap_content"
 		android:paddingBottom="@dimen/baseline_unit_2x">
 
+		<!-- stops view from scrolling to / focusing on first EditText -->
+		<View
+			android:id="@+id/focus_view"
+			android:layout_width="fill_parent"
+			android:layout_height="0dp"
+			android:focusable="true"
+			android:focusableInTouchMode="true">
+
+			<requestFocus />
+		</View>
+
 		<TextView
 			android:id="@+id/textview_title"
 			style="@style/GearUpSectionTitle"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="@dimen/baseline_unit"
 			android:text="@{viewModel.name}"
 			tools:text="scholarship 1" />
 
 		<LinearLayout
 			android:id="@+id/layout_1"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@+id/textview_title"
-			android:orientation="vertical"
-			android:paddingEnd="@dimen/baseline_unit_2x"
-			android:paddingStart="@dimen/baseline_unit_2x">
+			style="@style/GearUpSectionLayout"
+			android:layout_below="@+id/textview_title">
 
 			<android.support.design.widget.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
 				<android.support.design.widget.TextInputEditText
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
+					style="@style/GearUpTextMaxLengthDefault"
 					android:hint="@string/scholarship_name_hint"
-					android:inputType="text"
-					android:text="@={viewModel.name}"
+						android:text="@={viewModel.name}"
 					tools:text="my scholarship" />
 			</android.support.design.widget.TextInputLayout>
 
@@ -58,10 +60,9 @@
 				android:layout_height="wrap_content">
 
 				<android.support.design.widget.TextInputEditText
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
+					style="@style/GearUpTextMaxLengthDefault"
 					android:hint="@string/website_url"
-					android:inputType="text"
+					android:inputType="textUri"
 					android:text="@={viewModel.website}"
 					tools:text="https://gotocollege" />
 			</android.support.design.widget.TextInputLayout>
@@ -83,12 +84,8 @@
 
 		<LinearLayout
 			android:id="@+id/layout_2"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@+id/textview_subtitle"
-			android:orientation="vertical"
-			android:paddingEnd="@dimen/baseline_unit_2x"
-			android:paddingStart="@dimen/baseline_unit_2x">
+			style="@style/GearUpSectionLayout"
+			android:layout_below="@+id/textview_subtitle">
 
 			<CheckBox
 				android:layout_width="wrap_content"
@@ -129,11 +126,8 @@
 		</LinearLayout>
 
 		<Button
-			style="@style/GearUpButtonBorderless"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
+			style="@style/GearUpRemoveButton"
 			android:layout_below="@+id/layout_2"
-			android:layout_gravity="center_horizontal"
 			android:onClick="@{(view) -> viewModel.onRemoveScholarship(view)}"
 			android:text="@string/remove_scholarship"
 			android:visibility="@{viewModel.isRemovable ? View.VISIBLE : View.GONE, default=gone}"

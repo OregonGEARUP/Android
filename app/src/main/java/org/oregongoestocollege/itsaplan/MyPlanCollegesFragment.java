@@ -89,7 +89,7 @@ public class MyPlanCollegesFragment extends Fragment
 			}
 		});
 
-		// bind to fragment to get onClick for floating actions
+		// bind to fragment to get isLoading/onClick for floating actions
 		binding.setUxContext(viewModel);
 	}
 

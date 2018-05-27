@@ -19,8 +19,8 @@ public class College
 	private int uid;
 	private String name;
 	private Date applicationDate;
-	private double averageNetPrice;
-	private double applicationCost;
+	private String averageNetPrice;
+	private String applicationCost;
 	private boolean essayDone;
 	private boolean recommendationsDone;
 	private boolean activitiesChartDone;
@@ -61,22 +61,22 @@ public class College
 		this.applicationDate = applicationDate;
 	}
 
-	public double getAverageNetPrice()
+	public String getAverageNetPrice()
 	{
 		return averageNetPrice;
 	}
 
-	public void setAverageNetPrice(double averageNetPrice)
+	public void setAverageNetPrice(String averageNetPrice)
 	{
 		this.averageNetPrice = averageNetPrice;
 	}
 
-	public double getApplicationCost()
+	public String getApplicationCost()
 	{
 		return applicationCost;
 	}
 
-	public void setApplicationCost(double applicationCost)
+	public void setApplicationCost(String applicationCost)
 	{
 		this.applicationCost = applicationCost;
 	}

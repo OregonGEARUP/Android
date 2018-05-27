@@ -3,7 +3,6 @@ package org.oregongoestocollege.itsaplan.viewmodel;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.databinding.ObservableBoolean;
-import android.databinding.ObservableDouble;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -31,8 +30,8 @@ public class CollegeViewModel implements BindingItem
 	private boolean initialized = false;
 	public final ObservableField<String> name = new ObservableField<>();
 	public final ObservableField<DateViewModel> applicationDateVm = new ObservableField<>();
-	public final ObservableDouble averageNetPrice = new ObservableDouble();
-	public final ObservableDouble applicationCost = new ObservableDouble();
+	public final ObservableField<String> averageNetPrice = new ObservableField<>();
+	public final ObservableField<String> applicationCost = new ObservableField<>();
 	public final ObservableBoolean essayDone = new ObservableBoolean();
 	public final ObservableBoolean recommendationsDone = new ObservableBoolean();
 	public final ObservableBoolean activitiesChartDone = new ObservableBoolean();
@@ -55,8 +54,8 @@ public class CollegeViewModel implements BindingItem
 	{
 		return applicationDateVm.get().isDirty() ||
 			!TextUtils.equals(name.get(), college.getName()) ||
-			averageNetPrice.get() != college.getAverageNetPrice() ||
-			applicationCost.get() != college.getApplicationCost() ||
+			!TextUtils.equals(averageNetPrice.get(), college.getAverageNetPrice()) ||
+			!TextUtils.equals(applicationCost.get(), college.getApplicationCost()) ||
 			essayDone.get() != college.isEssayDone() ||
 			recommendationsDone.get() != college.isRecommendationsDone() ||
 			activitiesChartDone.get() != college.isActivitiesChartDone() ||

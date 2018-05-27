@@ -28,7 +28,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.ScholarshipsViewModel;
  */
 public class MyPlanScholarshipsFragment extends Fragment
 {
-	private RecyclerView recyclerView;
+	private FragmentMyPlanScholarshipsBinding binding;
 	private BindingItemsAdapter adapter;
 	private ScholarshipsViewModel viewModel;
 
@@ -42,37 +42,55 @@ public class MyPlanScholarshipsFragment extends Fragment
 		@Nullable Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		FragmentMyPlanScholarshipsBinding binding =
-			DataBindingUtil.inflate(inflater, R.layout.fragment_my_plan_scholarships, container, false);
+		binding = DataBindingUtil.inflate(inflater, R.layout.fragment_my_plan_scholarships, container, false);
 		View v = binding.getRoot();
 
 		adapter = new BindingItemsAdapter();
 
-		recyclerView = v.findViewById(R.id.recycler_view);
+		RecyclerView recyclerView = v.findViewById(R.id.recycler_view);
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
+		return v;
+	}
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+
+		Utils.d(ScholarshipViewModel.LOG_TAG, "onActivityCreated");
+
 		viewModel = ViewModelProviders.of(this).get(ScholarshipsViewModel.class);
+
+		// observe live data
+		viewModel.getAllScholarships().removeObservers(this);
 		viewModel.getAllScholarships().observe(this, new Observer<List<Scholarship>>()
 		{
 			@Override
 			public void onChanged(@Nullable List<Scholarship> scholarships)
 			{
-				Utils.d(ScholarshipViewModel.LOG_TAG, "All scholarships changed");
+				Utils.d(ScholarshipViewModel.LOG_TAG, String.format("All scholarhips changed hasData:%s",
+					scholarships != null ? "true" : "false"));
 
-				List<BindingItem> items = viewModel.getItems(scholarships);
+				if (scholarships != null)
+				{
+					binding.setIsLoading(false);
 
-				if (adapter.getItemCount() != 0)
-					adapter.clear();
-
-				adapter.addAll(items);
+					List<BindingItem> items = viewModel.getItems(scholarships);
+					if (adapter.getItemCount() != 0)
+						adapter.clear();
+					adapter.addAll(items);
+				}
+				else
+				{
+					binding.setIsLoading(true);
+				}
 			}
 		});
 
-		// bind to fragment to get onClick for floating actions
+		// bind to fragment to get isLoading/onClick for floating actions
 		binding.setUxContext(viewModel);
-
-		return v;
 	}
 
 	@Override
