@@ -35,11 +35,11 @@ public class TestResultViewModel
 			return false;
 
 		return testDateVm.get().isDirty() ||
-			TextUtils.equals(composite.get(), value.getComposite()) ||
-			TextUtils.equals(math.get(), value.getMath()) ||
-			TextUtils.equals(science.get(), value.getScience()) ||
-			TextUtils.equals(reading.get(), value.getReading()) ||
-			TextUtils.equals(writing.get(), value.getWriting());
+			!TextUtils.equals(composite.get(), value.getComposite()) ||
+			!TextUtils.equals(math.get(), value.getMath()) ||
+			!TextUtils.equals(science.get(), value.getScience()) ||
+			!TextUtils.equals(reading.get(), value.getReading()) ||
+			!TextUtils.equals(writing.get(), value.getWriting());
 	}
 
 	public void setTestResult(@NonNull Context context, TestResult testResult)

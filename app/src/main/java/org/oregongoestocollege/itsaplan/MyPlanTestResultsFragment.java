@@ -61,7 +61,9 @@ public class MyPlanTestResultsFragment extends Fragment
 				Utils.d(TestResultViewModel.LOG_TAG, String.format("ACT TestResult changed hasData:%s",
 					testResult != null ? "true" : "false"));
 
-				viewModel.setActTestResult(getContext(), testResult);
+				// could add progress - when loading can start out null followed quickly by non-null
+				if (testResult != null)
+					viewModel.setActTestResult(getContext(), testResult);
 			}
 		});
 
@@ -75,7 +77,9 @@ public class MyPlanTestResultsFragment extends Fragment
 				Utils.d(TestResultViewModel.LOG_TAG, String.format("SAT TestResult changed hasData:%s",
 					testResult != null ? "true" : "false"));
 
-				viewModel.setSatTestResult(getContext(), testResult);
+				// could add progress - when loading can start out null followed quickly by non-null
+				if (testResult != null)
+					viewModel.setSatTestResult(getContext(), testResult);
 			}
 		});
 	}

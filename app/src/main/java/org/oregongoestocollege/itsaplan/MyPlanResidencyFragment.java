@@ -62,7 +62,9 @@ public class MyPlanResidencyFragment extends Fragment
 				Utils.d(ResidencyViewModel.LOG_TAG, String.format("Residency changed hasData:%s",
 					residency != null ? "true" : "false"));
 
-				viewModel.setResidency(getContext(), residency);
+				// could add progress - when loading can start out null followed quickly by non-null
+				if (residency != null)
+					viewModel.setResidency(getContext(), residency);
 			}
 		});
 	}
