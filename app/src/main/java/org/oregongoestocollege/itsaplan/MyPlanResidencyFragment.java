@@ -52,9 +52,9 @@ public class MyPlanResidencyFragment extends Fragment
 
 		binding.setViewModel(viewModel);
 
-		// observe residency data
-		viewModel.getResidency().removeObservers(this);
-		viewModel.getResidency().observe(this, new Observer<Residency>()
+		// observe residency data / live data
+		viewModel.getResidencyData().removeObservers(this);
+		viewModel.getResidencyData().observe(this, new Observer<Residency>()
 		{
 			@Override
 			public void onChanged(@Nullable Residency residency)
@@ -62,8 +62,7 @@ public class MyPlanResidencyFragment extends Fragment
 				Utils.d(ResidencyViewModel.LOG_TAG, String.format("Residency changed hasData:%s",
 					residency != null ? "true" : "false"));
 
-				if (residency != null)
-					viewModel.residencyChanged(getContext());
+				viewModel.setResidency(getContext(), residency);
 			}
 		});
 	}
@@ -73,6 +72,7 @@ public class MyPlanResidencyFragment extends Fragment
 	{
 		Utils.d(ResidencyViewModel.LOG_TAG, "onDetach");
 
+		// persist any user entered data
 		if (viewModel != null)
 			viewModel.update();
 

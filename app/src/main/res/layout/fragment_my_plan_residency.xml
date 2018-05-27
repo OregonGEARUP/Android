@@ -25,6 +25,7 @@
 				style="@style/GearUpMyPlanPageMessage"
 				android:text="@string/residency_page_message" />
 
+			<!-- Residency -->
 			<TextView
 				android:id="@+id/textview_title_residency"
 				style="@style/GearUpMyPlanTitle"
@@ -33,68 +34,165 @@
 
 			<LinearLayout
 				android:id="@+id/layout_1"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_below="@+id/textview_title_residency"
-				android:orientation="vertical"
-				android:paddingEnd="@dimen/baseline_unit_2x"
-				android:paddingStart="@dimen/baseline_unit_2x">
+				style="@style/GearUpMyPlanGroupLayout"
+				android:layout_below="@+id/textview_title_residency">
 
 				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit"
-					android:layout_marginTop="@dimen/baseline_unit"
+					style="@style/GearUpMyPlanMessage"
 					android:text="@string/residency_message1" />
 
 				<include
 					layout="@layout/date_layout"
-					app:viewModel="@{viewModel.startEmployer1DateVm}"
-					app:dateLabel="@{@string/residency_start_date}"/>
+					app:dateLabel="@{@string/residency_start_date}"
+					app:viewModel="@{viewModel.residencyStartDateVm}" />
 
 				<include
 					layout="@layout/date_layout"
-					app:viewModel="@{viewModel.endEmployer1DateVm}"
-					app:dateLabel="@{@string/residency_end_date}"/>
+					app:dateLabel="@{@string/residency_end_date}"
+					app:viewModel="@{viewModel.residencyEndDateVm}" />
 
 				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit"
-					android:layout_marginTop="@dimen/baseline_unit"
+					style="@style/GearUpMyPlanMessage"
 					android:text="@string/residency_message2" />
 
 				<include
 					layout="@layout/date_layout"
-					app:viewModel="@{viewModel.startEmployer1DateVm}"
-					app:dateLabel="@{@string/residency_start_date}"/>
+					app:dateLabel="@{@string/residency_start_date}"
+					app:viewModel="@{viewModel.parentResidencyStartDateVm}" />
 
 				<include
 					layout="@layout/date_layout"
-					app:viewModel="@{viewModel.endEmployer1DateVm}"
-					app:dateLabel="@{@string/residency_end_date}"/>
+					app:dateLabel="@{@string/residency_end_date}"
+					app:viewModel="@{viewModel.parentResidencyEndDateVm}" />
 			</LinearLayout>
 
+			<!-- Voter Registration -->
 			<TextView
-				android:id="@+id/textview_title_employment"
+				android:id="@+id/textview_title_voter"
 				style="@style/GearUpMyPlanTitle"
 				android:layout_below="@+id/layout_1"
-				android:text="@string/employment" />
+				android:text="@string/voter_registration" />
 
 			<LinearLayout
 				android:id="@+id/layout_2"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_below="@+id/textview_title_employment"
-				android:orientation="vertical"
-				android:paddingEnd="@dimen/baseline_unit_2x"
-				android:paddingStart="@dimen/baseline_unit_2x">
+				style="@style/GearUpMyPlanGroupLayout"
+				android:layout_below="@+id/textview_title_voter">
 
 				<TextView
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginBottom="@dimen/baseline_unit"
-					android:layout_marginTop="@dimen/baseline_unit"
+					style="@style/GearUpMyPlanMessage"
+					android:text="@string/voter_message1" />
+
+				<include
+					layout="@layout/date_layout"
+					app:dateLabel="@{@string/voter_registration_date}"
+					app:viewModel="@{viewModel.residencyStartDateVm}" />
+
+				<TextView
+					style="@style/GearUpMyPlanMessage"
+					android:text="@string/voter_message2" />
+
+				<include
+					layout="@layout/date_layout"
+					app:dateLabel="@{@string/voter_registration_date}"
+					app:viewModel="@{viewModel.parentResidencyStartDateVm}" />
+			</LinearLayout>
+
+			<!-- Military -->
+			<TextView
+				android:id="@+id/textview_title_military"
+				style="@style/GearUpMyPlanTitle"
+				android:layout_below="@+id/layout_2"
+				android:text="@string/military_service" />
+
+			<LinearLayout
+				android:id="@+id/layout_3"
+				style="@style/GearUpMyPlanGroupLayout"
+				android:layout_below="@+id/textview_title_military">
+
+				<TextView
+					style="@style/GearUpMyPlanMessage"
+					android:text="@string/military_message1" />
+
+				<include
+					layout="@layout/date_layout"
+					app:dateLabel="@{@string/military_start_date}"
+					app:viewModel="@{viewModel.militaryServiceStartDateVm}" />
+
+				<include
+					layout="@layout/date_layout"
+					app:dateLabel="@{@string/military_end_date}"
+					app:viewModel="@{viewModel.militaryServiceEndDateVm}" />
+
+				<TextView
+					style="@style/GearUpMyPlanMessage"
+					android:text="@string/military_message2" />
+
+				<include
+					layout="@layout/date_layout"
+					app:dateLabel="@{@string/military_start_date}"
+					app:viewModel="@{viewModel.parentMilitaryServiceStartDateVm}" />
+
+				<include
+					layout="@layout/date_layout"
+					app:dateLabel="@{@string/military_end_date}"
+					app:viewModel="@{viewModel.parentMilitaryServiceEndDateVm}" />
+			</LinearLayout>
+
+			<!-- Taxes -->
+			<TextView
+				android:id="@+id/textview_title_taxes"
+				style="@style/GearUpMyPlanTitle"
+				android:layout_below="@+id/layout_3"
+				android:text="@string/taxes" />
+
+			<LinearLayout
+				android:id="@+id/layout_4"
+				style="@style/GearUpMyPlanGroupLayout"
+				android:layout_below="@+id/textview_title_taxes">
+
+				<TextView
+					style="@style/GearUpMyPlanMessage"
+					android:text="@string/taxes_message1" />
+
+				<include
+					layout="@layout/date_layout"
+					app:dateLabel="@{@string/taxes_year1}"
+					app:viewModel="@{viewModel.fileOregonTaxesYear1DateVm}" />
+
+				<include
+					layout="@layout/date_layout"
+					app:dateLabel="@{@string/taxes_year2}"
+					app:viewModel="@{viewModel.fileOregonTaxesYear2DateVm}" />
+
+				<TextView
+					style="@style/GearUpMyPlanMessage"
+					android:text="@string/taxes_message2" />
+
+				<include
+					layout="@layout/date_layout"
+					app:dateLabel="@{@string/taxes_year1}"
+					app:viewModel="@{viewModel.parentsFileOregonTaxesYear1DateVm}" />
+
+				<include
+					layout="@layout/date_layout"
+					app:dateLabel="@{@string/taxes_year2}"
+					app:viewModel="@{viewModel.parentsFileOregonTaxesYear2DateVm}" />
+			</LinearLayout>
+
+			<!-- Employment -->
+			<TextView
+				android:id="@+id/textview_title_employment"
+				style="@style/GearUpMyPlanTitle"
+				android:layout_below="@+id/layout_4"
+				android:text="@string/employment" />
+
+			<LinearLayout
+				android:id="@+id/layout_5"
+				style="@style/GearUpMyPlanGroupLayout"
+				android:layout_below="@+id/textview_title_employment">
+
+				<TextView
+					style="@style/GearUpMyPlanMessage"
 					android:text="@string/employment_message" />
 
 				<android.support.design.widget.TextInputLayout
@@ -102,11 +200,9 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
+						style="@style/GearUpMyPlanTextInput"
 						android:hint="@string/employment_name"
-						android:inputType="text"
-						android:text="@={viewModel.nameEmployer1}"/>
+						android:text="@={viewModel.nameEmployer1}" />
 				</android.support.design.widget.TextInputLayout>
 
 				<android.support.design.widget.TextInputLayout
@@ -114,22 +210,20 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
+						style="@style/GearUpMyPlanTextInput"
 						android:hint="@string/employment_city"
-						android:inputType="text"
-						android:text="@={viewModel.cityEmployer1}"/>
+						android:text="@={viewModel.cityEmployer1}" />
 				</android.support.design.widget.TextInputLayout>
 
 				<include
 					layout="@layout/date_layout"
-					app:viewModel="@{viewModel.startEmployer1DateVm}"
-					app:dateLabel="@{@string/employment_start_date}"/>
+					app:dateLabel="@{@string/employment_start_date}"
+					app:viewModel="@{viewModel.startEmployer1DateVm}" />
 
 				<include
 					layout="@layout/date_layout"
-					app:viewModel="@{viewModel.endEmployer1DateVm}"
-					app:dateLabel="@{@string/employment_end_date}"/>
+					app:dateLabel="@{@string/employment_end_date}"
+					app:viewModel="@{viewModel.endEmployer1DateVm}" />
 			</LinearLayout>
 		</RelativeLayout>
 	</ScrollView>

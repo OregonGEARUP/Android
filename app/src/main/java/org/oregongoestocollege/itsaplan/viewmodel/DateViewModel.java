@@ -26,9 +26,22 @@ public class DateViewModel implements BindingItem
 	private final int placeholderStringRes;
 	public final ObservableField<String> value = new ObservableField<>();
 
+	/**
+	 * Constructor for using in recycler view, binding item
+	 */
 	public DateViewModel(Date originalDate)
 	{
 		this(originalDate, R.string.hint_date_picker);
+	}
+
+	/**
+	 * Constructor for use in fragment, view, etc.
+	 */
+	public DateViewModel(@NonNull Context context, Date originalDate)
+	{
+		this(originalDate, R.string.hint_date_picker);
+
+		onBind(context);
 	}
 
 	public DateViewModel(Date originalDate, @StringRes int placeholderStringRes)

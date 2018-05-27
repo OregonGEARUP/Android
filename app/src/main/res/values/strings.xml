@@ -84,10 +84,24 @@
 	<string name="residency_message2">How long has your parent/guardian lived here?</string>
 	<string name="residency_start_date">Residency Start Date</string>
 	<string name="residency_end_date">Residency End Date</string>
+	<string name="voter_registration">Voter Registration</string>
+	<string name="voter_message1">When did you register to vote?</string>
+	<string name="voter_message2">When did your parent/guardian register to vote?</string>
+	<string name="voter_registration_date">Registration Date</string>
+	<string name="military_service">Military Service</string>
+	<string name="military_message1">Have you entered military service from Oregon?</string>
+	<string name="military_message2">Has your parent/guardian entered military service from Oregon?</string>
+	<string name="military_start_date">Service Start Date</string>
+	<string name="military_end_date">Service End Date</string>
+	<string name="taxes">Taxes</string>
+	<string name="taxes_message1">What are the last two years you filed Oregon income taxes?</string>
+	<string name="taxes_message2">What are the last two years your parent/guardian filed Oregon income taxes?</string>
+	<string name="taxes_year1">Tax Year 1</string>
+	<string name="taxes_year2">Tax Year 2</string>
 	<string name="employment">Employment</string>
 	<string name="employment_message">Do you or did you have a job? List your most recent or current job.</string>
 	<string name="employment_name">Employer Name</string>
 	<string name="employment_city">Employer City</string>
-	<string name="employment_start_date">Employer Start Date</string>
-	<string name="employment_end_date">Employer End Date</string>
+	<string name="employment_start_date">Employment Start Date</string>
+	<string name="employment_end_date">Employment End Date</string>
 </resources>
