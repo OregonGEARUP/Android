@@ -28,8 +28,10 @@ import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
  */
 public class CollegesViewModel extends AndroidViewModel
 {
-	static int count = 0;
-	int mycount;
+	// debug
+	private static int count = 0;
+	private int mycount;
+	// data
 	private MyPlanRepository repository;
 	private LiveData<List<College>> allColleges;
 	private List<CollegeViewModel> allViewModels;

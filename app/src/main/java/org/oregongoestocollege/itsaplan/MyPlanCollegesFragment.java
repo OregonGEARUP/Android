@@ -28,7 +28,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.CollegesViewModel;
  */
 public class MyPlanCollegesFragment extends Fragment
 {
-	private RecyclerView recyclerView;
+	private FragmentMyPlanCollegesBinding binding;
 	private BindingItemsAdapter adapter;
 	private CollegesViewModel viewModel;
 
@@ -42,37 +42,55 @@ public class MyPlanCollegesFragment extends Fragment
 		@Nullable Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		FragmentMyPlanCollegesBinding binding =
-			DataBindingUtil.inflate(inflater, R.layout.fragment_my_plan_colleges, container, false);
+		binding = DataBindingUtil.inflate(inflater, R.layout.fragment_my_plan_colleges, container, false);
 		View v = binding.getRoot();
 
 		adapter = new BindingItemsAdapter();
 
-		recyclerView = v.findViewById(R.id.recycler_view);
+		RecyclerView recyclerView = v.findViewById(R.id.recycler_view);
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
+		return v;
+	}
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+
+		Utils.d(CollegeViewModel.LOG_TAG, "onActivityCreated");
+
 		viewModel = ViewModelProviders.of(this).get(CollegesViewModel.class);
+
+		// observe live data
+		viewModel.getAllColleges().removeObservers(this);
 		viewModel.getAllColleges().observe(this, new Observer<List<College>>()
 		{
 			@Override
 			public void onChanged(@Nullable List<College> colleges)
 			{
-				Utils.d(CollegeViewModel.LOG_TAG, "All colleges changed");
+				Utils.d(CollegeViewModel.LOG_TAG, String.format("All colleges changed hasData:%s",
+					colleges != null ? "true" : "false"));
 
-				List<BindingItem> items = viewModel.getItems(colleges);
+				if (colleges != null)
+				{
+					binding.setIsLoading(false);
 
-				if (adapter.getItemCount() != 0)
-					adapter.clear();
-
-				adapter.addAll(items);
+					List<BindingItem> items = viewModel.getItems(colleges);
+					if (adapter.getItemCount() != 0)
+						adapter.clear();
+					adapter.addAll(items);
+				}
+				else
+				{
+					binding.setIsLoading(true);
+				}
 			}
 		});
 
 		// bind to fragment to get onClick for floating actions
 		binding.setUxContext(viewModel);
-
-		return v;
 	}
 
 	@Override
