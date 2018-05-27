@@ -35,16 +35,16 @@
 
 			<TextView
 				android:id="@+id/textview_title_act"
-				style="@style/GearUpMyPlanTitle"
+				style="@style/GearUpSectionTitle"
 				android:text="@string/tests_act" />
 
 			<LinearLayout
 				android:id="@+id/layout_1"
-				style="@style/GearUpMyPlanGroupLayout"
+				style="@style/GearUpSectionLayout"
 				android:layout_below="@+id/textview_title_act">
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/tests_act_message" />
 
 				<include
@@ -57,7 +57,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInputScore"
+						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_composite"
 						android:text="@={viewModel.actVm.composite}"
 						tools:text="500" />
@@ -68,7 +68,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInputScore"
+						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_math"
 						android:text="@={viewModel.actVm.math}"
 						tools:text="500" />
@@ -79,7 +79,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInputScore"
+						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_sciece"
 						android:text="@={viewModel.actVm.science}"
 						tools:text="500" />
@@ -90,7 +90,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInputScore"
+						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_reading"
 						android:text="@={viewModel.actVm.reading}"
 						tools:text="500" />
@@ -101,7 +101,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInputScore"
+						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_writing"
 						android:text="@={viewModel.actVm.writing}"
 						tools:text="500" />
@@ -110,17 +110,17 @@
 
 			<TextView
 				android:id="@+id/textview_title_sat"
-				style="@style/GearUpMyPlanTitle"
+				style="@style/GearUpSectionTitle"
 				android:layout_below="@+id/layout_1"
 				android:text="@string/tests_sat" />
 
 			<LinearLayout
 				android:id="@+id/layout_2"
-				style="@style/GearUpMyPlanGroupLayout"
+				style="@style/GearUpSectionLayout"
 				android:layout_below="@+id/textview_title_sat">
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/tests_sat_message" />
 
 				<include
@@ -133,7 +133,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInputScore"
+						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_sat_total"
 						android:text="@={viewModel.satVm.composite}"
 						tools:text="500" />
@@ -144,7 +144,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInputScore"
+						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_sat_reading"
 						android:text="@={viewModel.satVm.reading}"
 						tools:text="500" />
@@ -155,7 +155,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInputScore"
+						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_sat_math"
 						android:text="@={viewModel.satVm.math}"
 						tools:text="500" />
@@ -166,7 +166,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInputScore"
+						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_sat_essay"
 						android:text="@={viewModel.satVm.writing}"
 						tools:text="500" />

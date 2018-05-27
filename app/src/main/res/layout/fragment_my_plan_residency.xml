@@ -33,23 +33,23 @@
 
 			<TextView
 				android:id="@+id/textview_message"
-				style="@style/GearUpMyPlanPageMessage"
+				style="@style/GearUpMessage1"
 				android:text="@string/residency_page_message" />
 
 			<!-- Residency -->
 			<TextView
 				android:id="@+id/textview_title_residency"
-				style="@style/GearUpMyPlanTitle"
+				style="@style/GearUpSectionTitle"
 				android:layout_below="@+id/textview_message"
 				android:text="@string/residency" />
 
 			<LinearLayout
 				android:id="@+id/layout_1"
-				style="@style/GearUpMyPlanGroupLayout"
+				style="@style/GearUpSectionLayout"
 				android:layout_below="@+id/textview_title_residency">
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/residency_message1" />
 
 				<include
@@ -63,7 +63,7 @@
 					app:viewModel="@{viewModel.residencyEndDateVm}" />
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/residency_message2" />
 
 				<include
@@ -80,17 +80,17 @@
 			<!-- Voter Registration -->
 			<TextView
 				android:id="@+id/textview_title_voter"
-				style="@style/GearUpMyPlanTitle"
+				style="@style/GearUpSectionTitle"
 				android:layout_below="@+id/layout_1"
 				android:text="@string/voter_registration" />
 
 			<LinearLayout
 				android:id="@+id/layout_2"
-				style="@style/GearUpMyPlanGroupLayout"
+				style="@style/GearUpSectionLayout"
 				android:layout_below="@+id/textview_title_voter">
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/voter_message1" />
 
 				<include
@@ -99,7 +99,7 @@
 					app:viewModel="@{viewModel.residencyStartDateVm}" />
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/voter_message2" />
 
 				<include
@@ -111,17 +111,17 @@
 			<!-- Military -->
 			<TextView
 				android:id="@+id/textview_title_military"
-				style="@style/GearUpMyPlanTitle"
+				style="@style/GearUpSectionTitle"
 				android:layout_below="@+id/layout_2"
 				android:text="@string/military_service" />
 
 			<LinearLayout
 				android:id="@+id/layout_3"
-				style="@style/GearUpMyPlanGroupLayout"
+				style="@style/GearUpSectionLayout"
 				android:layout_below="@+id/textview_title_military">
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/military_message1" />
 
 				<include
@@ -135,7 +135,7 @@
 					app:viewModel="@{viewModel.militaryServiceEndDateVm}" />
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/military_message2" />
 
 				<include
@@ -152,17 +152,17 @@
 			<!-- Taxes -->
 			<TextView
 				android:id="@+id/textview_title_taxes"
-				style="@style/GearUpMyPlanTitle"
+				style="@style/GearUpSectionTitle"
 				android:layout_below="@+id/layout_3"
 				android:text="@string/taxes" />
 
 			<LinearLayout
 				android:id="@+id/layout_4"
-				style="@style/GearUpMyPlanGroupLayout"
+				style="@style/GearUpSectionLayout"
 				android:layout_below="@+id/textview_title_taxes">
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/taxes_message1" />
 
 				<include
@@ -176,7 +176,7 @@
 					app:viewModel="@{viewModel.fileOregonTaxesYear2DateVm}" />
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/taxes_message2" />
 
 				<include
@@ -193,17 +193,17 @@
 			<!-- Employment -->
 			<TextView
 				android:id="@+id/textview_title_employment"
-				style="@style/GearUpMyPlanTitle"
+				style="@style/GearUpSectionTitle"
 				android:layout_below="@+id/layout_4"
 				android:text="@string/employment" />
 
 			<LinearLayout
 				android:id="@+id/layout_5"
-				style="@style/GearUpMyPlanGroupLayout"
+				style="@style/GearUpSectionLayout"
 				android:layout_below="@+id/textview_title_employment">
 
 				<TextView
-					style="@style/GearUpMyPlanMessage"
+					style="@style/GearUpMessage2"
 					android:text="@string/employment_message" />
 
 				<android.support.design.widget.TextInputLayout
@@ -211,7 +211,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInput"
+						style="@style/GearUpTextMaxLengthDefault"
 						android:hint="@string/employment_name"
 						android:text="@={viewModel.nameEmployer1}" />
 				</android.support.design.widget.TextInputLayout>
@@ -221,7 +221,7 @@
 					android:layout_height="wrap_content">
 
 					<android.support.design.widget.TextInputEditText
-						style="@style/GearUpMyPlanTextInput"
+						style="@style/GearUpTextMaxLengthDefault"
 						android:hint="@string/employment_city"
 						android:text="@={viewModel.cityEmployer1}" />
 				</android.support.design.widget.TextInputLayout>
