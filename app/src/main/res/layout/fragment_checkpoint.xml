@@ -27,6 +27,7 @@
 
 		<TextView
 			android:id="@+id/text"
+			style="@style/GearUpTextAppearance.SubTitle"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:text="@{uxContent.description}"
@@ -104,6 +105,7 @@
 			android:layout_centerVertical="false"
 			android:text="@{uxContent.urlText}"
 			android:visibility="@{uxContent.urlText != null ? View.VISIBLE : View.GONE, default=gone}"
+			android:onClick="@{() -> uxContent.onUrlClick()}"
 			tools:text="Get more information"
 			tools:visibility="visible" />
 

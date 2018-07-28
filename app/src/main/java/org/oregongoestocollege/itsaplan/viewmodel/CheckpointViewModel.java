@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
+import org.oregongoestocollege.itsaplan.WebViewActivity;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
@@ -81,7 +82,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			description = model.description;
 			descriptionTextColor = ContextCompat.getColor(context, R.color.text_primary);
 			// url / help
-			urlText = model.urlText;
+			urlText = model.getVerifiedUrlText();
 
 			switch (model.entryType)
 			{
@@ -392,5 +393,13 @@ public class CheckpointViewModel extends AndroidViewModel
 		}
 
 		return show;
+	}
+
+	public void onUrlClick()
+	{
+		if (TextUtils.isEmpty(model.url))
+			return;
+
+		WebViewActivity.startActivity(getApplication().getApplicationContext(), model.url);
 	}
 }

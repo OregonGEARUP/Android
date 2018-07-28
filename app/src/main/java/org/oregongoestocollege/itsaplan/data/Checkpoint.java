@@ -101,4 +101,9 @@ public class Checkpoint
 
 		return meets;
 	}
+
+	public String getVerifiedUrlText()
+	{
+		return (!TextUtils.isEmpty(url) && !TextUtils.isEmpty(urlText)) ? urlText : null;
+	}
 }
