@@ -24,6 +24,7 @@ import org.oregongoestocollege.itsaplan.data.EntryType;
 import org.oregongoestocollege.itsaplan.data.Instance;
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.data.UserEntries;
+import org.oregongoestocollege.itsaplan.data.UserEntriesInterface;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -39,6 +40,7 @@ public class CheckpointViewModel extends AndroidViewModel
 	private int stageIndex;
 	private int checkpointIndex;
 	// view data
+	private final UserEntriesInterface entries;
 	private final CheckpointInterface repository;
 	private final SingleLiveEvent<ChecklistState> nextStageEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<ChecklistState> nextBlockEvent = new SingleLiveEvent<>();
@@ -48,10 +50,6 @@ public class CheckpointViewModel extends AndroidViewModel
 	public Drawable image;
 	private int instanceCount;
 	private List<Instance> instances;
-	// for fields
-	private final int MAX_FIELDS = 5;
-	// for checkboxes / radio buttons
-	private final int MAX_BUTTONS = 5;
 	// for info
 	public String urlText;
 	// for route / next stage
@@ -65,6 +63,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		super(context);
 
 		this.repository = checkNotNull(repository);
+		this.entries = new UserEntries(context);
 	}
 
 	public void start(Context context, int blockIndex, int stageIndex, int checkpointIndex)
@@ -76,8 +75,6 @@ public class CheckpointViewModel extends AndroidViewModel
 		model = repository.getCheckpoint(blockIndex, stageIndex, checkpointIndex);
 		if (model != null)
 		{
-			Resources resources = context.getResources();
-
 			// setup defaults
 			description = model.description;
 			descriptionTextColor = ContextCompat.getColor(context, R.color.text_primary);
@@ -133,11 +130,12 @@ public class CheckpointViewModel extends AndroidViewModel
 			int size = modelInstances.size();
 			if (size > 0)
 			{
+				// for fields
+				final int MAX_FIELDS = 5;
+
 				// limit instances to our maximum
 				instanceCount = size > MAX_FIELDS ? MAX_FIELDS : size;
 				instances = modelInstances.subList(0, instanceCount);
-
-				UserEntries entries = UserEntries.getInstance();
 
 				for (int i = 0; i < instances.size(); i++)
 				{
@@ -156,11 +154,12 @@ public class CheckpointViewModel extends AndroidViewModel
 			int size = modelInstances.size();
 			if (size > 0)
 			{
+				// for checkboxes / radio buttons
+				final int MAX_BUTTONS = 5;
+
 				// limit instances to our maximum
 				instanceCount = size > MAX_BUTTONS ? MAX_BUTTONS : size;
 				instances = modelInstances.subList(0, instanceCount);
-
-				UserEntries entries = UserEntries.getInstance();
 
 				for (int i = 0; i < instances.size(); i++)
 				{
@@ -181,7 +180,6 @@ public class CheckpointViewModel extends AndroidViewModel
 			instanceCount = 1;
 			instances = modelInstances;
 
-			UserEntries entries = UserEntries.getInstance();
 			Instance instance = instances.get(0);
 			String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
 			long value = entries.getValueAsLong(key);
@@ -199,7 +197,6 @@ public class CheckpointViewModel extends AndroidViewModel
 			instanceCount = 1;
 			instances = modelInstances;
 
-			UserEntries entries = UserEntries.getInstance();
 			Instance instance = instances.get(0);
 			String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
 			long value = entries.getValueAsLong(key);
@@ -321,8 +318,6 @@ public class CheckpointViewModel extends AndroidViewModel
 			{
 				if (instances != null)
 				{
-					UserEntries entries = UserEntries.getInstance();
-
 					for (int i = 0; i < instances.size(); i++)
 					{
 						entries.setValue(
@@ -337,8 +332,6 @@ public class CheckpointViewModel extends AndroidViewModel
 			{
 				if (instances != null)
 				{
-					UserEntries entries = UserEntries.getInstance();
-
 					for (int i = 0; i < instances.size(); i++)
 					{
 						entries.setValue(
@@ -352,7 +345,6 @@ public class CheckpointViewModel extends AndroidViewModel
 			{
 				if (instances != null && !instances.isEmpty())
 				{
-					UserEntries entries = UserEntries.getInstance();
 					Instance instance = instances.get(0);
 
 					String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
@@ -364,7 +356,6 @@ public class CheckpointViewModel extends AndroidViewModel
 			{
 				if (instances != null && !instances.isEmpty())
 				{
-					UserEntries entries = UserEntries.getInstance();
 					Instance instance = instances.get(0);
 
 					String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0);
@@ -400,6 +391,6 @@ public class CheckpointViewModel extends AndroidViewModel
 		if (TextUtils.isEmpty(model.url))
 			return;
 
-		WebViewActivity.startActivity(getApplication().getApplicationContext(), model.url);
+		WebViewActivity.startActivity(getApplication(), model.url);
 	}
 }

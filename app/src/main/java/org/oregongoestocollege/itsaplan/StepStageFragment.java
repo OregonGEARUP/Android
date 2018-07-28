@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
@@ -18,6 +20,8 @@ import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.EntryType;
 import org.oregongoestocollege.itsaplan.data.Stage;
+import org.oregongoestocollege.itsaplan.data.UserEntries;
+import org.oregongoestocollege.itsaplan.data.UserEntriesInterface;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
 /**
@@ -56,7 +60,7 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState)
+	public void onSaveInstanceState(@NonNull Bundle outState)
 	{
 		super.onSaveInstanceState(outState);
 
@@ -76,7 +80,7 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
@@ -88,12 +92,15 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 			stageIndex = savedInstanceState.getInt(Utils.PARAM_STAGE_INDEX, Utils.NO_INDEX);
 		}
 
+		Context context = getContext();
 		List<CheckpointFragment> fragments = new ArrayList<>();
 
 		// we only use Stage/Checkpoint model classes to make sure all is valid and setup indexes
 		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
-		if (stage != null && stage.checkpoints != null)
+		if (stage != null && stage.checkpoints != null && context != null)
 		{
+			UserEntriesInterface userEntries = new UserEntries(context);
+
 			int count = 0;
 			int size = stage.checkpoints.size();
 			for (int i = 0; i < size; i++)
@@ -102,7 +109,7 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 
 				if (checkpoint.entryType == EntryType.route)
 				{
-					boolean meetsCriteria = checkpoint.meetsCriteria();
+					boolean meetsCriteria = checkpoint.meetsCriteria(userEntries);
 					if (meetsCriteria)
 					{
 						if (!TextUtils.isEmpty(checkpoint.routeFileName))
@@ -157,7 +164,11 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 			}
 
 			if (!TextUtils.isEmpty(stage.title))
-				getActivity().setTitle(stage.title);
+			{
+				Activity activity = getActivity();
+				if (activity != null)
+					activity.setTitle(stage.title);
+			}
 		}
 
 		Resources resources = getResources();

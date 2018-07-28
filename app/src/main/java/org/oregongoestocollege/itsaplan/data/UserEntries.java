@@ -1,74 +1,78 @@
 package org.oregongoestocollege.itsaplan.data;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.lang.ref.WeakReference;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 /**
- * This class is a singleton used to retrieve and store user entered data.
+ * This class is used to retrieve and store user entered data.
+ * For now storing in shared preferences since it's reasonable size list of
+ * key / value pairs but could move to database.
  *
  * Oregon GEAR UP App
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-public class UserEntries
+public class UserEntries implements UserEntriesInterface
 {
-	private static UserEntries instance;
-	private Map<String, String> values = new HashMap<>();
+	private static WeakReference<Context> weakRef;
 
-	/**
-	 * @return a shared instance of the Manager
-	 */
-	public static UserEntries getInstance()
+	public UserEntries(@NonNull Context context)
 	{
-		if (instance == null)
-			instance = new UserEntries();
-		return instance;
+		weakRef = new WeakReference<>(context);
 	}
 
 	public String getValue(String key)
 	{
-		if (!TextUtils.isEmpty(key))
-			return values.get(key);
-
-		return null;
-	}
-
-	public void setValue(String key, String value)
-	{
-		values.put(key, value);
-	}
-
-	public void setValue(String key, boolean value)
-	{
-		if (value)
-			values.put(key, "true");
-		else
-			values.remove(key);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		return prefs.getString(key, null);
 	}
 
 	public boolean getValueAsBoolean(String key)
 	{
-		return !TextUtils.isEmpty(key) && "true".equals(values.get(key));
-	}
-
-	public void setValue(String key, long value)
-	{
-		if (value > 0)
-			values.put(key, Long.toString(value));
-		else
-			values.remove(key);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		return prefs.getBoolean(key, false);
 	}
 
 	public long getValueAsLong(String key)
 	{
-		if (!TextUtils.isEmpty(key))
-		{
-			String value = values.get(key);
-			if (!TextUtils.isEmpty(value))
-				return Long.parseLong(value);
-		}
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		return prefs.getLong(key, 0);
+	}
 
-		return 0;
+	public void setValue(String key, String value)
+	{
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences.Editor editor = prefs.edit();
+		if (TextUtils.isEmpty(value))
+			editor.remove(key);
+		else
+			editor.putString(key, value);
+		editor.apply();
+	}
+
+	public void setValue(String key, boolean value)
+	{
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences.Editor editor = prefs.edit();
+		if (!value)
+			editor.remove(key);
+		else
+			editor.putBoolean(key, true);
+		editor.apply();
+	}
+
+	public void setValue(String key, long value)
+	{
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences.Editor editor = prefs.edit();
+		if (value <= 0)
+			editor.remove(key);
+		else
+			editor.putLong(key, value);
+		editor.apply();
 	}
 }

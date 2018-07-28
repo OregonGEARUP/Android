@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
  * Checkpoint
  * Oregon GEAR UP App
  *
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
 public class Checkpoint
 {
@@ -70,7 +70,7 @@ public class Checkpoint
 		return true;
 	}
 
-	public boolean meetsCriteria()
+	public boolean meetsCriteria(UserEntriesInterface userEntries)
 	{
 		boolean meets = true;
 
@@ -84,9 +84,8 @@ public class Checkpoint
 					continue;
 
 				// check that value for the key matches the expected value
-				UserEntries entries = UserEntries.getInstance();
 				String expectedValue = criterion.value;
-				String actualValue = entries.getValue(criterion.key);
+				String actualValue = userEntries.getValue(criterion.key);
 
 				meets = TextUtils.isEmpty(expectedValue) || (!TextUtils.isEmpty(actualValue) && expectedValue.compareToIgnoreCase(actualValue) == 0);
 
