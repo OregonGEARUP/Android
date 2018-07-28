@@ -38,7 +38,8 @@
 			android:layout_alignParentEnd="true"
 			android:tint="@color/white"
 			app:srcCompat="@drawable/ic_check_black_24dp"
-			android:visibility="@{viewModel.isCompleted ? View.VISIBLE : View.GONE, default=gone}"/>
+			android:visibility="@{viewModel.isCompleted ? View.VISIBLE : View.GONE, default=gone}"
+			tools:visibility="visible"/>
 
 	</RelativeLayout>
 </layout>
