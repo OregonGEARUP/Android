@@ -19,8 +19,8 @@ import org.oregongoestocollege.itsaplan.AddLayoutView;
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.data.College;
-import org.oregongoestocollege.itsaplan.data.MyPlanDatabase;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
+import org.oregongoestocollege.itsaplan.data.UserEntries;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 
 /**
@@ -44,7 +44,7 @@ public class CollegesViewModel extends AndroidViewModel
 		mycount = ++count;
 		Utils.d(CollegeViewModel.LOG_TAG, "create %d", mycount);
 
-		repository = MyPlanRepository.getInstance(MyPlanDatabase.getDatabase(application));
+		repository = MyPlanRepository.getInstance(application);
 		allColleges = repository.getAllColleges();
 	}
 
@@ -126,5 +126,15 @@ public class CollegesViewModel extends AndroidViewModel
 			for (CollegeViewModel allViewModel : allViewModels)
 				allViewModel.update();
 		}
+	}
+
+	public void insertFirstCollege(@Nullable Context context)
+	{
+		if (context == null)
+			return;
+
+		// inserts the first college initializing with any user entered info
+		repository.insertFirstCollege(new UserEntries(context),
+			context.getString(R.string.college_1));
 	}
 }

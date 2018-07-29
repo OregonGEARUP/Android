@@ -3,11 +3,13 @@ package org.oregongoestocollege.itsaplan.data;
 import java.util.List;
 
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
+import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
 import org.oregongoestocollege.itsaplan.data.dao.ResidencyDao;
 import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
 import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
@@ -30,9 +32,9 @@ public class MyPlanRepository
 	/**
 	 * Constructor to initialize the database and variables
 	 */
-	private MyPlanRepository(final MyPlanDatabase database)
+	private MyPlanRepository(@NonNull Context context)
 	{
-		this.database = database;
+		this.database = MyPlanDatabase.getDatabase(context);
 
 		collegeDao = database.collegeDao();
 		allColleges = collegeDao.getAll();
@@ -42,14 +44,14 @@ public class MyPlanRepository
 		residencyDao = database.residencyDao();
 	}
 
-	public static MyPlanRepository getInstance(final MyPlanDatabase database)
+	public static MyPlanRepository getInstance(@NonNull Context context)
 	{
 		if (instance == null)
 		{
 			synchronized (MyPlanRepository.class)
 			{
 				if (instance == null)
-					instance = new MyPlanRepository(database);
+					instance = new MyPlanRepository(context);
 			}
 		}
 		return instance;
@@ -316,5 +318,42 @@ public class MyPlanRepository
 	public void update(Residency residency)
 	{
 		new UpdateResidencyAsyncTask(residencyDao).execute(residency);
+	}
+
+	/**
+	 * Add the first college from user entered data when visiting the My Plan - college tab.
+	 */
+	public void insertFirstCollege(@NonNull UserEntriesInterface userEntries, String defaultName)
+	{
+		// determine what college name was entered in the checkpoint
+		String value = userEntries.getValue("b2_s3_cp2_i1_text");
+		if (TextUtils.isEmpty(value))
+			value = defaultName;
+
+		College college = new College();
+		college.setName(value);
+
+		// fill in any missing pieces of the first college from the checkpoints
+		long appDate = userEntries.getValueAsLong("b2_s3_cp2_i1_date");
+		if (appDate > 0)
+			college.setApplicationDate(DateConverter.toDate(appDate));
+
+		value = userEntries.getValue("b3citizen_s1_cp3_i1");
+		if (!TextUtils.isEmpty(value))
+			college.setAverageNetPrice(value);
+		else
+		{
+			value = userEntries.getValue("b3undoc_s1_cp3_i1");
+			if (!TextUtils.isEmpty(value))
+				college.setAverageNetPrice(value);
+			else
+			{
+				value = userEntries.getValue("b3visa_s1_cp3_i1");
+				if (TextUtils.isEmpty(value))
+					college.setAverageNetPrice(value);
+			}
+		}
+
+		new InsertCollegeAsyncTask(collegeDao).execute(college);
 	}
 }

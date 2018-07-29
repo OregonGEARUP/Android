@@ -7,7 +7,6 @@ import android.content.Context;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 
-import org.oregongoestocollege.itsaplan.data.MyPlanDatabase;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.TestResult;
 
@@ -28,7 +27,7 @@ public class TestResultsViewModel extends AndroidViewModel
 	{
 		super(application);
 
-		this.repository = MyPlanRepository.getInstance(MyPlanDatabase.getDatabase(application));
+		this.repository = MyPlanRepository.getInstance(application);
 		actTestResultData = repository.getActTestResult();
 		satTestResultData = repository.getSatTestResult();
 	}

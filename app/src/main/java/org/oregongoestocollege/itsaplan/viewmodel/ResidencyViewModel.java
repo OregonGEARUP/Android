@@ -11,7 +11,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.Utils;
-import org.oregongoestocollege.itsaplan.data.MyPlanDatabase;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Residency;
 
@@ -146,7 +145,7 @@ public class ResidencyViewModel extends AndroidViewModel
 		public Factory(@NonNull Application application)
 		{
 			this.application = application;
-			this.repository = MyPlanRepository.getInstance(MyPlanDatabase.getDatabase(application));
+			this.repository = MyPlanRepository.getInstance(application);
 		}
 
 		@NonNull

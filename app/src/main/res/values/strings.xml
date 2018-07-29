@@ -57,6 +57,7 @@
 	<string name="college_apply_addl_scholarship">Additional scholarship application</string>
 	<string name="college_apply_fee_deferral">Fee deferral or waiver</string>
 	<string name="college_apply_cost_hint">Cost to Apply</string>
+	<string name="college_1">College 1</string>
 	<string name="add_scholarship">Add Scholarship</string>
 	<string name="add_scholarship_message">Please enter the name of the scholarship.</string>
 	<string name="remove_scholarship">Remove This Scholarship</string>

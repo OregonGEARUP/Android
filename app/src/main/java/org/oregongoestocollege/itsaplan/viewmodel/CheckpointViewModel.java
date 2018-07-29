@@ -198,12 +198,11 @@ public class CheckpointViewModel extends AndroidViewModel
 			instances = modelInstances;
 
 			Instance instance = instances.get(0);
-			String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
-			long value = entries.getValueAsLong(key);
+			final String baseKey = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0);
+			long value = entries.getValueAsLong(baseKey + "_date");
 
 			instance.setDate(context, value);
-			instance.textEntry.set(
-				entries.getValue(repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0)));
+			instance.textEntry.set(entries.getValue(baseKey + "_text"));
 		}
 	}
 
@@ -358,10 +357,9 @@ public class CheckpointViewModel extends AndroidViewModel
 				{
 					Instance instance = instances.get(0);
 
-					String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0);
-					entries.setValue(key, instance.textEntry.get());
-					key += "_date";
-					entries.setValue(key, instance.dateValue);
+					final String baseKey = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0);
+					entries.setValue(baseKey + "_date", instance.dateValue);
+					entries.setValue(baseKey + "_text", instance.textEntry.get());
 				}
 				break;
 			}

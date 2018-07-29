@@ -25,7 +25,7 @@ import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
 	version = 1,
 	exportSchema = false)
 @TypeConverters(DateConverter.class)
-public abstract class MyPlanDatabase extends RoomDatabase
+abstract class MyPlanDatabase extends RoomDatabase
 {
 	private static MyPlanDatabase instance;
 

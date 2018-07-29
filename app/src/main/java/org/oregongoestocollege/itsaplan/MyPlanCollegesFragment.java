@@ -62,6 +62,7 @@ public class MyPlanCollegesFragment extends Fragment
 		Utils.d(CollegeViewModel.LOG_TAG, "onActivityCreated");
 
 		viewModel = ViewModelProviders.of(this).get(CollegesViewModel.class);
+		binding.setIsLoading(true);
 
 		// observe live data
 		viewModel.getAllColleges().removeObservers(this);
@@ -75,12 +76,20 @@ public class MyPlanCollegesFragment extends Fragment
 
 				if (colleges != null)
 				{
-					binding.setIsLoading(false);
+					if (colleges.isEmpty())
+					{
+						// keep the loading indicator while we insert the first college
+						viewModel.insertFirstCollege(getContext());
+					}
+					else
+					{
+						binding.setIsLoading(false);
 
-					List<BindingItem> items = viewModel.getItems(colleges);
-					if (adapter.getItemCount() != 0)
-						adapter.clear();
-					adapter.addAll(items);
+						List<BindingItem> items = viewModel.getItems(colleges);
+						if (adapter.getItemCount() != 0)
+							adapter.clear();
+						adapter.addAll(items);
+					}
 				}
 				else
 				{

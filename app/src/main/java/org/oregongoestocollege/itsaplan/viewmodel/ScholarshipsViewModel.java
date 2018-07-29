@@ -17,7 +17,6 @@ import android.view.View;
 
 import org.oregongoestocollege.itsaplan.AddLayoutView;
 import org.oregongoestocollege.itsaplan.R;
-import org.oregongoestocollege.itsaplan.data.MyPlanDatabase;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Scholarship;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
@@ -36,7 +35,7 @@ public class ScholarshipsViewModel extends AndroidViewModel
 	{
 		super(application);
 
-		repository = MyPlanRepository.getInstance(MyPlanDatabase.getDatabase(application));
+		repository = MyPlanRepository.getInstance(application);
 		allScholarships = repository.getAllScholarships();
 	}
 
