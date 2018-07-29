@@ -17,8 +17,8 @@ import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.College;
 import org.oregongoestocollege.itsaplan.databinding.FragmentMyPlanCollegesBinding;
+import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
-import org.oregongoestocollege.itsaplan.viewmodel.BindingItem;
 import org.oregongoestocollege.itsaplan.viewmodel.CollegeViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.CollegesViewModel;
 
@@ -45,7 +45,7 @@ public class MyPlanCollegesFragment extends Fragment
 		binding = DataBindingUtil.inflate(inflater, R.layout.fragment_my_plan_colleges, container, false);
 		View v = binding.getRoot();
 
-		adapter = new BindingItemsAdapter();
+		adapter = new BindingItemsAdapter(null);
 
 		RecyclerView recyclerView = v.findViewById(R.id.recycler_view);
 		recyclerView.setAdapter(adapter);

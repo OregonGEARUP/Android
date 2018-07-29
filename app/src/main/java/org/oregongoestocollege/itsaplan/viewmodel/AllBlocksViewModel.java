@@ -12,8 +12,8 @@ import android.widget.Toast;
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.BlockInfo;
-import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
+import org.oregongoestocollege.itsaplan.support.BindingItem;
 
 /**
  * Oregon GEAR UP App
@@ -23,7 +23,6 @@ public class AllBlocksViewModel extends AndroidViewModel implements CheckpointIn
 {
 	private final CheckpointInterface repository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
-	private final SingleLiveEvent<ChecklistState> openBlockEvent = new SingleLiveEvent<>();
 	private List<BindingItem> items;
 	// These observable fields will update Views automatically
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
@@ -48,11 +47,6 @@ public class AllBlocksViewModel extends AndroidViewModel implements CheckpointIn
 		return updateListEvent;
 	}
 
-	public SingleLiveEvent<ChecklistState> getOpenBlockEvent()
-	{
-		return openBlockEvent;
-	}
-
 	public List<BindingItem> getItems()
 	{
 		return items;
@@ -72,7 +66,7 @@ public class AllBlocksViewModel extends AndroidViewModel implements CheckpointIn
 				{
 					BlockInfo blockInfo = repository.getBlockInfo(i);
 					viewModels
-						.add(new BlockInfoItemViewModel(this.getApplication(), blockInfo, i, openBlockEvent));
+						.add(new BlockInfoItemViewModel(blockInfo, i));
 				}
 
 				items = viewModels;

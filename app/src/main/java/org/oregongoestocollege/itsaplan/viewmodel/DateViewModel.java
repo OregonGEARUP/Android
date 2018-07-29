@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.DatePicker;
 
 import org.oregongoestocollege.itsaplan.R;
+import org.oregongoestocollege.itsaplan.support.BindingItem;
 
 /**
  * Oregon GEAR UP App

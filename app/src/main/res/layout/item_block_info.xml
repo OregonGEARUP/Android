@@ -7,6 +7,10 @@
 		<import type="android.view.View" />
 
 		<variable
+			name="uxItemClickCallback"
+			type="org.oregongoestocollege.itsaplan.support.ItemClickCallback" />
+
+		<variable
 			name="viewModel"
 			type="org.oregongoestocollege.itsaplan.viewmodel.BlockInfoItemViewModel" />
 	</data>
@@ -18,7 +22,8 @@
 		android:minHeight="@dimen/gearup_min_button_height"
 		android:padding="@dimen/baseline_unit_1_half"
 		android:layout_marginBottom="@dimen/baseline_unit_2x"
-		android:onClick="@{(view) -> viewModel.onBlockClick(view)}">
+		android:clickable="@{viewModel.clickable}"
+		android:onClick="@{() -> uxItemClickCallback.onClick(viewModel)}">
 
 		<TextView
 			android:id="@+id/textview_title"

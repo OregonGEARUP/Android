@@ -1,5 +1,6 @@
 package org.oregongoestocollege.itsaplan;
 
+import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -13,16 +14,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentAllBlocksBinding;
+import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
+import org.oregongoestocollege.itsaplan.support.ItemClickCallback;
 import org.oregongoestocollege.itsaplan.viewmodel.AllBlocksViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoItemViewModel;
 
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class AllBlocksFragment extends Fragment
+public class AllBlocksFragment extends Fragment implements ItemClickCallback
 {
 	private static final String LOG_TAG = "GearUpAllBlocksFrag";
 	private OnFragmentInteractionListener listener;
@@ -54,7 +57,7 @@ public class AllBlocksFragment extends Fragment
 			binding = DataBindingUtil.inflate(inflater, R.layout.fragment_all_blocks, container, false);
 		View v = binding.getRoot();
 
-		adapter = new BindingItemsAdapter();
+		adapter = new BindingItemsAdapter(this);
 
 		recyclerView = v.findViewById(R.id.recycler_view);
 		recyclerView.setAdapter(adapter);
@@ -75,16 +78,6 @@ public class AllBlocksFragment extends Fragment
 				adapter.addAll(allBlocksViewModel.getItems());
 
 				getActivity().setTitle(R.string.app_name);
-			}
-		});
-
-		allBlocksViewModel.getOpenBlockEvent().observe(this, new Observer<ChecklistState>()
-		{
-			@Override
-			public void onChanged(@Nullable ChecklistState state)
-			{
-				if (listener != null && state != null)
-					listener.onShowBlock(state.blockIndex, state.blockFileName);
 			}
 		});
 
@@ -116,5 +109,19 @@ public class AllBlocksFragment extends Fragment
 	{
 		super.onDetach();
 		listener = null;
+	}
+
+	@Override
+	public void onClick(BindingItem item)
+	{
+		if (!(item instanceof BlockInfoItemViewModel))
+			return;
+
+		if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED) && listener != null)
+		{
+			BlockInfoItemViewModel vm = (BlockInfoItemViewModel)item;
+			if (vm.clickable())
+				listener.onShowBlock(vm.getBlockIndex(), vm.getBlockFileName());
+		}
 	}
 }

@@ -91,7 +91,7 @@ public class StepBlockFragment extends Fragment
 			blockIndex = savedInstanceState.getInt(Utils.PARAM_BLOCK_INDEX, Utils.NO_INDEX);
 		}
 
-		adapter = new BindingItemsAdapter();
+		adapter = new BindingItemsAdapter(null);
 
 		recyclerView = v.findViewById(R.id.recycler_view);
 		recyclerView.setAdapter(adapter);

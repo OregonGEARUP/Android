@@ -13,6 +13,7 @@ import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Scholarship;
+import org.oregongoestocollege.itsaplan.support.BindingItem;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

@@ -7,11 +7,10 @@ import java.util.List;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
-import org.oregongoestocollege.itsaplan.viewmodel.BindingItem;
 
 /**
  * BindingItemsAdapter
@@ -22,13 +21,16 @@ import org.oregongoestocollege.itsaplan.viewmodel.BindingItem;
 public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHolder>
 {
 	private final List<BindingItem> items;
+	@Nullable
+	private final ItemClickCallback itemClickCallback;
 
 	/**
 	 * Constructor for Adapter.
 	 */
-	public BindingItemsAdapter()
+	public BindingItemsAdapter(ItemClickCallback itemClickCallback)
 	{
-		items = new ArrayList<>();
+		this.items = new ArrayList<>();
+		this.itemClickCallback = itemClickCallback;
 	}
 
 	/**
@@ -211,7 +213,8 @@ public class BindingItemsAdapter extends RecyclerView.Adapter<BindingItemViewHol
 
 		// Get ViewDataBinding from the layout file and use it to bind the view model
 		ViewDataBinding viewBinding = DataBindingUtil.inflate(layoutInflater, layoutId, parent, false);
-		return new BindingItemViewHolder(viewBinding);
+
+		return new BindingItemViewHolder(viewBinding, itemClickCallback);
 	}
 
 	/**

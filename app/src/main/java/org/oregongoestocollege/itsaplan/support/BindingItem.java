@@ -1,4 +1,4 @@
-package org.oregongoestocollege.itsaplan.viewmodel;
+package org.oregongoestocollege.itsaplan.support;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

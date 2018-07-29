@@ -20,6 +20,7 @@ import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.data.MyPlanDatabase;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Scholarship;
+import org.oregongoestocollege.itsaplan.support.BindingItem;
 
 /**
  * Oregon GEAR UP App

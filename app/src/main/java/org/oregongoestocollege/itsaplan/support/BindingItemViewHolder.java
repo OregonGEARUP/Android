@@ -4,7 +4,6 @@ import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 
 import org.oregongoestocollege.itsaplan.BR;
-import org.oregongoestocollege.itsaplan.viewmodel.BindingItem;
 
 /**
  * BindingItemViewHolder
@@ -16,10 +15,11 @@ class BindingItemViewHolder extends RecyclerView.ViewHolder
 {
 	private final ViewDataBinding viewDataBinding;
 
-	BindingItemViewHolder(ViewDataBinding viewDataBinding)
+	BindingItemViewHolder(ViewDataBinding viewDataBinding, ItemClickCallback itemClickCallback)
 	{
 		super(viewDataBinding.getRoot());
 		this.viewDataBinding = viewDataBinding;
+		this.viewDataBinding.setVariable(BR.uxItemClickCallback, itemClickCallback);
 	}
 
 	void onBindView(int position, BindingItem item)

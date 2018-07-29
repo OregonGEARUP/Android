@@ -11,6 +11,7 @@ import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.Stage;
+import org.oregongoestocollege.itsaplan.support.BindingItem;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
