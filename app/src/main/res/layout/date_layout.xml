@@ -4,19 +4,16 @@
 	<data>
 
 		<variable
-			name="dateLabel"
-			type="java.lang.String" />
-
-		<variable
 			name="viewModel"
 			type="org.oregongoestocollege.itsaplan.viewmodel.DateViewModel" />
 	</data>
 
-	<RelativeLayout
+	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_marginBottom="@dimen/baseline_unit_half"
-		android:layout_marginTop="@dimen/baseline_unit_half">
+		android:layout_marginTop="@dimen/baseline_unit_half"
+		android:orientation="vertical">
 
 		<TextView
 			android:id="@+id/textview_label"
@@ -24,13 +21,12 @@
 			android:layout_height="wrap_content"
 			android:clickable="false"
 			android:focusable="false"
-			android:text="@{dateLabel}"
+			android:text="@{viewModel.label}"
 			tools:text="@string/residency_start_date" />
 
 		<TextView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_below="@+id/textview_label"
 			android:layout_marginBottom="@dimen/baseline_unit_half"
 			android:layout_marginTop="@dimen/baseline_unit_half"
 			android:background="@drawable/button_outline"
@@ -41,5 +37,5 @@
 			android:text="@{viewModel.value}"
 			android:textSize="16sp"
 			tools:text="March 30, 2010" />
-	</RelativeLayout>
+	</LinearLayout>
 </layout>

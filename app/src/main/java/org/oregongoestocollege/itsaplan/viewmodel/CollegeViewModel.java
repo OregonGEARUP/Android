@@ -48,7 +48,7 @@ public class CollegeViewModel implements BindingItem
 		this.college = checkNotNull(college);
 		this.removable = removable;
 
-		applicationDateVm.set(new DateViewModel(college.getApplicationDate()));
+		applicationDateVm.set(new DateViewModel(college.getApplicationDate(), R.string.application_deadline));
 	}
 
 	private boolean isDirty()

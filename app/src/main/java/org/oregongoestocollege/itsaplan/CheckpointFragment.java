@@ -1,31 +1,26 @@
 package org.oregongoestocollege.itsaplan;
 
-import java.util.Calendar;
-
-import android.app.DatePickerDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.DatePicker;
 
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
-import org.oregongoestocollege.itsaplan.data.Instance;
 import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
-import org.oregongoestocollege.itsaplan.support.DatePickerDialogFragment;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class CheckpointFragment extends Fragment implements DatePickerDialog.OnDateSetListener
+public class CheckpointFragment extends Fragment
 {
 	private static final String LOG_TAG = "GearUpCheckpointFragment";
 	private OnFragmentInteractionListener listener;
@@ -56,7 +51,7 @@ public class CheckpointFragment extends Fragment implements DatePickerDialog.OnD
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState)
+	public void onSaveInstanceState(@NonNull Bundle outState)
 	{
 		super.onSaveInstanceState(outState);
 
@@ -78,7 +73,7 @@ public class CheckpointFragment extends Fragment implements DatePickerDialog.OnD
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
@@ -117,36 +112,7 @@ public class CheckpointFragment extends Fragment implements DatePickerDialog.OnD
 			}
 		});
 
-		checkpointViewModel.getPickDateEvent().observe(this, new Observer<Instance>()
-		{
-			@Override
-			public void onChanged(@Nullable Instance instance)
-			{
-				onShowDatePicker(instance);
-			}
-		});
-
 		return v;
-	}
-
-	private void onShowDatePicker(Instance instance)
-	{
-		final DatePickerDialogFragment.Builder datePickerBuilder = new DatePickerDialogFragment.Builder();
-		final Calendar calendar = instance.getDate();
-
-		datePickerBuilder.setYear(calendar.get(Calendar.YEAR));
-		datePickerBuilder.setMonth(calendar.get(Calendar.MONTH));
-		datePickerBuilder.setDay(calendar.get(Calendar.DAY_OF_MONTH));
-
-		datePickerBuilder.createFromFragment(20, this)
-			.show(getFragmentManager(), "datePickerInstance");
-	}
-
-	@Override
-	public void onDateSet(DatePicker datePicker, int year, int month, int day)
-	{
-		if (checkpointViewModel != null)
-			checkpointViewModel.setDate(getContext(), year, month, day);
 	}
 
 	@Override

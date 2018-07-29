@@ -10,6 +10,7 @@ import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Residency;
@@ -82,24 +83,24 @@ public class ResidencyViewModel extends AndroidViewModel
 
 	public void setResidency(@NonNull Context context, Residency residency)
 	{
-		residencyStartDateVm.set(new DateViewModel(context, residency.getResidencyStart()));
-		residencyEndDateVm.set(new DateViewModel(context, residency.getResidencyEnd()));
-		parentResidencyStartDateVm.set(new DateViewModel(context, residency.getParentResidencyStart()));
-		parentResidencyEndDateVm.set(new DateViewModel(context, residency.getParentResidencyEnd()));
-		registerToVoteDateVm.set(new DateViewModel(context, residency.getRegisterToVote()));
-		parentsRegisterToVoteDateVm.set(new DateViewModel(context, residency.getParentsRegisterToVote()));
-		militaryServiceStartDateVm.set(new DateViewModel(context, residency.getMilitaryServiceStart()));
-		militaryServiceEndDateVm.set(new DateViewModel(context, residency.getMilitaryServiceEnd()));
-		parentMilitaryServiceStartDateVm.set(new DateViewModel(context, residency.getParentMilitaryServiceStart()));
-		parentMilitaryServiceEndDateVm.set(new DateViewModel(context, residency.getParentMilitaryServiceEnd()));
-		fileOregonTaxesYear1DateVm.set(new DateViewModel(context, residency.getFileOregonTaxesYear1()));
-		fileOregonTaxesYear2DateVm.set(new DateViewModel(context, residency.getFileOregonTaxesYear2()));
-		parentsFileOregonTaxesYear1DateVm.set(new DateViewModel(context, residency.getParentsFileOregonTaxesYear1()));
-		parentsFileOregonTaxesYear2DateVm.set(new DateViewModel(context, residency.getParentsFileOregonTaxesYear2()));
+		residencyStartDateVm.set(DateViewModel.build(context, residency.getResidencyStart(), R.string.residency_start_date));
+		residencyEndDateVm.set(DateViewModel.build(context, residency.getResidencyEnd(), R.string.residency_end_date));
+		parentResidencyStartDateVm.set(DateViewModel.build(context, residency.getParentResidencyStart(), R.string.residency_start_date));
+		parentResidencyEndDateVm.set(DateViewModel.build(context, residency.getParentResidencyEnd(), R.string.residency_end_date));
+		registerToVoteDateVm.set(DateViewModel.build(context, residency.getRegisterToVote(), R.string.voter_registration_date));
+		parentsRegisterToVoteDateVm.set(DateViewModel.build(context, residency.getParentsRegisterToVote(), R.string.voter_registration_date));
+		militaryServiceStartDateVm.set(DateViewModel.build(context, residency.getMilitaryServiceStart(), R.string.military_start_date));
+		militaryServiceEndDateVm.set(DateViewModel.build(context, residency.getMilitaryServiceEnd(), R.string.military_end_date));
+		parentMilitaryServiceStartDateVm.set(DateViewModel.build(context, residency.getParentMilitaryServiceStart(), R.string.military_start_date));
+		parentMilitaryServiceEndDateVm.set(DateViewModel.build(context, residency.getParentMilitaryServiceEnd(), R.string.military_end_date));
+		fileOregonTaxesYear1DateVm.set(DateViewModel.build(context, residency.getFileOregonTaxesYear1(), R.string.taxes_year1));
+		fileOregonTaxesYear2DateVm.set(DateViewModel.build(context, residency.getFileOregonTaxesYear2(), R.string.taxes_year2));
+		parentsFileOregonTaxesYear1DateVm.set(DateViewModel.build(context, residency.getParentsFileOregonTaxesYear1(), R.string.taxes_year1));
+		parentsFileOregonTaxesYear2DateVm.set(DateViewModel.build(context, residency.getParentsFileOregonTaxesYear2(), R.string.taxes_year2));
 		nameEmployer1.set(residency.getNameEmployer1());
 		cityEmployer1.set(residency.getCityEmployer1());
-		startEmployer1DateVm.set(new DateViewModel(context, residency.getStartEmployer1()));
-		endEmployer1DateVm.set(new DateViewModel(context, residency.getEndEmployer1()));
+		startEmployer1DateVm.set(DateViewModel.build(context, residency.getStartEmployer1(), R.string.employment_start_date));
+		endEmployer1DateVm.set(DateViewModel.build(context, residency.getEndEmployer1(), R.string.employment_end_date));
 	}
 
 	public void update()

@@ -9,6 +9,8 @@
 
 		<import type="org.oregongoestocollege.itsaplan.data.EntryType" />
 
+		<import type="org.oregongoestocollege.itsaplan.viewmodel.DateViewModel" />
+
 		<variable
 			name="uxContent"
 			type="org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel" />
@@ -55,13 +57,13 @@
 			tools:visibility="gone" />
 
 		<include
-			layout="@layout/layout_entry_date"
+			layout="@layout/date_layout"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_below="@id/text"
 			android:layout_marginTop="@dimen/baseline_unit_2x"
 			android:visibility="@{uxContent.showEntryType(EntryType.dateOnly, true) ? View.VISIBLE : View.GONE, default=gone}"
-			app:uxContent="@{uxContent}"
+			app:viewModel="@{uxContent.dateOnlyVm}"
 			tools:visibility="visible" />
 
 		<include

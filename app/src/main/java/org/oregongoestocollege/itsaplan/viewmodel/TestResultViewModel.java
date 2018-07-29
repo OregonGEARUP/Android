@@ -3,6 +3,7 @@ package org.oregongoestocollege.itsaplan.viewmodel;
 import android.content.Context;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.Utils;
@@ -42,9 +43,10 @@ public class TestResultViewModel
 			!TextUtils.equals(writing.get(), value.getWriting());
 	}
 
-	public void setTestResult(@NonNull Context context, TestResult testResult)
+	public void setTestResult(@NonNull Context context, TestResult testResult, @StringRes int placeholderStringResId)
 	{
-		testDateVm.set(new DateViewModel(context, testResult.getDate()));
+		testDateVm.set(DateViewModel.build(context, testResult.getDate(), placeholderStringResId));
+
 		composite.set(testResult.getComposite());
 		math.set(testResult.getMath());
 		science.set(testResult.getScience());

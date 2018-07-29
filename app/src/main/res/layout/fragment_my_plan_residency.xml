@@ -54,12 +54,10 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/residency_start_date}"
 					app:viewModel="@{viewModel.residencyStartDateVm}" />
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/residency_end_date}"
 					app:viewModel="@{viewModel.residencyEndDateVm}" />
 
 				<TextView
@@ -68,12 +66,10 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/residency_start_date}"
 					app:viewModel="@{viewModel.parentResidencyStartDateVm}" />
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/residency_end_date}"
 					app:viewModel="@{viewModel.parentResidencyEndDateVm}" />
 			</LinearLayout>
 
@@ -95,8 +91,7 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/voter_registration_date}"
-					app:viewModel="@{viewModel.residencyStartDateVm}" />
+					app:viewModel="@{viewModel.registerToVoteDateVm}" />
 
 				<TextView
 					style="@style/GearUpMessage2"
@@ -104,8 +99,7 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/voter_registration_date}"
-					app:viewModel="@{viewModel.parentResidencyStartDateVm}" />
+					app:viewModel="@{viewModel.parentsRegisterToVoteDateVm}" />
 			</LinearLayout>
 
 			<!-- Military -->
@@ -126,12 +120,10 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/military_start_date}"
 					app:viewModel="@{viewModel.militaryServiceStartDateVm}" />
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/military_end_date}"
 					app:viewModel="@{viewModel.militaryServiceEndDateVm}" />
 
 				<TextView
@@ -140,12 +132,10 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/military_start_date}"
 					app:viewModel="@{viewModel.parentMilitaryServiceStartDateVm}" />
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/military_end_date}"
 					app:viewModel="@{viewModel.parentMilitaryServiceEndDateVm}" />
 			</LinearLayout>
 
@@ -167,12 +157,10 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/taxes_year1}"
 					app:viewModel="@{viewModel.fileOregonTaxesYear1DateVm}" />
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/taxes_year2}"
 					app:viewModel="@{viewModel.fileOregonTaxesYear2DateVm}" />
 
 				<TextView
@@ -181,12 +169,10 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/taxes_year1}"
 					app:viewModel="@{viewModel.parentsFileOregonTaxesYear1DateVm}" />
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/taxes_year2}"
 					app:viewModel="@{viewModel.parentsFileOregonTaxesYear2DateVm}" />
 			</LinearLayout>
 
@@ -228,12 +214,10 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/employment_start_date}"
 					app:viewModel="@{viewModel.startEmployer1DateVm}" />
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/employment_end_date}"
 					app:viewModel="@{viewModel.endEmployer1DateVm}" />
 			</LinearLayout>
 		</RelativeLayout>

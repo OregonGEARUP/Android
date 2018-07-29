@@ -52,7 +52,6 @@
 
 			<include
 				layout="@layout/date_layout"
-				app:dateLabel="@{@string/application_deadline}"
 				app:viewModel="@{viewModel.applicationDateVm}" />
 
 			<android.support.design.widget.TextInputLayout
@@ -62,6 +61,7 @@
 				<android.support.design.widget.TextInputEditText
 					style="@style/GearUpTextMaxLengthDefault"
 					android:hint="@string/college_net_price_hint"
+					android:text="@={viewModel.averageNetPrice}"
 					tools:text="10,000" />
 			</android.support.design.widget.TextInputLayout>
 
@@ -121,6 +121,12 @@
 				android:checked="@={viewModel.addlScholarshipDone}"
 				android:text="@string/college_apply_addl_scholarship" />
 
+			<CheckBox
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:checked="@={viewModel.feeDeferralDone}"
+				android:text="@string/college_apply_fee_deferral" />
+
 			<android.support.design.widget.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
@@ -128,6 +134,7 @@
 				<android.support.design.widget.TextInputEditText
 					style="@style/GearUpTextMaxLengthDefault"
 					android:hint="@string/college_apply_cost_hint"
+					android:text="@={viewModel.applicationCost}"
 					tools:text="10,000" />
 			</android.support.design.widget.TextInputLayout>
 		</LinearLayout>

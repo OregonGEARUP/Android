@@ -52,8 +52,7 @@
 
 			<include
 				layout="@layout/date_layout"
-				app:viewModel="@{viewModel.applicationDateVm}"
-				app:dateLabel="@{@string/application_deadline}"/>
+				app:viewModel="@{viewModel.applicationDateVm}"/>
 
 			<android.support.design.widget.TextInputLayout
 				android:layout_width="match_parent"

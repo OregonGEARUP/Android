@@ -32,25 +32,18 @@
 				android:text="@={uxContent.getInstance(0).textEntry}" />
 		</android.support.design.widget.TextInputLayout>
 
-		<LinearLayout
+		<TextView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:layout_marginBottom="@dimen/baseline_unit_2x"
+			android:layout_marginTop="@dimen/baseline_unit"
+			android:background="@drawable/button_outline"
 			android:clickable="true"
 			android:focusable="true"
-			android:onClick="@{(view) -> uxContent.onShowDatePicker(uxContent.getInstance(0))}"
-			android:orientation="vertical">
-
-			<TextView
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginBottom="@dimen/baseline_unit_half"
-				android:layout_marginTop="@dimen/baseline_unit_half"
-				android:background="@drawable/button_outline"
-				android:padding="@dimen/baseline_unit"
-				android:text="@{uxContent.getInstance(0).dateText}"
-				android:textSize="16sp"
-				tools:text="March 17, 2000" />
-		</LinearLayout>
-
+			android:onClick="@{(view) -> uxContent.dateAndTextVm.get().onChangeDate(view)}"
+			android:padding="@dimen/baseline_unit"
+			android:text="@{uxContent.dateAndTextVm.value}"
+			android:textSize="16sp"
+			tools:text="March 30, 2010" />
 	</LinearLayout>
 </layout>

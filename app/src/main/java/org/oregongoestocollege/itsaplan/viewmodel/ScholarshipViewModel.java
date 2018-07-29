@@ -45,7 +45,7 @@ public class ScholarshipViewModel implements BindingItem
 		this.scholarship = checkNotNull(scholarship);
 		this.removable = removable;
 
-		applicationDateVm.set(new DateViewModel(scholarship.getApplicationDate()));
+		applicationDateVm.set(new DateViewModel(scholarship.getApplicationDate(), R.string.application_deadline));
 	}
 
 	private boolean isDirty()

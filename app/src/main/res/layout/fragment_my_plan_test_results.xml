@@ -49,7 +49,6 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/tests_act_date}"
 					app:viewModel="@{viewModel.actVm.testDateVm}" />
 
 				<android.support.design.widget.TextInputLayout
@@ -125,7 +124,6 @@
 
 				<include
 					layout="@layout/date_layout"
-					app:dateLabel="@{@string/tests_sat_date}"
 					app:viewModel="@{viewModel.satVm.testDateVm}" />
 
 				<android.support.design.widget.TextInputLayout

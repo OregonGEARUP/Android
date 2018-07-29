@@ -7,6 +7,7 @@ import android.content.Context;
 import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 
+import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.TestResult;
 
@@ -47,11 +48,11 @@ public class TestResultsViewModel extends AndroidViewModel
 		if (actVm.get() == null)
 		{
 			TestResultViewModel viewModel = new TestResultViewModel();
-			viewModel.setTestResult(context, testResult);
+			viewModel.setTestResult(context, testResult, R.string.tests_act_date);
 			actVm.set(viewModel);
 		}
 		else
-			actVm.get().setTestResult(context, testResult);
+			actVm.get().setTestResult(context, testResult, R.string.tests_act_date);
 	}
 
 	public void setSatTestResult(@NonNull Context context, TestResult testResult)
@@ -59,11 +60,11 @@ public class TestResultsViewModel extends AndroidViewModel
 		if (satVm.get() == null)
 		{
 			TestResultViewModel viewModel = new TestResultViewModel();
-			viewModel.setTestResult(context, testResult);
+			viewModel.setTestResult(context, testResult, R.string.tests_sat_date);
 			satVm.set(viewModel);
 		}
 		else
-			satVm.get().setTestResult(context, testResult);
+			satVm.get().setTestResult(context, testResult, R.string.tests_sat_date);
 	}
 
 	public void update()

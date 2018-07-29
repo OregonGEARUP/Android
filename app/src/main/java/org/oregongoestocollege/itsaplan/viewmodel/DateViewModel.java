@@ -24,32 +24,22 @@ public class DateViewModel implements BindingItem
 	private Date originalDate;
 	private Date selectedDate;
 	@StringRes
-	private final int placeholderStringRes;
+	private final int labelStringRes;
+	public final ObservableField<String> label = new ObservableField<>();
 	public final ObservableField<String> value = new ObservableField<>();
 
-	/**
-	 * Constructor for using in recycler view, binding item
-	 */
-	public DateViewModel(Date originalDate)
-	{
-		this(originalDate, R.string.hint_date_picker);
-	}
-
-	/**
-	 * Constructor for use in fragment, view, etc.
-	 */
-	public DateViewModel(@NonNull Context context, Date originalDate)
-	{
-		this(originalDate, R.string.hint_date_picker);
-
-		onBind(context);
-	}
-
-	public DateViewModel(Date originalDate, @StringRes int placeholderStringRes)
+	public DateViewModel(Date originalDate, @StringRes int labelStringRes)
 	{
 		this.originalDate = originalDate;
 		this.selectedDate = originalDate;
-		this.placeholderStringRes = placeholderStringRes;
+		this.labelStringRes = labelStringRes;
+	}
+
+	public DateViewModel(Date originalDate, String label)
+	{
+		this(originalDate, 0);
+
+		this.label.set(label);
 	}
 
 	@Override
@@ -64,7 +54,10 @@ public class DateViewModel implements BindingItem
 		if (selectedDate != null)
 			value.set(DateFormat.getLongDateFormat(context).format(selectedDate));
 		else
-			value.set(context.getString(placeholderStringRes));
+			value.set(context.getString(R.string.hint_date_picker));
+
+		if (labelStringRes > 0)
+			this.label.set(context.getString(labelStringRes));
 	}
 
 	public boolean isDirty()
@@ -103,5 +96,19 @@ public class DateViewModel implements BindingItem
 			c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
 
 		datePickerDialog.show();
+	}
+
+	public static DateViewModel build(@NonNull Context context, Date originalDate, @StringRes int placeholderStringRes)
+	{
+		DateViewModel viewModel = new DateViewModel(originalDate, placeholderStringRes);
+		viewModel.onBind(context);
+		return viewModel;
+	}
+
+	public static DateViewModel build(@NonNull Context context, Date originalDate, String label)
+	{
+		DateViewModel viewModel = new DateViewModel(originalDate, label);
+		viewModel.onBind(context);
+		return viewModel;
 	}
 }
