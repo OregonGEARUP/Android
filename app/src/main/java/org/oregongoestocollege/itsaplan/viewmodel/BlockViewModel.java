@@ -13,7 +13,6 @@ import android.widget.Toast;
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.Block;
-import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
@@ -33,7 +32,6 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 	// view data
 	private final CheckpointInterface repository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
-	private final SingleLiveEvent<ChecklistState> openStageEvent = new SingleLiveEvent<>();
 	private List<BindingItem> items;
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
 
@@ -62,11 +60,6 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 		return updateListEvent;
 	}
 
-	public SingleLiveEvent<ChecklistState> getOpenStageEvent()
-	{
-		return openStageEvent;
-	}
-
 	public List<BindingItem> getItems()
 	{
 		return items;
@@ -91,10 +84,8 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 						for (int i = 0; i < size; i++)
 						{
 							viewModels.add(new StageItemViewModel(
-								getApplication(),
 								repository,
-								blockIndex, i,
-								openStageEvent));
+								blockIndex, i));
 						}
 
 						items = viewModels;

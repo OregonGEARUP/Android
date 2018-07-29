@@ -7,6 +7,10 @@
 		<import type="android.view.View" />
 
 		<variable
+			name="uxItemClickCallback"
+			type="org.oregongoestocollege.itsaplan.support.ItemClickCallback" />
+
+		<variable
 			name="viewModel"
 			type="org.oregongoestocollege.itsaplan.viewmodel.StageItemViewModel" />
 	</data>
@@ -19,7 +23,7 @@
 		android:padding="@dimen/baseline_unit_1_half"
 		android:layout_marginBottom="@dimen/baseline_unit_2x"
 		android:orientation="vertical"
-		android:onClick="@{(view) -> viewModel.onStageClick(view)}"
+		android:onClick="@{() -> uxItemClickCallback.onClick(viewModel)}"
 		tools:background="@drawable/button_background_blue">
 
 		<TextView

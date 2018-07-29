@@ -1,14 +1,10 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
-import android.app.Application;
 import android.content.Context;
 import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
-import android.view.View;
 
 import org.oregongoestocollege.itsaplan.R;
-import org.oregongoestocollege.itsaplan.SingleLiveEvent;
-import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
@@ -25,23 +21,19 @@ public class StageItemViewModel implements BindingItem
 	private int blockIndex;
 	private int stageIndex;
 	private Stage model;
-	private final SingleLiveEvent<ChecklistState> openStageEvent;
 	// view data
 	private final CheckpointInterface repository;
 	public String title;
 	public final ObservableBoolean isCompleted = new ObservableBoolean();
 
-	public StageItemViewModel(@NonNull Application context, @NonNull CheckpointInterface repository,
-		int blockIndex, int stageIndex,
-		SingleLiveEvent<ChecklistState> openStageEvent)
+	public StageItemViewModel(@NonNull CheckpointInterface repository,
+		int blockIndex, int stageIndex)
 	{
-		checkNotNull(context);
 		checkNotNull(repository);
 
 		this.repository = repository;
 		this.blockIndex = blockIndex;
 		this.stageIndex = stageIndex;
-		this.openStageEvent = openStageEvent;
 
 		model = repository.getStage(blockIndex, stageIndex);
 		if (model != null)
@@ -62,9 +54,13 @@ public class StageItemViewModel implements BindingItem
 
 	}
 
-	public void onStageClick(View view)
+	public int getBlockIndex()
 	{
-		if (openStageEvent != null)
-			openStageEvent.setValue(new ChecklistState(blockIndex, stageIndex));
+		return blockIndex;
+	}
+
+	public int getStageIndex()
+	{
+		return stageIndex;
 	}
 }

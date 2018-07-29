@@ -1,5 +1,6 @@
 package org.oregongoestocollege.itsaplan;
 
+import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -14,16 +15,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentStepBlockBinding;
+import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
+import org.oregongoestocollege.itsaplan.support.ItemClickCallback;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.StageItemViewModel;
 
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class StepBlockFragment extends Fragment
+public class StepBlockFragment extends Fragment implements ItemClickCallback
 {
 	private static final String LOG_TAG = "GearUpStepBlockFragment";
 	private OnFragmentInteractionListener listener;
@@ -91,7 +94,7 @@ public class StepBlockFragment extends Fragment
 			blockIndex = savedInstanceState.getInt(Utils.PARAM_BLOCK_INDEX, Utils.NO_INDEX);
 		}
 
-		adapter = new BindingItemsAdapter(null);
+		adapter = new BindingItemsAdapter(this);
 
 		recyclerView = v.findViewById(R.id.recycler_view);
 		recyclerView.setAdapter(adapter);
@@ -112,16 +115,6 @@ public class StepBlockFragment extends Fragment
 				adapter.addAll(blockViewModel.getItems());
 
 				getActivity().setTitle(blockViewModel.getTitle());
-			}
-		});
-
-		blockViewModel.getOpenStageEvent().observe(this, new Observer<ChecklistState>()
-		{
-			@Override
-			public void onChanged(@Nullable ChecklistState state)
-			{
-				if (listener != null && state != null)
-					listener.onShowStage(state.blockIndex, state.stageIndex);
 			}
 		});
 
@@ -153,5 +146,18 @@ public class StepBlockFragment extends Fragment
 	{
 		super.onDetach();
 		listener = null;
+	}
+
+	@Override
+	public void onClick(BindingItem item)
+	{
+		if (!(item instanceof StageItemViewModel))
+			return;
+
+		if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED) && listener != null)
+		{
+			StageItemViewModel vm = (StageItemViewModel)item;
+			listener.onShowStage(vm.getBlockIndex(), vm.getStageIndex());
+		}
 	}
 }
