@@ -18,7 +18,7 @@ import android.text.TextUtils;
  */
 public class UserEntries implements UserEntriesInterface
 {
-	private static WeakReference<Context> weakRef;
+	private WeakReference<Context> weakRef;
 
 	public UserEntries(@NonNull Context context)
 	{

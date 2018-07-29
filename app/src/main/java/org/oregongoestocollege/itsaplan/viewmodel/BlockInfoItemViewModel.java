@@ -61,7 +61,7 @@ public class BlockInfoItemViewModel implements BindingItem
 			}
 			else if (model.stagesCompleted >= 0 && model.stageCount >= 0)
 			{
-				show = false;
+				show = true;
 				showText = context.getString(R.string.x_of_y, model.stagesCompleted, model.stageCount);
 			}
 		}

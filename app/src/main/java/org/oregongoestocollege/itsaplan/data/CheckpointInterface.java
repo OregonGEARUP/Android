@@ -1,6 +1,5 @@
 package org.oregongoestocollege.itsaplan.data;
 
-import android.app.Application;
 import android.support.annotation.NonNull;
 
 /**
@@ -16,10 +15,9 @@ public interface CheckpointInterface
 		void onDataLoaded(boolean success);
 	}
 
-	void resumeCheckpoints(@NonNull Application context, @NonNull CheckpointCallback callback);
+	void resumeCheckpoints(@NonNull CheckpointCallback callback);
 
-	void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex,
-		String blockFileName);
+	void loadBlock(@NonNull CheckpointCallback callback, int blockIndex, String blockFileName);
 
 	int getCountOfBlocks();
 

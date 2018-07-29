@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -19,8 +18,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import android.app.Application;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -72,9 +69,8 @@ public class CheckpointRepository implements CheckpointInterface
 	}
 
 	@Override
-	public void resumeCheckpoints(@NonNull Application context, @NonNull CheckpointCallback callback)
+	public void resumeCheckpoints(@NonNull CheckpointCallback callback)
 	{
-		checkNotNull(context);
 		checkNotNull(callback);
 
 		List<BlockInfo> data = null;
@@ -87,7 +83,7 @@ public class CheckpointRepository implements CheckpointInterface
 			else if (currentBlockInfoTask != null)
 				currentBlockInfoTask.setCallback(callback);
 			else
-				newTask = new GetBlockInfoTask(context, callback);
+				newTask = new GetBlockInfoTask(this, callback);
 		}
 
 		// respond immediately if we have the data cached
@@ -106,7 +102,7 @@ public class CheckpointRepository implements CheckpointInterface
 	}
 
 	@Override
-	public void loadBlock(@NonNull Application context, @NonNull CheckpointCallback callback, int blockIndex,
+	public void loadBlock(@NonNull CheckpointCallback callback, int blockIndex,
 		String blockFileName)
 	{
 		checkNotNull(callback);
@@ -141,7 +137,7 @@ public class CheckpointRepository implements CheckpointInterface
 				if (currentTask != null)
 					currentTask.setCallback(callback);
 				else
-					newTask = new GetBlockTask(context, callback, fileName, blockIndex);
+					newTask = new GetBlockTask(this, callback, fileName, blockIndex);
 			}
 		}
 
@@ -163,28 +159,27 @@ public class CheckpointRepository implements CheckpointInterface
 
 	private static class GetBlockInfoTask extends AsyncTask<Void, Void, Boolean>
 	{
-		final WeakReference<Context> contextWeakReference;
+		CheckpointRepository repository;
 		CheckpointCallback callback;
-		Boolean success;
 
-		GetBlockInfoTask(@NonNull Context context, @NonNull CheckpointCallback callback)
+		GetBlockInfoTask(@NonNull CheckpointRepository repository, @NonNull CheckpointCallback callback)
 		{
-			this.contextWeakReference = new WeakReference<>(context);
+			this.repository = repository;
 			this.callback = callback;
 
 			// keep track of the pending task
-			CheckpointRepository.getInstance().currentBlockInfoTask = this;
+			repository.currentBlockInfoTask = this;
 		}
 
 		protected Boolean doInBackground(Void... params)
 		{
-			return CheckpointRepository.getInstance().fetchBlocks(contextWeakReference.get());
+			return repository.fetchBlocks();
 		}
 
 		protected void onPostExecute(Boolean success)
 		{
 			// clear this task
-			CheckpointRepository.getInstance().currentBlockInfoTask = null;
+			repository.currentBlockInfoTask = null;
 
 			callback.onDataLoaded(success);
 		}
@@ -200,35 +195,36 @@ public class CheckpointRepository implements CheckpointInterface
 
 	private static class GetBlockTask extends AsyncTask<Void, Void, Block>
 	{
-		final WeakReference<Context> contextWeakReference;
+		CheckpointRepository repository;
 		final String blockFileName;
 		final int blockIndex;
 		CheckpointCallback callback;
 		Block block;
 
-		GetBlockTask(@NonNull Context context, @NonNull CheckpointCallback callback, @NonNull String blockFileName,
+		GetBlockTask(@NonNull CheckpointRepository repository,
+			@NonNull CheckpointCallback callback,
+			@NonNull String blockFileName,
 			int blockIndex)
 		{
-			this.contextWeakReference = new WeakReference<>(context);
+			this.repository = repository;
 			this.callback = callback;
 			this.blockFileName = blockFileName;
 			this.blockIndex = blockIndex;
 
 			// keep track of the pending task
-			CheckpointRepository.getInstance().currentBlockTasks.put(blockFileName, this);
+			repository.currentBlockTasks.put(blockFileName, this);
 		}
 
 		protected Block doInBackground(Void... params)
 		{
-			block =
-				CheckpointRepository.getInstance().fetchBlock(contextWeakReference.get(), blockFileName, blockIndex);
+			block = repository.fetchBlock(blockFileName, blockIndex);
 			return block;
 		}
 
 		protected void onPostExecute(Block block)
 		{
 			// clear this task
-			CheckpointRepository.getInstance().currentBlockTasks.remove(blockFileName);
+			repository.currentBlockTasks.remove(blockFileName);
 
 			callback.onDataLoaded(block != null);
 		}
@@ -254,7 +250,7 @@ public class CheckpointRepository implements CheckpointInterface
 		}
 	}
 
-	boolean fetchBlocks(Context context)
+	boolean fetchBlocks()
 	{
 		boolean success = false;
 		List<BlockInfo> blocks = null;
@@ -292,7 +288,7 @@ public class CheckpointRepository implements CheckpointInterface
 		return success;
 	}
 
-	Block fetchBlock(Context context, String blockFileName, int index)
+	Block fetchBlock(String blockFileName, int index)
 	{
 		Block block = null;
 

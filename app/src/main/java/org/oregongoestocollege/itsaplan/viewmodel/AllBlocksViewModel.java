@@ -39,7 +39,7 @@ public class AllBlocksViewModel extends AndroidViewModel implements CheckpointIn
 	{
 		dataLoading.set(true);
 
-		repository.resumeCheckpoints(this.getApplication(), this);
+		repository.resumeCheckpoints(this);
 	}
 
 	public SingleLiveEvent<Void> getUpdateListEvent()

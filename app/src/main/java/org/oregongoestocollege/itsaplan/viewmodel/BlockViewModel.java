@@ -52,7 +52,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 
 		dataLoading.set(true);
 
-		repository.loadBlock(this.getApplication(), this, blockIndex, blockFileName);
+		repository.loadBlock(this, blockIndex, blockFileName);
 	}
 
 	public SingleLiveEvent<Void> getUpdateListEvent()
