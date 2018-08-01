@@ -184,13 +184,13 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 		viewPager.addOnPageChangeListener(this);
 		viewPager.setAdapter(pagerAdapter);
 
-		setAsVisited(0);
+		setAsVisited(v.getContext(), 0);
 		CheckpointRepository.getInstance().markVisited(stageIndex, 0);
 
 		return v;
 	}
 
-	private void setAsVisited(int position)
+	private void setAsVisited(Context context, int position)
 	{
 		CheckpointViewModel viewModel = pagerAdapter.getCurrentViewModel(position);
 		if (viewModel != null)
@@ -200,7 +200,7 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 		{
 			viewModel = pagerAdapter.getCurrentViewModel(lastVisitedPosition);
 			if (viewModel != null)
-				viewModel.saveCheckpointEntries();
+				viewModel.saveCheckpointEntries(new UserEntries(context));
 			lastVisitedPosition = position;
 		}
 	}
@@ -223,7 +223,7 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	{
 		CheckpointViewModel viewModel = pagerAdapter.getCurrentViewModel(lastVisitedPosition);
 		if (viewModel != null)
-			viewModel.saveCheckpointEntries();
+			viewModel.saveCheckpointEntries(new UserEntries(getContext()));
 
 		super.onDetach();
 		listener = null;
@@ -238,7 +238,7 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	@Override
 	public void onPageSelected(int position)
 	{
-		setAsVisited(position);
+		setAsVisited(getContext(), position);
 		//Utils.d(LOG_TAG, "onPageSelected position:%d", position);
 	}
 

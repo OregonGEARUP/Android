@@ -42,11 +42,10 @@ public class CheckpointViewModel extends AndroidViewModel
 	private int blockIndex;
 	private int stageIndex;
 	private int checkpointIndex;
+	private final CheckpointInterface repository;
 	// view data
 	public final ObservableField<DateViewModel> dateOnlyVm = new ObservableField<>();
 	public final ObservableField<DateViewModel> dateAndTextVm = new ObservableField<>();
-	private final UserEntriesInterface entries;
-	private final CheckpointInterface repository;
 	private final SingleLiveEvent<ChecklistState> nextStageEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<ChecklistState> nextBlockEvent = new SingleLiveEvent<>();
 	public String description;
@@ -67,7 +66,6 @@ public class CheckpointViewModel extends AndroidViewModel
 		super(context);
 
 		this.repository = checkNotNull(repository);
-		this.entries = new UserEntries(context);
 	}
 
 	public void start(Context context, int blockIndex, int stageIndex, int checkpointIndex)
@@ -75,6 +73,8 @@ public class CheckpointViewModel extends AndroidViewModel
 		this.blockIndex = blockIndex;
 		this.stageIndex = stageIndex;
 		this.checkpointIndex = checkpointIndex;
+
+		UserEntriesInterface entries = new UserEntries(context);
 
 		model = repository.getCheckpoint(blockIndex, stageIndex, checkpointIndex);
 		if (model != null)
@@ -91,21 +91,21 @@ public class CheckpointViewModel extends AndroidViewModel
 				// url only for now
 				break;
 			case field:
-				setupFieldEntry();
+				setupFieldEntry(entries);
 				break;
 			case checkbox:
 			case radio:
-				setupCheckboxAndRadioEntry();
+				setupCheckboxAndRadioEntry(entries);
 				break;
 			case dateOnly:
-				setupDateOnlyEntry(context);
+				setupDateOnlyEntry(context, entries);
 				break;
 			case dateAndText:
-				setupDateAndTextEntry(context);
+				setupDateAndTextEntry(context, entries);
 				break;
 			case route:
 			case nextstage:
-				setupRouteEntry();
+				setupRouteEntry(context);
 				break;
 			}
 		}
@@ -121,7 +121,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		return nextBlockEvent;
 	}
 
-	private void setupFieldEntry()
+	private void setupFieldEntry(@NonNull UserEntriesInterface entries)
 	{
 		List<Instance> modelInstances = model.instances;
 		if (modelInstances != null)
@@ -145,7 +145,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		}
 	}
 
-	private void setupCheckboxAndRadioEntry()
+	private void setupCheckboxAndRadioEntry(@NonNull UserEntriesInterface entries)
 	{
 		List<Instance> modelInstances = model.instances;
 		if (modelInstances != null)
@@ -170,7 +170,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		}
 	}
 
-	private void setupDateOnlyEntry(Context context)
+	private void setupDateOnlyEntry(Context context, @NonNull UserEntriesInterface entries)
 	{
 		List<Instance> modelInstances = model.instances;
 		if (modelInstances != null && !modelInstances.isEmpty())
@@ -188,7 +188,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		}
 	}
 
-	private void setupDateAndTextEntry(Context context)
+	private void setupDateAndTextEntry(Context context, @NonNull UserEntriesInterface entries)
 	{
 		List<Instance> modelInstances = model.instances;
 		if (modelInstances != null && !modelInstances.isEmpty())
@@ -208,10 +208,9 @@ public class CheckpointViewModel extends AndroidViewModel
 		}
 	}
 
-	private void setupRouteEntry()
+	private void setupRouteEntry(Context context)
 	{
-		Context context = getApplication();
-		Resources resources = getApplication().getResources();
+		Resources resources = context.getResources();
 
 		descriptionTextColor = ContextCompat.getColor(context, R.color.colorPrimary);
 		showNextText = true;
@@ -290,7 +289,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		repository.markVisited(stageIndex, checkpointIndex);
 	}
 
-	public void saveCheckpointEntries()
+	public void saveCheckpointEntries(@NonNull UserEntriesInterface entries)
 	{
 		model = repository.getCheckpoint(blockIndex, stageIndex, checkpointIndex);
 		if (model != null)
