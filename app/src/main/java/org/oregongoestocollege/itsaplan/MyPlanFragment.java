@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.oregongoestocollege.itsaplan.viewmodel.MyPlanViewModel;
+
 /**
  * MyPlanFragment
  * Oregon GEAR UP App
@@ -21,12 +23,6 @@ import android.view.ViewGroup;
  */
 public class MyPlanFragment extends Fragment implements OnFragmentInteractionListener
 {
-	static final String MY_PLAN_COLLEGES = "colleges";
-	static final String MY_PLAN_SCHOLARSHIPS = "scholarships";
-	static final String MY_PLAN_ACTSAT = "actsat";
-	static final String MY_PLAN_RESIDENCY = "residency";
-	static final String MY_PLAN_CALENDAR = "calendar";
-
 	private Fragment lastFragment;
 	private String optionName;
 
@@ -97,19 +93,19 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 
 			switch (name)
 			{
-			case MY_PLAN_COLLEGES:
+			case MyPlanViewModel.MY_PLAN_COLLEGES:
 				fragment = new MyPlanCollegesFragment();
 				break;
-			case MY_PLAN_SCHOLARSHIPS:
+			case MyPlanViewModel.MY_PLAN_SCHOLARSHIPS:
 				fragment = new MyPlanScholarshipsFragment();
 				break;
-			case MY_PLAN_ACTSAT:
+			case MyPlanViewModel.MY_PLAN_TESTS:
 				fragment = new MyPlanTestResultsFragment();
 				break;
-			case MY_PLAN_RESIDENCY:
+			case MyPlanViewModel.MY_PLAN_RESIDENCY:
 				fragment = new MyPlanResidencyFragment();
 				break;
-			case MY_PLAN_CALENDAR:
+			case MyPlanViewModel.MY_PLAN_CALENDAR:
 				fragment = new MyPlanCalendarFragment();
 				break;
 			}
@@ -125,18 +121,6 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 				optionName = name;
 			}
 		}
-	}
-
-	@Override
-	public void onShowBlock(int blockIndex, String blockFileName)
-	{
-		// no-op
-	}
-
-	@Override
-	public void onShowStage(int blockIndex, int stageIndex)
-	{
-		// no-op
 	}
 
 	@Override

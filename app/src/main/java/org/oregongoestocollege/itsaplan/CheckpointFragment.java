@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
+import org.oregongoestocollege.itsaplan.data.NavigationState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
@@ -109,6 +110,16 @@ public class CheckpointFragment extends Fragment
 			{
 				if (listener != null && state != null)
 					listener.onShowBlock(state.blockIndex, state.blockFileName);
+			}
+		});
+
+		checkpointViewModel.getNavigationEvent().observe(this, new Observer<NavigationState>()
+		{
+			@Override
+			public void onChanged(@Nullable NavigationState navigationState)
+			{
+				if (listener != null && navigationState != null)
+					listener.onNavigate(navigationState.index, navigationState.option);
 			}
 		});
 

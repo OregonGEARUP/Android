@@ -41,7 +41,7 @@
 		<ImageView style="@style/GearUpOptionSeparator" />
 
 		<TextView
-			android:id="@+id/topic_actsat"
+			android:id="@+id/topic_tests"
 			style="@style/GearUpTextAppearance.Option"
 			android:drawableStart="@mipmap/actsat"
 			android:text="@string/actsat" />

@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.oregongoestocollege.itsaplan.viewmodel.MyPlanViewModel;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -27,8 +29,8 @@ public class MyPlanOptionsFragment extends Fragment implements View.OnClickListe
 	TextView textViewColleges;
 	@BindView(R.id.topic_scholarships)
 	TextView textViewScholarships;
-	@BindView(R.id.topic_actsat)
-	TextView textViewActSat;
+	@BindView(R.id.topic_tests)
+	TextView textViewTests;
 	@BindView(R.id.topic_residency)
 	TextView textViewResidency;
 	@BindView(R.id.topic_calendar)
@@ -49,7 +51,7 @@ public class MyPlanOptionsFragment extends Fragment implements View.OnClickListe
 
 		textViewColleges.setOnClickListener(this);
 		textViewScholarships.setOnClickListener(this);
-		textViewActSat.setOnClickListener(this);
+		textViewTests.setOnClickListener(this);
 		textViewResidency.setOnClickListener(this);
 		textViewCalendar.setOnClickListener(this);
 
@@ -69,15 +71,15 @@ public class MyPlanOptionsFragment extends Fragment implements View.OnClickListe
 		String optionName = null;
 
 		if (view == textViewColleges)
-			optionName = MyPlanFragment.MY_PLAN_COLLEGES;
+			optionName = MyPlanViewModel.MY_PLAN_COLLEGES;
 		else if (view == textViewScholarships)
-			optionName = MyPlanFragment.MY_PLAN_SCHOLARSHIPS;
-		else if (view == textViewActSat)
-			optionName = MyPlanFragment.MY_PLAN_ACTSAT;
+			optionName = MyPlanViewModel.MY_PLAN_SCHOLARSHIPS;
+		else if (view == textViewTests)
+			optionName = MyPlanViewModel.MY_PLAN_TESTS;
 		else if (view == textViewResidency)
-			optionName = MyPlanFragment.MY_PLAN_RESIDENCY;
+			optionName = MyPlanViewModel.MY_PLAN_RESIDENCY;
 		else if (view == textViewCalendar)
-			optionName = MyPlanFragment.MY_PLAN_CALENDAR;
+			optionName = MyPlanViewModel.MY_PLAN_CALENDAR;
 
 		if (!TextUtils.isEmpty(optionName))
 			clickOptionEvent.setValue(optionName);

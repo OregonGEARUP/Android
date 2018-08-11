@@ -24,6 +24,7 @@ import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.EntryType;
 import org.oregongoestocollege.itsaplan.data.Instance;
+import org.oregongoestocollege.itsaplan.data.NavigationState;
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.data.UserEntries;
 import org.oregongoestocollege.itsaplan.data.UserEntriesInterface;
@@ -48,6 +49,7 @@ public class CheckpointViewModel extends AndroidViewModel
 	public final ObservableField<DateViewModel> dateAndTextVm = new ObservableField<>();
 	private final SingleLiveEvent<ChecklistState> nextStageEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<ChecklistState> nextBlockEvent = new SingleLiveEvent<>();
+	private final SingleLiveEvent<NavigationState> navigationEvent = new SingleLiveEvent<>();
 	public String description;
 	public int descriptionTextColor;
 	public Drawable image;
@@ -120,6 +122,8 @@ public class CheckpointViewModel extends AndroidViewModel
 	{
 		return nextBlockEvent;
 	}
+
+	public SingleLiveEvent<NavigationState> getNavigationEvent() { return navigationEvent; }
 
 	private void setupFieldEntry(@NonNull UserEntriesInterface entries)
 	{
@@ -381,9 +385,32 @@ public class CheckpointViewModel extends AndroidViewModel
 
 	public void onUrlClick()
 	{
-		if (TextUtils.isEmpty(model.url))
+		final String url = model.url;
+		if (TextUtils.isEmpty(url))
 			return;
 
-		WebViewActivity.startActivity(getApplication(), model.url);
+		//  check for special app destination URLs first
+		if (url.startsWith("itsaplan://myplan/"))
+		{
+			String option = MyPlanViewModel.getOptionFromUrl(url);
+
+			// switch to My Plan tab
+			navigationEvent.setValue(new NavigationState(1, option));
+		}
+		else if (url.startsWith("itsaplan://passwords"))
+		{
+			// switch to Passwords tab
+			navigationEvent.setValue(new NavigationState(2, null));
+		}
+		else if (url.startsWith("itsaplan://info"))
+		{
+			// switch to Info tab
+			navigationEvent.setValue(new NavigationState(3, null));
+		}
+		else
+		{
+			// open web page for URL
+			WebViewActivity.startActivity(getApplication(), url);
+		}
 	}
 }

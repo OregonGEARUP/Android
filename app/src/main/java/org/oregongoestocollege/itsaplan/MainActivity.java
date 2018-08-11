@@ -1,7 +1,9 @@
 package org.oregongoestocollege.itsaplan;
 
+import android.arch.lifecycle.Lifecycle;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -121,6 +123,32 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 			if (fragment instanceof OnFragmentInteractionListener)
 				((OnFragmentInteractionListener)fragment).onShowStage(blockIndex, stageIndex);
 		}
+	}
+
+	@Override
+	public void onNavigate(int index, @Nullable String option)
+	{
+		if (!getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED))
+			return;
+
+		int id;
+		switch (index)
+		{
+		case 3:
+			id = R.id.navigation_info;
+			break;
+		case 2:
+			id = R.id.navigation_passwords;
+			break;
+		case 1:
+			id = R.id.navigation_myplan;
+			break;
+		default:
+			id = R.id.navigation_checklist;
+			break;
+		}
+		BottomNavigationView navigation = findViewById(R.id.navigation);
+		navigation.setSelectedItemId(id);
 	}
 
 	@Override

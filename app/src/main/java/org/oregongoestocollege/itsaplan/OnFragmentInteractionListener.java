@@ -1,5 +1,7 @@
 package org.oregongoestocollege.itsaplan;
 
+import android.support.annotation.Nullable;
+
 /**
  * OnFragmentInteractionListener
  * Oregon GEAR UP App
@@ -14,9 +16,11 @@ package org.oregongoestocollege.itsaplan;
  */
 public interface OnFragmentInteractionListener
 {
-	void onShowBlock(int blockIndex, String blockFileName);
+	default void onShowBlock(int blockIndex, String blockFileName) { }
 
-	void onShowStage(int blockIndex, int stageIndex);
+	default void onShowStage(int blockIndex, int stageIndex) { }
+
+	default void onNavigate(int index, @Nullable String option) { }
 
 	boolean handleBackPressed();
 
