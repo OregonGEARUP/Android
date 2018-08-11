@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 	}
 
 	@Override
-	public void onNavigate(int index, @Nullable String option)
+	public void onNavigate(int index, @Nullable String task)
 	{
 		if (!getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED))
 			return;

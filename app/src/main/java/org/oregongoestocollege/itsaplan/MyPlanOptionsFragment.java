@@ -1,5 +1,6 @@
 package org.oregongoestocollege.itsaplan;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,7 +23,7 @@ import butterknife.Unbinder;
  */
 public class MyPlanOptionsFragment extends Fragment implements View.OnClickListener
 {
-	private final SingleLiveEvent<String> clickOptionEvent = new SingleLiveEvent<>();
+	private MyPlanViewModel viewModel;
 	// bind to views using Butterknife, need to unbind when used in Fragment
 	private Unbinder unbinder;
 	@BindView(R.id.topic_colleges)
@@ -39,6 +40,14 @@ public class MyPlanOptionsFragment extends Fragment implements View.OnClickListe
 	public MyPlanOptionsFragment()
 	{
 		// Required empty public constructor
+	}
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+		viewModel = ViewModelProviders.of(getActivity()).get(MyPlanViewModel.class);
 	}
 
 	@Override
@@ -68,25 +77,20 @@ public class MyPlanOptionsFragment extends Fragment implements View.OnClickListe
 	@Override
 	public void onClick(View view)
 	{
-		String optionName = null;
+		String task = null;
 
 		if (view == textViewColleges)
-			optionName = MyPlanViewModel.MY_PLAN_COLLEGES;
+			task = MyPlanViewModel.MY_PLAN_COLLEGES;
 		else if (view == textViewScholarships)
-			optionName = MyPlanViewModel.MY_PLAN_SCHOLARSHIPS;
+			task = MyPlanViewModel.MY_PLAN_SCHOLARSHIPS;
 		else if (view == textViewTests)
-			optionName = MyPlanViewModel.MY_PLAN_TESTS;
+			task = MyPlanViewModel.MY_PLAN_TESTS;
 		else if (view == textViewResidency)
-			optionName = MyPlanViewModel.MY_PLAN_RESIDENCY;
+			task = MyPlanViewModel.MY_PLAN_RESIDENCY;
 		else if (view == textViewCalendar)
-			optionName = MyPlanViewModel.MY_PLAN_CALENDAR;
+			task = MyPlanViewModel.MY_PLAN_CALENDAR;
 
-		if (!TextUtils.isEmpty(optionName))
-			clickOptionEvent.setValue(optionName);
-	}
-
-	public SingleLiveEvent<String> getClickOptionEvent()
-	{
-		return clickOptionEvent;
+		if (!TextUtils.isEmpty(task))
+			viewModel.setCurrentTask(task);
 	}
 }
