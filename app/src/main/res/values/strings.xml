@@ -25,6 +25,9 @@
 	<string name="fsa_title">FSA ID</string>
 	<string name="fsa_username">FSA username</string>
 	<string name="fsa_password">FSA password</string>
+	<string name="orsaa_title">ORSAA</string>
+	<string name="orsaa_username">ORSAA Username</string>
+	<string name="orsaa_password">ORSAA Password</string>
 	<string name="college_and_scholarships">College and Scholarship Applications</string>
 	<string name="application_title">The email address and password you will use for applications.</string>
 	<string name="application_email">Email</string>
@@ -108,4 +111,18 @@
 	<string name="employment_city">Employer City</string>
 	<string name="employment_start_date">Employment Start Date</string>
 	<string name="employment_end_date">Employment End Date</string>
+	<string name="setup_pin_message">You need to setup a PIN for accessing your passwords.</string>
+	<string name="setup_pin_button_text">Setup PIN</string>
+	<string name="set_pin">Set PIN</string>
+	<string name="enter_pin">Enter PIN</string>
+	<string name="css_title">CSS Profile</string>
+	<string name="css_username">CSS username</string>
+	<string name="css_password">CSS password</string>
+	<string name="extra_login_1_title">Extra Login #1</string>
+	<string name="osac_username">OSAC username</string>
+	<string name="osac_password">OSAC password</string>
+	<string name="osac_title">OSAC</string>
+	<string name="username">Username</string>
+	<string name="organization">Organization</string>
+	<string name="extra_login_2_title">Extra Login #2</string>
 </resources>
