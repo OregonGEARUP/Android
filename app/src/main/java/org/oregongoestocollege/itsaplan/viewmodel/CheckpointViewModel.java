@@ -413,4 +413,11 @@ public class CheckpointViewModel extends AndroidViewModel
 			WebViewActivity.startActivity(getApplication(), url);
 		}
 	}
+
+	// workaround for android:onClick="@{(view) -> uxContent.dateAndTextVm.onChangeDate(view)}"
+	// which caused dateAndTextVm to be null and using dateAndTextVm.get() works but gives compiler warning
+	public void onChangeDateAndText(View view)
+	{
+		dateAndTextVm.get().onChangeDate(view);
+	}
 }

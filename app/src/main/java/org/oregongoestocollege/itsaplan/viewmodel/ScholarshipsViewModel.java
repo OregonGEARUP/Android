@@ -19,6 +19,7 @@ import org.oregongoestocollege.itsaplan.AddLayoutView;
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Scholarship;
+import org.oregongoestocollege.itsaplan.data.UserEntries;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 
 /**
@@ -111,5 +112,15 @@ public class ScholarshipsViewModel extends AndroidViewModel
 			for (ScholarshipViewModel allViewModel : allViewModels)
 				allViewModel.update();
 		}
+	}
+
+	public void insertFirstScholarship(@Nullable Context context)
+	{
+		if (context == null)
+			return;
+
+		// inserts the first college initializing with any user entered info
+		repository.insertFirstScholarship(new UserEntries(context),
+			context.getString(R.string.scholarship_1));
 	}
 }

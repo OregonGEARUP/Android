@@ -68,6 +68,7 @@
 	<string name="remove_scholarship">Remove This Scholarship</string>
 	<string name="remove_scholarship_confirm">Confirm removing \'%s\' from your scholarship list.</string>
 	<string name="scholarship_name_hint">Scholarship Name</string>
+	<string name="scholarship_1">Scholarship 1</string>
 	<string name="tests_act">ACT</string>
 	<string name="tests_act_message">If you have taken the ACT, enter the date and your best scores.</string>
 	<string name="tests_act_date">Date</string>

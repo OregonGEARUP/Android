@@ -78,7 +78,8 @@ public class MyPlanCollegesFragment extends Fragment
 				{
 					if (colleges.isEmpty())
 					{
-						// keep the loading indicator while we insert the first college
+						// keep the loading indicator while we insert the first entry
+						// will get another onChanged() when insert is complete
 						viewModel.insertFirstCollege(getContext());
 					}
 					else

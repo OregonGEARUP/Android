@@ -75,12 +75,21 @@ public class MyPlanScholarshipsFragment extends Fragment
 
 				if (scholarships != null)
 				{
-					binding.setIsLoading(false);
+					if (scholarships.isEmpty())
+					{
+						// keep the loading indicator while we insert the first entry
+						// will get another onChanged() when insert is complete
+						viewModel.insertFirstScholarship(getContext());
+					}
+					else
+					{
+						binding.setIsLoading(false);
 
-					List<BindingItem> items = viewModel.getItems(scholarships);
-					if (adapter.getItemCount() != 0)
-						adapter.clear();
-					adapter.addAll(items);
+						List<BindingItem> items = viewModel.getItems(scholarships);
+						if (adapter.getItemCount() != 0)
+							adapter.clear();
+						adapter.addAll(items);
+					}
 				}
 				else
 				{

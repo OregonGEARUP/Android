@@ -356,4 +356,43 @@ public class MyPlanRepository
 
 		new InsertCollegeAsyncTask(collegeDao).execute(college);
 	}
+
+	/**
+	 * Add the first scholarship from user entered data when visiting the My Plan - scholarship tab.
+	 */
+	public void insertFirstScholarship(@NonNull UserEntriesInterface userEntries, String defaultName)
+	{
+		String value = userEntries.getValue("b3citizen_s2_cp2_i1_text");
+
+		Scholarship scholarship = new Scholarship();
+
+		if (!TextUtils.isEmpty(value = userEntries.getValue("b3citizen_s2_cp2_i1_text")))
+		{
+			scholarship.setName(value);
+
+			long appDate = userEntries.getValueAsLong("b3citizen_s2_cp2_i1_date");
+			if (appDate > 0)
+				scholarship.setApplicationDate(DateConverter.toDate(appDate));
+		}
+		else if (!TextUtils.isEmpty(value = userEntries.getValue("b3undoc_s2_cp2_i1_text")))
+		{
+			scholarship.setName(value);
+
+			long appDate = userEntries.getValueAsLong("b3undoc_s2_cp2_i1_date");
+			if (appDate > 0)
+				scholarship.setApplicationDate(DateConverter.toDate(appDate));
+		}
+		else if (!TextUtils.isEmpty(value = userEntries.getValue("b3visa_s2_cp2_i1_text")))
+		{
+			scholarship.setName(value);
+
+			long appDate = userEntries.getValueAsLong("b3visa_s2_cp2_i1_date");
+			if (appDate > 0)
+				scholarship.setApplicationDate(DateConverter.toDate(appDate));
+		}
+		else
+			scholarship.setName(defaultName);
+
+		new InsertScholarshipAsyncTask(scholarshipDao).execute(scholarship);
+	}
 }
