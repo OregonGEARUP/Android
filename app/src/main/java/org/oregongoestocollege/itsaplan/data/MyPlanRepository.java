@@ -10,6 +10,7 @@ import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
 import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
+import org.oregongoestocollege.itsaplan.data.dao.PasswordsDao;
 import org.oregongoestocollege.itsaplan.data.dao.ResidencyDao;
 import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
 import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
@@ -26,8 +27,10 @@ public class MyPlanRepository
 	private ScholarshipDao scholarshipDao;
 	private TestResultDao testResultDao;
 	private ResidencyDao residencyDao;
+	private PasswordsDao passwordsDao;
 	private LiveData<List<College>> allColleges;
 	private LiveData<List<Scholarship>> allScholarships;
+	private LiveData<List<Password>> allPasswords;
 
 	/**
 	 * Constructor to initialize the database and variables
@@ -42,6 +45,8 @@ public class MyPlanRepository
 		allScholarships = scholarshipDao.getAll();
 		testResultDao = database.testResultDao();
 		residencyDao = database.residencyDao();
+		passwordsDao = database.passwordsDao();
+		allPasswords = passwordsDao.getAll();
 	}
 
 	public static MyPlanRepository getInstance(@NonNull Context context)
@@ -193,6 +198,60 @@ public class MyPlanRepository
 		}
 	}
 
+	private static class InsertPasswordAsyncTask extends AsyncTask<Password, Void, Void>
+	{
+		private PasswordsDao mAsyncTaskDao;
+
+		InsertPasswordAsyncTask(PasswordsDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(Password... passwords)
+		{
+			for (Password password : passwords)
+				mAsyncTaskDao.insert(password);
+			return null;
+		}
+	}
+
+	private static class UpdatePasswordAsyncTask extends AsyncTask<Password, Void, Void>
+	{
+		private PasswordsDao mAsyncTaskDao;
+
+		UpdatePasswordAsyncTask(PasswordsDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(Password... passwords)
+		{
+			for (Password password : passwords)
+				mAsyncTaskDao.update(password);
+			return null;
+		}
+	}
+
+	private static class DeletePasswordAsyncTask extends AsyncTask<Password, Void, Void>
+	{
+		private PasswordsDao mAsyncTaskDao;
+
+		DeletePasswordAsyncTask(PasswordsDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(Password... passwords)
+		{
+			for (Password password : passwords)
+				mAsyncTaskDao.delete(password);
+			return null;
+		}
+	}
+
 	/**
 	 * Wrapper to get all colleges from the database. Room executes all queries on a separate thread.
 	 * Observed LiveData will notify the observer when the data has changed.
@@ -318,6 +377,30 @@ public class MyPlanRepository
 	public void update(Residency residency)
 	{
 		new UpdateResidencyAsyncTask(residencyDao).execute(residency);
+	}
+
+	public LiveData<List<Password>> getAllPasswords()
+	{
+		return allPasswords;
+	}
+
+	public void insertPassword(String name, String s)
+	{
+		if (TextUtils.isEmpty(name))
+			return;
+
+		Password password = new Password(name, s);
+		new InsertPasswordAsyncTask(passwordsDao).execute(password);
+	}
+
+	public void updatePassword(Password password)
+	{
+		new UpdatePasswordAsyncTask(passwordsDao).execute(password);
+	}
+
+	public void deletePassword(Password password)
+	{
+		new DeletePasswordAsyncTask(passwordsDao).execute(password);
 	}
 
 	/**

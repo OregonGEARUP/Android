@@ -3,6 +3,7 @@ package org.oregongoestocollege.itsaplan;
 import java.util.Arrays;
 import java.util.List;
 
+import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
+import org.oregongoestocollege.itsaplan.data.Password;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +37,16 @@ import butterknife.Unbinder;
 public class PasswordsFragment extends Fragment
 {
 	private static final String LOG_TAG = "GearUpPasswordsFrag";
+
+	public static final String EDIT_SSN_KEY = "edit_ssn";
+	public static final String EDIT_SSN_1_KEY = "edit_ssn1";
+	public static final String EDIT_SSN_2_KEY = "edit_ssn2";
+	public static final String EDIT_DRIVER_LIC_KEY = "edit_driver_lic";
+	public static final String FSA_USERNAME_KEY = "fsa_username";
+	public static final String FSA_PASSWORD_KEY = "fsa_password";
+	public static final String APPLICATION_EMAIL_KEY = "scholarship_email";
+	public static final String APPLICATION_PASSWORD_KEY = "scholarship_password";
+
 	private OnFragmentInteractionListener mListener;
 	// tracks the locked / unlocked state of the controls
 	private boolean locked = true;
@@ -48,8 +62,18 @@ public class PasswordsFragment extends Fragment
 	TextInputEditText editSsn2;
 	@BindView(R.id.edit_driver_lic)
 	TextInputEditText editDriverLic;
+	@BindView(R.id.edit_fsa_username)
+	TextInputEditText editFsaUsername;
+	@BindView(R.id.edit_fsa_password)
+	TextInputEditText editFsaPassword;
+	@BindView(R.id.edit_application_email)
+	TextInputEditText editApplicationEmail;
+	@BindView(R.id.edit_application_password)
+	TextInputEditText editApplicationPassword;
 
 
+	MyPlanRepository repository;
+	LiveData<List<Password>> allPasswords;
 	// TODO
 	// setup controls in layout for all the fields
 	// validate data and perhaps use the TextInputLayout error message to show invalid fields
@@ -86,9 +110,58 @@ public class PasswordsFragment extends Fragment
 		unbinder = ButterKnife.bind(this, view);
 
 		// keep a list of all edit controls so we can show/hide values when we lock/unlock
-		editableViews = Arrays.asList(editSsn, editSsn1, editSsn2, editDriverLic);
+		editableViews = Arrays.asList(editSsn, editSsn1, editSsn2, editDriverLic, editFsaUsername, editFsaPassword,
+			editApplicationEmail, editApplicationPassword);
+
+		toggleEditableValues(false);
 
 		// TODO: setup controls with current values
+
+
+		repository = MyPlanRepository.getInstance(getActivity());
+		allPasswords = repository.getAllPasswords();
+
+		allPasswords.observe(this, passwords ->
+		{
+			if (passwords != null)
+			{
+				TextInputEditText v = null;
+
+				for (Password password : passwords)
+				{
+					switch (password.getName())
+					{
+					case EDIT_SSN_KEY:
+						v = editSsn;
+						break;
+					case EDIT_SSN_1_KEY:
+						v = editSsn1;
+						break;
+					case EDIT_SSN_2_KEY:
+						v = editSsn2;
+						break;
+					case EDIT_DRIVER_LIC_KEY:
+						v = editDriverLic;
+						break;
+					case FSA_USERNAME_KEY:
+						v = editFsaUsername;
+						break;
+					case FSA_PASSWORD_KEY:
+						v = editFsaPassword;
+						break;
+					case APPLICATION_EMAIL_KEY:
+						v = editApplicationEmail;
+						break;
+					case APPLICATION_PASSWORD_KEY:
+						v = editApplicationPassword;
+						break;
+					}
+
+					if (v != null)
+						v.setText(password.getValue());
+				}
+			}
+		});
 
 		return view;
 	}
@@ -125,6 +198,42 @@ public class PasswordsFragment extends Fragment
 				// 'lock' so we hide our values
 				toggleEditableValues(false);
 				locked = true;
+
+				for (TextInputEditText view : editableViews)
+				{
+					String name = null;
+
+					switch (view.getId())
+					{
+					case R.id.edit_ssn:
+						name = EDIT_SSN_KEY;
+						break;
+					case R.id.edit_ssn1:
+						name = EDIT_SSN_1_KEY;
+						break;
+					case R.id.edit_ssn2:
+						name = EDIT_SSN_2_KEY;
+						break;
+					case R.id.edit_driver_lic:
+						name = EDIT_DRIVER_LIC_KEY;
+						break;
+					case R.id.edit_fsa_username:
+						name = FSA_USERNAME_KEY;
+						break;
+					case R.id.edit_fsa_password:
+						name = FSA_PASSWORD_KEY;
+						break;
+					case R.id.edit_application_email:
+						name = APPLICATION_EMAIL_KEY;
+						break;
+					case R.id.edit_application_password:
+						name = APPLICATION_PASSWORD_KEY;
+						break;
+					}
+
+					if (name != null)
+						repository.insertPassword(name, view.getText().toString());
+				}
 			}
 
 			// force update of our menu
