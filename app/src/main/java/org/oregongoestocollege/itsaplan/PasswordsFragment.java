@@ -178,12 +178,13 @@ public class PasswordsFragment extends Fragment implements CreatePinFragment.OnP
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			builder
 				.setMessage(R.string.setup_pin_message)
+				.setCancelable(false)
 				.setPositiveButton(R.string.setup_pin_button_text, (dialog, which) ->
 				{
-					// todo start create a pin dialog
 					FragmentManager fm = getActivity().getSupportFragmentManager();
 					CreatePinFragment cpf = new CreatePinFragment();
 					cpf.setCallback(PasswordsFragment.this);
+					cpf.setCancelable(false);
 					cpf.show(fm, "create_pin_fragment");
 				});
 			builder.create().show();
