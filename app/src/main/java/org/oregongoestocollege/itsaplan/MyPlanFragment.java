@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -36,6 +37,8 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 	{
 		super.onCreate(savedInstanceState);
 
+		Utils.d(MyPlanViewModel.LOG_TAG, "onCreate");
+
 		viewModel = ViewModelProviders.of(getActivity()).get(MyPlanViewModel.class);
 		viewModel.getCurrentTask().observe(this, this::showTask);
 	}
@@ -45,74 +48,91 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 		@Nullable Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		View view = inflater.inflate(R.layout.fragment_my_plan, container, false);
-
-		if (savedInstanceState == null)
-		{
-			showTask(null);
-		}
-
-		return view;
+		return inflater.inflate(R.layout.fragment_my_plan, container, false);
 	}
 
 	private void showTask(String currentTask)
 	{
-		FragmentManager manager = getActivity().getSupportFragmentManager();
+		// make sure to use getChildFragmentManager versus getSupportFragmentManager
+		FragmentManager manager = getChildFragmentManager();
 		if (manager == null)
 			return;
 
 		if (!TextUtils.isEmpty(currentTask))
 		{
+			// we can get here from links in the checklist steps so we want to make sure the
+			// requested task isn't already displayed, MyPlanOptionsFragment should always be 0
+			Fragment currentFragment = null;
+			if (manager.getFragments().size() > 1)
+				currentFragment = manager.getFragments().get(1);
+
 			Fragment fragment = null;
 
 			switch (currentTask)
 			{
 			case MyPlanViewModel.MY_PLAN_COLLEGES:
-				fragment = new MyPlanCollegesFragment();
+				if (!(currentFragment instanceof MyPlanCollegesFragment))
+					fragment = new MyPlanCollegesFragment();
 				break;
 			case MyPlanViewModel.MY_PLAN_SCHOLARSHIPS:
-				fragment = new MyPlanScholarshipsFragment();
+				if (!(currentFragment instanceof MyPlanScholarshipsFragment))
+					fragment = new MyPlanScholarshipsFragment();
 				break;
 			case MyPlanViewModel.MY_PLAN_TESTS:
-				fragment = new MyPlanTestResultsFragment();
+				if (!(currentFragment instanceof MyPlanTestResultsFragment))
+					fragment = new MyPlanTestResultsFragment();
 				break;
 			case MyPlanViewModel.MY_PLAN_RESIDENCY:
-				fragment = new MyPlanResidencyFragment();
+				if (!(currentFragment instanceof MyPlanResidencyFragment))
+					fragment = new MyPlanResidencyFragment();
 				break;
 			case MyPlanViewModel.MY_PLAN_CALENDAR:
-				fragment = new MyPlanCalendarFragment();
+				if (!(currentFragment instanceof MyPlanCalendarFragment))
+					fragment = new MyPlanCalendarFragment();
 				break;
 			}
 
 			if (fragment != null)
 			{
-				FragmentTransaction transaction = manager.beginTransaction();
-				transaction.replace(R.id.fragment_container_myplan, fragment);
-				transaction.commit();
+				// remove the current fragment outside of the transaction so when we pop the
+				// backstack we only revert the add
+				if (currentFragment != null)
+					manager.popBackStack();
 
-				// show the back button
-				setHomeAsUpEnabled(true);
+				FragmentTransaction transaction = manager.beginTransaction();
+				transaction.add(R.id.my_plan_container, fragment);
+				transaction.addToBackStack(null);
+				transaction.commit();
 			}
+
+			// show the back button
+			setHomeAsUpEnabled(true);
+
+			Utils.d(MyPlanViewModel.LOG_TAG, "showTask %s",
+				fragment == null ? "do nothing" : (currentFragment != null ? "pop/add" : "add only"));
 		}
 		else
 		{
-			MyPlanOptionsFragment fragment = new MyPlanOptionsFragment();
-			FragmentTransaction transaction = manager.beginTransaction();
-			transaction.replace(R.id.fragment_container_myplan, fragment);
-			transaction.commit();
+			manager.popBackStack();
 
 			// hide the back button
 			setHomeAsUpEnabled(false);
 
 			getActivity().setTitle(R.string.title_myplan);
+
+			Utils.d(MyPlanViewModel.LOG_TAG, "showTask pop backstack");
 		}
 	}
 
 	private void setHomeAsUpEnabled(boolean enabled)
 	{
-		ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-		if (actionBar != null)
-			actionBar.setDisplayHomeAsUpEnabled(enabled);
+		FragmentActivity activity = getActivity();
+		if (activity != null)
+		{
+			ActionBar actionBar = ((AppCompatActivity)activity).getSupportActionBar();
+			if (actionBar != null)
+				actionBar.setDisplayHomeAsUpEnabled(enabled);
+		}
 	}
 
 	@Override

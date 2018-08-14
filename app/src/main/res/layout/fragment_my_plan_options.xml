@@ -60,9 +60,11 @@
 			android:id="@+id/topic_calendar"
 			style="@style/GearUpTextAppearance.Option"
 			android:drawableStart="@mipmap/calendar"
-			android:text="@string/calendar" />
+			android:text="@string/calendar"
+			android:visibility="gone"/>
 
-		<ImageView style="@style/GearUpOptionSeparator" />
+		<ImageView style="@style/GearUpOptionSeparator"
+			android:visibility="gone"/>
 
 	</LinearLayout>
 </ScrollView>

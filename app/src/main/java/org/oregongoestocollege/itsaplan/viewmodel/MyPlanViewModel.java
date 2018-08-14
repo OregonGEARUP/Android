@@ -3,12 +3,17 @@ package org.oregongoestocollege.itsaplan.viewmodel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.Utils;
 
 /**
+ * Use for navigation between My Plan tasks such as colleges, calendard, etc. When creating this
+ * view model it should always be scoped to the activity so that the current task stays in sync.
+ * Eg: {@link android.arch.lifecycle.ViewModelProviders#of(FragmentActivity)}
+ *
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */

@@ -1,9 +1,16 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 
+	<fragment
+		android:id="@+id/my_plan_options"
+		class="org.oregongoestocollege.itsaplan.MyPlanOptionsFragment"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent" />
+
 	<FrameLayout
-		android:id="@+id/fragment_container_myplan"
+		android:id="@+id/my_plan_container"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent" />
 
