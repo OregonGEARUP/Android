@@ -47,6 +47,7 @@ public class InfoFragment extends Fragment
 
 		// TODO wait till fragment is displayed before loading web page
 		mWebView = v.findViewById(R.id.info_web_view);
+		mWebView.getSettings().setJavaScriptEnabled(true);
 		mWebView.loadUrl(url);
 
 		return v;
