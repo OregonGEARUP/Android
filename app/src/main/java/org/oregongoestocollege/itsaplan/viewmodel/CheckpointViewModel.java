@@ -22,6 +22,7 @@ import org.oregongoestocollege.itsaplan.WebViewActivity;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
+import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.EntryType;
 import org.oregongoestocollege.itsaplan.data.Instance;
 import org.oregongoestocollege.itsaplan.data.NavigationState;
@@ -29,8 +30,6 @@ import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.data.UserEntries;
 import org.oregongoestocollege.itsaplan.data.UserEntriesInterface;
 import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Oregon GEAR UP App
@@ -62,12 +61,12 @@ public class CheckpointViewModel extends AndroidViewModel
 	public boolean showNextText;
 	public boolean showStars;
 
-	public CheckpointViewModel(@NonNull Application context, @NonNull CheckpointInterface repository)
+	public CheckpointViewModel(@NonNull Application context)
 	{
 		// To avoid leaks, force use of application context
 		super(context);
 
-		this.repository = checkNotNull(repository);
+		this.repository = CheckpointRepository.getInstance();
 	}
 
 	public void start(Context context, int blockIndex, int stageIndex, int checkpointIndex)

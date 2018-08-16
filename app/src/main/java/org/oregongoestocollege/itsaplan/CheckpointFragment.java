@@ -89,8 +89,7 @@ public class CheckpointFragment extends Fragment
 			checkpointIndex = savedInstanceState.getInt(Utils.PARAM_CHECKPOINT_INDEX, Utils.NO_INDEX);
 		}
 
-		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
-		checkpointViewModel = ViewModelProviders.of(this, factory).get(CheckpointViewModel.class);
+		checkpointViewModel = ViewModelProviders.of(this).get(CheckpointViewModel.class);
 		binding.setUxContent(checkpointViewModel);
 
 		checkpointViewModel.getNextStageEvent().observe(this, new Observer<ChecklistState>()

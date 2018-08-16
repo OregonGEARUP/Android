@@ -13,6 +13,7 @@ import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.BlockInfo;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
+import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 
 /**
@@ -27,12 +28,12 @@ public class AllBlocksViewModel extends AndroidViewModel implements CheckpointIn
 	// These observable fields will update Views automatically
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
 
-	public AllBlocksViewModel(@NonNull Application context, @NonNull CheckpointInterface repository)
+	public AllBlocksViewModel(@NonNull Application context)
 	{
 		// To avoid leaks, force use of application context
 		super(context);
 
-		this.repository = repository;
+		this.repository = CheckpointRepository.getInstance();
 	}
 
 	public void start()

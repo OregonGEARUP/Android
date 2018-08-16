@@ -100,8 +100,7 @@ public class StepBlockFragment extends Fragment implements ItemClickCallback
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
-		blockViewModel = ViewModelProviders.of(this, factory).get(BlockViewModel.class);
+		blockViewModel = ViewModelProviders.of(this).get(BlockViewModel.class);
 		binding.setUxContext(blockViewModel);
 
 		blockViewModel.getUpdateListEvent().observe(this, new Observer<Void>()

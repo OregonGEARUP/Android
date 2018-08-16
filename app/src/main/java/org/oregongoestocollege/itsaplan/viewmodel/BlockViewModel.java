@@ -14,6 +14,7 @@ import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.Block;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
+import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 
@@ -35,14 +36,14 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 	private List<BindingItem> items;
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
 
-	public BlockViewModel(@NonNull Application context, @NonNull CheckpointInterface repository)
+	public BlockViewModel(@NonNull Application context)
 	{
 		// To avoid leaks, force use of application context
 		super(context);
 
 		checkNotNull(context);
 
-		this.repository = repository;
+		this.repository = CheckpointRepository.getInstance();
 	}
 
 	public void start(int blockIndex, String blockFileName)

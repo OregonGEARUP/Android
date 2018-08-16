@@ -63,8 +63,7 @@ public class AllBlocksFragment extends Fragment implements ItemClickCallback
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-		ViewModelFactory factory = ViewModelFactory.getInstance(getActivity().getApplication());
-		allBlocksViewModel = ViewModelProviders.of(this, factory).get(AllBlocksViewModel.class);
+		allBlocksViewModel = ViewModelProviders.of(getActivity()).get(AllBlocksViewModel.class);
 		binding.setUxContext(allBlocksViewModel);
 
 		allBlocksViewModel.getUpdateListEvent().observe(this, new Observer<Void>()
