@@ -9,6 +9,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 
+import org.oregongoestocollege.itsaplan.data.dao.BlockInfoDao;
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
 import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
 import org.oregongoestocollege.itsaplan.data.dao.PasswordsDao;
@@ -22,7 +23,7 @@ import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
  *
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-@Database(entities = { College.class, Scholarship.class, TestResult.class, Residency.class, Password.class },
+@Database(entities = { College.class, Scholarship.class, TestResult.class, Residency.class, Password.class, BlockInfo.class },
 	version = 1,
 	exportSchema = false)
 @TypeConverters(DateConverter.class)
@@ -100,4 +101,6 @@ abstract class MyPlanDatabase extends RoomDatabase
 	public abstract ResidencyDao residencyDao();
 
 	public abstract PasswordsDao passwordsDao();
+
+	public abstract BlockInfoDao blockInfoDao();
 }

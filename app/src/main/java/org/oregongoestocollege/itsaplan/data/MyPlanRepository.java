@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import org.oregongoestocollege.itsaplan.data.dao.BlockInfoDao;
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
 import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
 import org.oregongoestocollege.itsaplan.data.dao.PasswordsDao;
@@ -28,9 +29,11 @@ public class MyPlanRepository
 	private TestResultDao testResultDao;
 	private ResidencyDao residencyDao;
 	private PasswordsDao passwordsDao;
+	private BlockInfoDao blockInfoDao;
 	private LiveData<List<College>> allColleges;
 	private LiveData<List<Scholarship>> allScholarships;
 	private LiveData<List<Password>> allPasswords;
+	private LiveData<List<BlockInfo>> allBlockInfos;
 
 	/**
 	 * Constructor to initialize the database and variables
@@ -47,6 +50,8 @@ public class MyPlanRepository
 		residencyDao = database.residencyDao();
 		passwordsDao = database.passwordsDao();
 		allPasswords = passwordsDao.getAll();
+		blockInfoDao = database.blockInfoDao();
+		allBlockInfos = blockInfoDao.getAll();
 	}
 
 	public static MyPlanRepository getInstance(@NonNull Context context)
@@ -252,6 +257,40 @@ public class MyPlanRepository
 		}
 	}
 
+	private static class UpdateBlockInfoAsyncTask extends AsyncTask<BlockInfo, Void, Void>
+	{
+		private BlockInfoDao mAsyncTaskDao;
+
+		UpdateBlockInfoAsyncTask(BlockInfoDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(final BlockInfo... params)
+		{
+			mAsyncTaskDao.update(params[0]);
+			return null;
+		}
+	}
+
+	private static class InsertBlockInfoAsyncTask extends AsyncTask<BlockInfo, Void, Void>
+	{
+		private BlockInfoDao mAsyncTaskDao;
+
+		InsertBlockInfoAsyncTask(BlockInfoDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(BlockInfo... blockInfos)
+		{
+			mAsyncTaskDao.insertAll(blockInfos);
+			return null;
+		}
+	}
+
 	/**
 	 * Wrapper to get all colleges from the database. Room executes all queries on a separate thread.
 	 * Observed LiveData will notify the observer when the data has changed.
@@ -445,7 +484,7 @@ public class MyPlanRepository
 	 */
 	public void insertFirstScholarship(@NonNull UserEntriesInterface userEntries, String defaultName)
 	{
-		String value = userEntries.getValue("b3citizen_s2_cp2_i1_text");
+		String value;
 
 		Scholarship scholarship = new Scholarship();
 
@@ -477,5 +516,37 @@ public class MyPlanRepository
 			scholarship.setName(defaultName);
 
 		new InsertScholarshipAsyncTask(scholarshipDao).execute(scholarship);
+	}
+
+	/**
+	 * Wrapper to get all block infors from the database. Room executes all queries on a separate thread.
+	 * Observed LiveData will notify the observer when the data has changed.
+	 */
+	public LiveData<List<BlockInfo>> getAllBlockInfos()
+	{
+		return allBlockInfos;
+	}
+
+	/**
+	 * Wrapper to update a college. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void update(BlockInfo blockInfo)
+	{
+		new UpdateBlockInfoAsyncTask(blockInfoDao).execute(blockInfo);
+	}
+
+	/**
+	 * Wrapper to insert a new scholarship. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void insertBlockInfos(@NonNull List<BlockInfo> list)
+	{
+		if (list.isEmpty())
+			return;
+
+		BlockInfo[] array = list.toArray(new BlockInfo[list.size()]);
+
+		new InsertBlockInfoAsyncTask(blockInfoDao).execute(array);
 	}
 }

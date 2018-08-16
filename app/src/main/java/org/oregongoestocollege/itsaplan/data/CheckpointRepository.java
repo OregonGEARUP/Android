@@ -113,7 +113,7 @@ public class CheckpointRepository implements CheckpointInterface
 			blockInfo = cachedBlockInfos.get(blockIndex);
 
 		// load either saved blockFileName or first from the BlockInfo
-		String fileName = blockInfo != null ? blockInfo.blockFileName : null;
+		String fileName = blockInfo != null ? blockInfo.getBlockFileName() : null;
 		// or we could be loading a new block
 		if (TextUtils.isEmpty(fileName))
 			fileName = blockFileName;
@@ -319,7 +319,7 @@ public class CheckpointRepository implements CheckpointInterface
 				synchronized (lock)
 				{
 					// store the file name once loaded successfully
-					cachedBlockInfos.get(index).blockFileName = blockFileName;
+					cachedBlockInfos.get(index).setBlockFileName(blockFileName);
 					// TODO: persist changes to data
 
 					currentBlock = block;
@@ -327,12 +327,12 @@ public class CheckpointRepository implements CheckpointInterface
 					cachedBlocks.put(blockFileName, block);
 
 					BlockInfo blockInfo = cachedBlockInfos.get(index);
-					if (blockInfo.ids != null && blockInfo.ids.contains(block.id))
+					if (blockInfo.getIds() != null && blockInfo.getIds().contains(block.id))
 					{
 						Pair<Integer, Integer> status = blockStagesStatus(block);
-						blockInfo.stagesCompleted = status.first;
-						blockInfo.stageCount = status.second;
-						blockInfo.blockFileName = blockFileName;
+						blockInfo.setStagesComplete(status.first);
+						blockInfo.setStageCount(status.second);
+						blockInfo.setBlockFileName(blockFileName);
 					}
 				}
 			}
@@ -455,8 +455,8 @@ public class CheckpointRepository implements CheckpointInterface
 		if (block != null)
 		{
 			Pair<Integer, Integer> status = blockStagesStatus(block);
-			cachedBlockInfos.get(blockIndex).stagesCompleted = status.first;
-			cachedBlockInfos.get(blockIndex).stageCount = status.second;
+			cachedBlockInfos.get(blockIndex).setStagesComplete(status.first);
+			cachedBlockInfos.get(blockIndex).setStageCount(status.second);
 			//cachedBlockInfos.get(blockIndex).blockFileName = blockFileName;
 
 			// TODO persist block infos (ROOM ?)
@@ -470,7 +470,7 @@ public class CheckpointRepository implements CheckpointInterface
 		{
 			BlockInfo blockInfo = cachedBlockInfos.get(blockIndex);
 			if (blockInfo != null)
-				return cachedBlocks.get(blockInfo.blockFileName);
+				return cachedBlocks.get(blockInfo.getBlockFileName());
 		}
 
 		return null;

@@ -44,7 +44,8 @@ public class BlockInfoItemViewModel implements BindingItem
 	@Override
 	public void onBind(@NonNull Context context)
 	{
-		title.set(String.format(Locale.getDefault(), "%d. %s", blockIndex + 1, model.title));
+		title.set(String.format(Locale.getDefault(), "%d. %s", blockIndex + 1,
+			model.getTitle()));
 
 		boolean enabled = false;
 		boolean done = false;
@@ -59,10 +60,10 @@ public class BlockInfoItemViewModel implements BindingItem
 			{
 				done = true;
 			}
-			else if (model.stagesCompleted >= 0 && model.stageCount >= 0)
+			else if (model.getStagesComplete() >= 0 && model.getStageCount() >= 0)
 			{
 				show = true;
-				showText = context.getString(R.string.x_of_y, model.stagesCompleted, model.stageCount);
+				showText = context.getString(R.string.x_of_y, model.getStagesComplete(), model.getStageCount());
 			}
 		}
 
@@ -79,7 +80,7 @@ public class BlockInfoItemViewModel implements BindingItem
 
 	public String getBlockFileName()
 	{
-		return model.blockFileName;
+		return model.getBlockFileName();
 	}
 
 	public int getBlockIndex()

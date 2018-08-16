@@ -4,7 +4,6 @@ import java.util.Date;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
 
 /**
  * College
@@ -30,7 +29,6 @@ public class College
 	private boolean feeDeferralDone;
 	private boolean applicationDone;
 
-	@NonNull
 	public int getUid()
 	{
 		return uid;
