@@ -14,26 +14,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.databinding.FragmentAllBlocksBinding;
+import org.oregongoestocollege.itsaplan.databinding.FragmentChecklistOverviewBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
 import org.oregongoestocollege.itsaplan.support.ItemClickCallback;
-import org.oregongoestocollege.itsaplan.viewmodel.AllBlocksViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoItemViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.OverviewViewModel;
 
 /**
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class AllBlocksFragment extends Fragment implements ItemClickCallback
+public class ChecklistOverviewFragment extends Fragment implements ItemClickCallback
 {
-	private static final String LOG_TAG = "GearUpAllBlocksFrag";
+	public static final String LOG_TAG = "GearUp_ChecklistOverviewFrag";
 	private OnFragmentInteractionListener listener;
 	private RecyclerView recyclerView;
 	private BindingItemsAdapter adapter;
-	private AllBlocksViewModel viewModel;
+	private OverviewViewModel viewModel;
 
-	public AllBlocksFragment()
+	public ChecklistOverviewFragment()
 	{
 		// Required empty public constructor
 	}
@@ -41,11 +41,11 @@ public class AllBlocksFragment extends Fragment implements ItemClickCallback
 	/**
 	 * Use this factory method to create a new instance of this fragment.
 	 *
-	 * @return A new instance of fragment AllBlocksFragment.
+	 * @return A new instance of fragment ChecklistOverviewFragment.
 	 */
-	public static AllBlocksFragment newInstance()
+	public static ChecklistOverviewFragment newInstance()
 	{
-		return new AllBlocksFragment();
+		return new ChecklistOverviewFragment();
 	}
 
 	private void showBlockInfoList(List<BindingItem> items)
@@ -67,8 +67,8 @@ public class AllBlocksFragment extends Fragment implements ItemClickCallback
 		Utils.d(LOG_TAG, "onCreateView()");
 
 		// Inflate the layout for this fragment
-		FragmentAllBlocksBinding
-			binding = DataBindingUtil.inflate(inflater, R.layout.fragment_all_blocks, container, false);
+		FragmentChecklistOverviewBinding
+			binding = DataBindingUtil.inflate(inflater, R.layout.fragment_checklist_overview, container, false);
 		View v = binding.getRoot();
 
 		adapter = new BindingItemsAdapter(this);
@@ -77,7 +77,7 @@ public class AllBlocksFragment extends Fragment implements ItemClickCallback
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-		viewModel = ViewModelProviders.of(getActivity()).get(AllBlocksViewModel.class);
+		viewModel = ViewModelProviders.of(getActivity()).get(OverviewViewModel.class);
 		viewModel.getBlockInfoList().observe(this, this::showBlockInfoList);
 
 		binding.setUxContext(viewModel);

@@ -39,7 +39,7 @@ import butterknife.Unbinder;
  */
 public class PasswordsFragment extends Fragment implements CreatePinFragment.OnPinCreatedListener, EnterPinFragment.OnPinEnteredListener
 {
-	private static final String LOG_TAG = "GearUpPasswordsFrag";
+	private static final String LOG_TAG = "GearUp_PasswordsFrag";
 
 	public static final String GEAR_UP_PREFERENCES = "gearUpSharedPreferences";
 	public static final String IS_FIRST_TIME_PASSWORDS = "passwordsIsFirstTime";

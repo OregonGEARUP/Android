@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CheckpointRepository implements CheckpointInterface
 {
-	final static String TAG = "GearUpCheckpointMgr";
+	final static String LOG_TAG = "GearUp_CheckpointRepo";
 	private static final String baseUrl = "https://oregongoestocollege.org/mobileApp/json/";
 	private static CheckpointRepository instance;
 	private final List<String> traces = new ArrayList<>();
@@ -93,7 +93,7 @@ public class CheckpointRepository implements CheckpointInterface
 				currentBlockInfoTask = newTask;
 			}
 			else
-				Utils.d(TAG, "resumeCheckpoints pending");
+				Utils.d(LOG_TAG, "resumeCheckpoints pending");
 		}
 
 		// if we didn't have a task executing, do it now
@@ -123,7 +123,7 @@ public class CheckpointRepository implements CheckpointInterface
 
 		if (blockInfo == null || TextUtils.isEmpty(fileName))
 		{
-			Utils.d(TAG, "Missing information for loadBlock().");
+			Utils.d(LOG_TAG, "Missing information for loadBlock().");
 			callback.onDataLoaded(false);
 			return;
 		}
@@ -147,17 +147,17 @@ public class CheckpointRepository implements CheckpointInterface
 		// response immediately if we have the data cached
 		if (data != null)
 		{
-			Utils.d(TAG, "Block from cache");
+			Utils.d(LOG_TAG, "Block from cache");
 			currentBlock = data;
 			callback.onDataLoaded(true);
 		}
 		else if (newTask != null)
 		{
-			Utils.d(TAG, "Block from network");
+			Utils.d(LOG_TAG, "Block from network");
 			newTask.execute();
 		}
 		else
-			Utils.d(TAG, "GetBlockTask pending");
+			Utils.d(LOG_TAG, "GetBlockTask pending");
 	}
 
 	private static class GetBlockInfoTask extends AsyncTask<Void, Void, Boolean>
@@ -181,7 +181,7 @@ public class CheckpointRepository implements CheckpointInterface
 
 				if (dbList == null || dbList.length < 1)
 				{
-					Utils.d(CheckpointRepository.TAG, "BlockInfos from network");
+					Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from network");
 
 					// load the block info
 					URL url = new URL(baseUrl + "blocks.json");
@@ -207,10 +207,10 @@ public class CheckpointRepository implements CheckpointInterface
 				{
 					repository.cachedBlockInfos = Arrays.asList(dbList);
 
-					Utils.d(CheckpointRepository.TAG, "BlockInfos from database");
+					Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from database");
 				}
 				else
-					Utils.d(CheckpointRepository.TAG, "BlockInfos from cache");
+					Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from cache");
 			}
 			catch (IOException e)
 			{
@@ -478,7 +478,7 @@ public class CheckpointRepository implements CheckpointInterface
 				myPlanRepository.update(blockInfo);
 		}
 
-		Utils.d(TAG, "persistBlockCompletionInfo blockIndex=%d dirty=%s", blockIndex, dirty);
+		Utils.d(LOG_TAG, "persistBlockCompletionInfo blockIndex=%d dirty=%s", blockIndex, dirty);
 	}
 
 	@Override
@@ -526,7 +526,7 @@ public class CheckpointRepository implements CheckpointInterface
 		String key = keyForBlockIndex(stageIndex, checkpointIndex);
 
 		if (Utils.DEBUG)
-			Utils.d(TAG, String.format("visited %s", key));
+			Utils.d(LOG_TAG, String.format("visited %s", key));
 
 		visited.add(key);
 	}
@@ -562,7 +562,7 @@ public class CheckpointRepository implements CheckpointInterface
 
 		traces.add(message);
 
-		Utils.d(TAG, trace);
+		Utils.d(LOG_TAG, trace);
 	}
 
 
@@ -590,7 +590,7 @@ public class CheckpointRepository implements CheckpointInterface
 				success = block != null;
 			}
 			else
-				Log.e(TAG, "no block filename in fetchBlocks()");
+				Log.e(LOG_TAG, "no block filename in fetchBlocks()");
 
 	 */
 }

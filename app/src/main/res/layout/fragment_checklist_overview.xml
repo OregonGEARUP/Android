@@ -1,6 +1,5 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	tools:context="org.oregongoestocollege.itsaplan.ChecklistFragment">
+	xmlns:tools="http://schemas.android.com/tools">
 
 	<data>
 
@@ -8,14 +7,14 @@
 
 		<variable
 			name="uxContext"
-			type="org.oregongoestocollege.itsaplan.viewmodel.AllBlocksViewModel" />
+			type="org.oregongoestocollege.itsaplan.viewmodel.OverviewViewModel" />
 	</data>
 
 	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_marginStart="@dimen/activity_vertical_margin"
 		android:layout_marginEnd="@dimen/activity_vertical_margin"
+		android:layout_marginStart="@dimen/activity_vertical_margin"
 		android:layout_marginTop="@dimen/activity_horizontal_margin">
 
 		<ProgressBar
@@ -27,19 +26,20 @@
 
 		<TextView
 			android:id="@+id/title"
+			style="@style/GearUpTextAppearance.SubTitle"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			style="@style/GearUpTextAppearance.SubTitle"
 			android:layout_marginBottom="@dimen/activity_horizontal_margin"
 			android:text="@string/header_checklist"
-			android:visibility="@{uxContext.dataLoading ? View.GONE : View.VISIBLE}"/>
+			android:visibility="@{uxContext.dataLoading ? View.GONE : View.VISIBLE}"
+			tools:visibility="visible" />
 
 		<android.support.v7.widget.RecyclerView
 			android:id="@+id/recycler_view"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:layout_below="@id/title"
-			android:visibility="@{uxContext.dataLoading ? View.GONE : View.VISIBLE}"/>
+			android:visibility="@{uxContext.dataLoading ? View.GONE : View.VISIBLE}" />
 
 	</RelativeLayout>
 </layout>

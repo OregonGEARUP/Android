@@ -20,7 +20,7 @@ import org.oregongoestocollege.itsaplan.Utils;
 public class MyPlanViewModel extends ViewModel
 {
 	// debug
-	public static final String LOG_TAG = "GearUpMyPlan";
+	public static final String LOG_TAG = "GearUp_MyPlan";
 	private static int count = 0;
 	private int mycount;
 	public static final String MY_PLAN_COLLEGES = "colleges";

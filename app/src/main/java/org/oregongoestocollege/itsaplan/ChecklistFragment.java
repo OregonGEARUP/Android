@@ -26,7 +26,7 @@ import org.oregongoestocollege.itsaplan.data.Stage;
  */
 public class ChecklistFragment extends Fragment implements OnFragmentInteractionListener
 {
-	private static final String LOG_TAG = "GearUpChecklistFrag";
+	private static final String LOG_TAG = "GearUp_ChecklistFrag";
 	private OnFragmentInteractionListener listener;
 	private int identifier;
 	private String currentBlockFileName;
@@ -72,11 +72,11 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		}
 
 		if (currentBlockIndex >= 0 && currentStageIndex >= 0)
-			showStepStage(currentBlockIndex, currentStageIndex);
+			showStage(currentBlockIndex, currentStageIndex);
 		else if (currentBlockIndex >= 0)
-			showStepBlock(currentBlockIndex, currentBlockFileName);
+			showBlock(currentBlockIndex, currentBlockFileName);
 		else
-			showAllBlocks();
+			showBlocks();
 
 		return v;
 	}
@@ -88,9 +88,9 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 			actionBar.setDisplayHomeAsUpEnabled(enabled);
 	}
 
-	private void showAllBlocks()
+	private void showBlocks()
 	{
-		AllBlocksFragment newFragment = AllBlocksFragment.newInstance();
+		ChecklistOverviewFragment newFragment = ChecklistOverviewFragment.newInstance();
 
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container_checklist, newFragment);
@@ -111,12 +111,12 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		firstBlockInfoAppearance = false;
 	}
 
-	private void showStepBlock(int blockIndex, String blockFileName)
+	private void showBlock(int blockIndex, String blockFileName)
 	{
 		CheckpointRepository.getInstance().persistBlockCompletionInfo(currentBlockIndex,
 			MyPlanRepository.getInstance(getContext()));
 
-		StepBlockFragment newFragment = StepBlockFragment.newInstance(blockIndex, blockFileName);
+		ChecklistBlockFragment newFragment = ChecklistBlockFragment.newInstance(blockIndex, blockFileName);
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container_checklist, newFragment);
 		transaction.commit();
@@ -129,7 +129,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		setHomeAsUpEnabled(true);
 	}
 
-	private void showStepStage(int blockIndex, int stageIndex)
+	private void showStage(int blockIndex, int stageIndex)
 	{
 		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
 		if (stage == null)
@@ -139,7 +139,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 			return;
 		}
 
-		StepStageFragment newFragment = StepStageFragment.newInstance(blockIndex, stageIndex);
+		ChecklistStageFragment newFragment = ChecklistStageFragment.newInstance(blockIndex, stageIndex);
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container_checklist, newFragment);
 		transaction.commit();
@@ -174,13 +174,13 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	@Override
 	public void onShowBlock(int blockIndex, String blockFileName)
 	{
-		showStepBlock(blockIndex, blockFileName);
+		showBlock(blockIndex, blockFileName);
 	}
 
 	@Override
 	public void onShowStage(int blockIndex, int stageIndex)
 	{
-		showStepStage(blockIndex, stageIndex);
+		showStage(blockIndex, stageIndex);
 	}
 
 	@Override
@@ -188,12 +188,12 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	{
 		if (identifier == 3)
 		{
-			showStepBlock(currentBlockIndex, currentBlockFileName);
+			showBlock(currentBlockIndex, currentBlockFileName);
 			return true;
 		}
 		if (identifier == 2)
 		{
-			showAllBlocks();
+			showBlocks();
 			return true;
 		}
 		return false;

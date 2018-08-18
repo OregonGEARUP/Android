@@ -21,7 +21,7 @@ import org.oregongoestocollege.itsaplan.data.Residency;
  */
 public class ResidencyViewModel extends AndroidViewModel
 {
-	public static final String LOG_TAG = "GearUpResidency";
+	public static final String LOG_TAG = "GearUp_Residency";
 	private MyPlanRepository repository;
 	private final LiveData<Residency> residencyData;
 	// UX fields

@@ -23,7 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CollegeViewModel implements BindingItem
 {
-	public static final String LOG_TAG = "GearUpCollege";
+	public static final String LOG_TAG = "GearUp_College";
 	private MyPlanRepository repository;
 	private final College college;
 	private final boolean removable;

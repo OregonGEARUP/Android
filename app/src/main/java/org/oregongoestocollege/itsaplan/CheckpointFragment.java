@@ -23,7 +23,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
  */
 public class CheckpointFragment extends Fragment
 {
-	private static final String LOG_TAG = "GearUpCheckpointFragment";
+	private static final String LOG_TAG = "GearUp_CheckpointFragment";
 	private OnFragmentInteractionListener listener;
 	private CheckpointViewModel checkpointViewModel;
 	private int blockIndex = Utils.NO_INDEX;

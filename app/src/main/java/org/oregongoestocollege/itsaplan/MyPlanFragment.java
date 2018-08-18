@@ -55,8 +55,6 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 	{
 		// make sure to use getChildFragmentManager versus getSupportFragmentManager
 		FragmentManager manager = getChildFragmentManager();
-		if (manager == null)
-			return;
 
 		if (!TextUtils.isEmpty(currentTask))
 		{

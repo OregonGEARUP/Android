@@ -15,7 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.databinding.FragmentStepBlockBinding;
+import org.oregongoestocollege.itsaplan.databinding.FragmentChecklistBlockBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
 import org.oregongoestocollege.itsaplan.support.ItemClickCallback;
@@ -26,9 +26,9 @@ import org.oregongoestocollege.itsaplan.viewmodel.StageItemViewModel;
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class StepBlockFragment extends Fragment implements ItemClickCallback
+public class ChecklistBlockFragment extends Fragment implements ItemClickCallback
 {
-	private static final String LOG_TAG = "GearUpStepBlockFragment";
+	private static final String LOG_TAG = "GearUp_ChecklistBlockFrag";
 	private OnFragmentInteractionListener listener;
 	private int blockIndex = Utils.NO_INDEX;
 	private String blockFileName;
@@ -36,7 +36,7 @@ public class StepBlockFragment extends Fragment implements ItemClickCallback
 	private BindingItemsAdapter adapter;
 	private BlockViewModel blockViewModel;
 
-	public StepBlockFragment()
+	public ChecklistBlockFragment()
 	{
 		// Required empty public constructor
 	}
@@ -44,11 +44,11 @@ public class StepBlockFragment extends Fragment implements ItemClickCallback
 	/**
 	 * Use this factory method to create a new instance of this fragment.
 	 *
-	 * @return A new instance of fragment StepBlockFragment.
+	 * @return A new instance of fragment ChecklistBlockFragment.
 	 */
-	public static StepBlockFragment newInstance(int blockIndex, String blockFileName)
+	public static ChecklistBlockFragment newInstance(int blockIndex, String blockFileName)
 	{
-		StepBlockFragment fragment = new StepBlockFragment();
+		ChecklistBlockFragment fragment = new ChecklistBlockFragment();
 		Bundle args = new Bundle();
 		args.putString(Utils.PARAM_BLOCK_FILE_NAME, blockFileName);
 		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
@@ -84,8 +84,8 @@ public class StepBlockFragment extends Fragment implements ItemClickCallback
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		FragmentStepBlockBinding binding =
-			DataBindingUtil.inflate(inflater, R.layout.fragment_step_block, container, false);
+		FragmentChecklistBlockBinding binding =
+			DataBindingUtil.inflate(inflater, R.layout.fragment_checklist_block, container, false);
 		View v = binding.getRoot();
 
 		if (savedInstanceState != null)

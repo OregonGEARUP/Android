@@ -20,7 +20,7 @@ import org.oregongoestocollege.itsaplan.support.BindingItem;
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class AllBlocksViewModel extends AndroidViewModel
+public class OverviewViewModel extends AndroidViewModel
 {
 	private final CheckpointInterface checkpointRepo;
 	private final MyPlanRepository myPlanRepo;
@@ -28,7 +28,7 @@ public class AllBlocksViewModel extends AndroidViewModel
 	private LiveData<Boolean> state;
 	private ObservableBoolean dataLoading;
 
-	public AllBlocksViewModel(@NonNull Application context)
+	public OverviewViewModel(@NonNull Application context)
 	{
 		// To avoid leaks, force use of application context
 		super(context);

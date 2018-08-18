@@ -28,9 +28,9 @@ import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class StepStageFragment extends Fragment implements ViewPager.OnPageChangeListener
+public class ChecklistStageFragment extends Fragment implements ViewPager.OnPageChangeListener
 {
-	private static final String LOG_TAG = "GearUpStepStageFragment";
+	private static final String LOG_TAG = "GearUp_ChecklistStageFrag";
 	private final int MAX_CHECKPOINTS = 7;
 	private OnFragmentInteractionListener listener;
 	private int blockIndex = Utils.NO_INDEX;
@@ -39,7 +39,7 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	private CheckpointPagerAdapter pagerAdapter;
 	private int lastVisitedPosition;
 
-	public StepStageFragment()
+	public ChecklistStageFragment()
 	{
 		// Required empty public constructor
 	}
@@ -47,11 +47,11 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 	/**
 	 * Use this factory method to create a new instance of this fragment.
 	 *
-	 * @return A new instance of fragment StepStageFragment.
+	 * @return A new instance of fragment ChecklistStageFragment.
 	 */
-	public static StepStageFragment newInstance(int blockIndex, int stageIndex)
+	public static ChecklistStageFragment newInstance(int blockIndex, int stageIndex)
 	{
-		StepStageFragment fragment = new StepStageFragment();
+		ChecklistStageFragment fragment = new ChecklistStageFragment();
 		Bundle args = new Bundle();
 		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
 		args.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
@@ -84,7 +84,7 @@ public class StepStageFragment extends Fragment implements ViewPager.OnPageChang
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		View v = inflater.inflate(R.layout.fragment_step_stage, container, false);
+		View v = inflater.inflate(R.layout.fragment_checklist_stage, container, false);
 
 		if (savedInstanceState != null)
 		{
