@@ -2,6 +2,7 @@ package org.oregongoestocollege.itsaplan.data;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 /**
  * Block
@@ -12,9 +13,8 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity(tableName = "block_info_table")
 public class BlockInfo
 {
-	@PrimaryKey(autoGenerate = true)
-	private int uid;
 	// data from the JSON files on the website
+	@PrimaryKey @NonNull
 	private String ids;
 	private String title;
 	private String blockFileName;
@@ -22,22 +22,13 @@ public class BlockInfo
 	private int stageCount = -1;
 	private int stagesComplete = -1;
 
-	public int getUid()
-	{
-		return uid;
-	}
-
-	public void setUid(int uid)
-	{
-		this.uid = uid;
-	}
-
+	@NonNull
 	public String getIds()
 	{
 		return ids;
 	}
 
-	public void setIds(String ids)
+	public void setIds(@NonNull String ids)
 	{
 		this.ids = ids;
 	}

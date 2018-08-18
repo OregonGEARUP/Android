@@ -28,4 +28,7 @@ public interface BlockInfoDao
 
 	@Query("SELECT * from block_info_table")
 	LiveData<List<BlockInfo>> getAll();
+
+	@Query("SELECT * from block_info_table")
+	BlockInfo[] getAllDirect();
 }

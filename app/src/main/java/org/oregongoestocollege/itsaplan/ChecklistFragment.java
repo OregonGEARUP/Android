@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
+import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
 
 /**
@@ -97,7 +98,8 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 
 		if (!firstBlockInfoAppearance)
 		{
-			CheckpointRepository.getInstance().persistBlockCompletionInfo(currentBlockIndex);
+			CheckpointRepository.getInstance().persistBlockCompletionInfo(currentBlockIndex,
+				MyPlanRepository.getInstance(getContext()));
 		}
 
 		identifier = 1;
@@ -111,6 +113,9 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 
 	private void showStepBlock(int blockIndex, String blockFileName)
 	{
+		CheckpointRepository.getInstance().persistBlockCompletionInfo(currentBlockIndex,
+			MyPlanRepository.getInstance(getContext()));
+
 		StepBlockFragment newFragment = StepBlockFragment.newInstance(blockIndex, blockFileName);
 		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
 		transaction.replace(R.id.fragment_container_checklist, newFragment);

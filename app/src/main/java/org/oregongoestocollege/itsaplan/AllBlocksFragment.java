@@ -1,12 +1,12 @@
 package org.oregongoestocollege.itsaplan;
 
+import java.util.List;
+
 import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,7 +31,7 @@ public class AllBlocksFragment extends Fragment implements ItemClickCallback
 	private OnFragmentInteractionListener listener;
 	private RecyclerView recyclerView;
 	private BindingItemsAdapter adapter;
-	private AllBlocksViewModel allBlocksViewModel;
+	private AllBlocksViewModel viewModel;
 
 	public AllBlocksFragment()
 	{
@@ -48,10 +48,24 @@ public class AllBlocksFragment extends Fragment implements ItemClickCallback
 		return new AllBlocksFragment();
 	}
 
+	private void showBlockInfoList(List<BindingItem> items)
+	{
+		Utils.d(LOG_TAG, "showBlockInfoList()");
+
+		// Update the list when the data changes
+		if (adapter.getItemCount() != 0)
+			adapter.clear();
+
+		if (items != null && !items.isEmpty())
+			adapter.addAll(items);
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState)
 	{
+		Utils.d(LOG_TAG, "onCreateView()");
+
 		// Inflate the layout for this fragment
 		FragmentAllBlocksBinding
 			binding = DataBindingUtil.inflate(inflater, R.layout.fragment_all_blocks, container, false);
@@ -63,22 +77,10 @@ public class AllBlocksFragment extends Fragment implements ItemClickCallback
 		recyclerView.setAdapter(adapter);
 		recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
 
-		allBlocksViewModel = ViewModelProviders.of(getActivity()).get(AllBlocksViewModel.class);
-		binding.setUxContext(allBlocksViewModel);
+		viewModel = ViewModelProviders.of(getActivity()).get(AllBlocksViewModel.class);
+		viewModel.getBlockInfoList().observe(this, this::showBlockInfoList);
 
-		allBlocksViewModel.getUpdateListEvent().observe(this, new Observer<Void>()
-		{
-			@Override
-			public void onChanged(@Nullable Void aVoid)
-			{
-				if (adapter.getItemCount() != 0)
-					adapter.clear();
-
-				adapter.addAll(allBlocksViewModel.getItems());
-
-				getActivity().setTitle(R.string.app_name);
-			}
-		});
+		binding.setUxContext(viewModel);
 
 		return v;
 	}
@@ -87,7 +89,7 @@ public class AllBlocksFragment extends Fragment implements ItemClickCallback
 	public void onResume()
 	{
 		super.onResume();
-		allBlocksViewModel.start();
+		viewModel.start();
 	}
 
 	@Override

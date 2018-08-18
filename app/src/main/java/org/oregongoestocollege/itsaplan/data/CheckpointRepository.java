@@ -10,6 +10,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +19,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -38,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CheckpointRepository implements CheckpointInterface
 {
-	private final String TAG = "GearUpCheckpointMgr";
+	final static String TAG = "GearUpCheckpointMgr";
 	private static final String baseUrl = "https://oregongoestocollege.org/mobileApp/json/";
 	private static CheckpointRepository instance;
 	private final List<String> traces = new ArrayList<>();
@@ -49,6 +52,7 @@ public class CheckpointRepository implements CheckpointInterface
 	private final Object lock = new Object();
 	// cached BlockInfo list
 	private List<BlockInfo> cachedBlockInfos;
+	private MutableLiveData<Boolean> blockInfosLoading = new MutableLiveData<>();
 	// cached Block(s)
 	private final Map<String, Block> cachedBlocks = new HashMap<>();
 	// current state
@@ -69,40 +73,39 @@ public class CheckpointRepository implements CheckpointInterface
 	}
 
 	@Override
-	public void resumeCheckpoints(@NonNull CheckpointCallback callback)
+	public LiveData<Boolean> blockInfoListLoading()
 	{
-		checkNotNull(callback);
-
-		List<BlockInfo> data = null;
-		GetBlockInfoTask newTask = null;
-
-		synchronized (lock)
-		{
-			if (cachedBlockInfos != null)
-				data = cachedBlockInfos;
-			else if (currentBlockInfoTask != null)
-				currentBlockInfoTask.setCallback(callback);
-			else
-				newTask = new GetBlockInfoTask(this, callback);
-		}
-
-		// respond immediately if we have the data cached
-		if (data != null)
-		{
-			Utils.d(TAG, "BlockInfos from cache");
-			callback.onDataLoaded(true);
-		}
-		else if (newTask != null)
-		{
-			Utils.d(TAG, "BlockInfos from network");
-			newTask.execute();
-		}
-		else
-			Utils.d(TAG, "GetBlockInfoTask pending");
+		return blockInfosLoading;
 	}
 
 	@Override
-	public void loadBlock(@NonNull CheckpointCallback callback, int blockIndex,
+	public void resumeCheckpoints(@NonNull MyPlanRepository myPlanRepo)
+	{
+		checkNotNull(myPlanRepo);
+
+		// setup a background task or hookup to our existing one
+		GetBlockInfoTask newTask = null;
+		synchronized (lock)
+		{
+			if (currentBlockInfoTask == null)
+			{
+				newTask = new GetBlockInfoTask(this, myPlanRepo);
+				currentBlockInfoTask = newTask;
+			}
+			else
+				Utils.d(TAG, "resumeCheckpoints pending");
+		}
+
+		// if we didn't have a task executing, do it now
+		blockInfosLoading.setValue(true);
+
+		if (newTask != null)
+			newTask.execute();
+	}
+
+	@Override
+	public void loadBlock(@NonNull MyPlanRepository myPlanRepo,
+		@NonNull CheckpointCallback callback, int blockIndex,
 		String blockFileName)
 	{
 		checkNotNull(callback);
@@ -137,7 +140,7 @@ public class CheckpointRepository implements CheckpointInterface
 				if (currentTask != null)
 					currentTask.setCallback(callback);
 				else
-					newTask = new GetBlockTask(this, callback, fileName, blockIndex);
+					newTask = new GetBlockTask(this, myPlanRepo, callback, fileName, blockIndex);
 			}
 		}
 
@@ -160,53 +163,87 @@ public class CheckpointRepository implements CheckpointInterface
 	private static class GetBlockInfoTask extends AsyncTask<Void, Void, Boolean>
 	{
 		CheckpointRepository repository;
-		CheckpointCallback callback;
+		MyPlanRepository myPlanRepo;
+		List<BlockInfo> blocks;
 
-		GetBlockInfoTask(@NonNull CheckpointRepository repository, @NonNull CheckpointCallback callback)
+		GetBlockInfoTask(@NonNull CheckpointRepository repository, @NonNull MyPlanRepository myPlanRepo)
 		{
 			this.repository = repository;
-			this.callback = callback;
-
-			// keep track of the pending task
-			repository.currentBlockInfoTask = this;
+			this.myPlanRepo = myPlanRepo;
 		}
 
 		protected Boolean doInBackground(Void... params)
 		{
-			return repository.fetchBlocks();
+			try
+			{
+				// determine if I already have data
+				BlockInfo [] dbList = myPlanRepo.blockInfoDao.getAllDirect();
+
+				if (dbList == null || dbList.length < 1)
+				{
+					Utils.d(CheckpointRepository.TAG, "BlockInfos from network");
+
+					// load the block info
+					URL url = new URL(baseUrl + "blocks.json");
+					HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+
+					InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
+					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+
+					Type listType = new TypeToken<ArrayList<BlockInfo>>()
+					{
+					}.getType();
+					blocks = new Gson().fromJson(bufferedReader, listType);
+
+					urlConnection.disconnect();
+
+					if (blocks != null && !blocks.isEmpty())
+						myPlanRepo.insertBlockInfos(blocks);
+
+					// for now cache a local copy
+					repository.cachedBlockInfos = blocks;
+				}
+				else if (repository.cachedBlockInfos == null || repository.cachedBlockInfos.isEmpty())
+				{
+					repository.cachedBlockInfos = Arrays.asList(dbList);
+
+					Utils.d(CheckpointRepository.TAG, "BlockInfos from database");
+				}
+				else
+					Utils.d(CheckpointRepository.TAG, "BlockInfos from cache");
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+
+			return blocks != null && !blocks.isEmpty();
 		}
 
 		protected void onPostExecute(Boolean success)
 		{
 			// clear this task
+			repository.blockInfosLoading.setValue(false);
 			repository.currentBlockInfoTask = null;
-
-			callback.onDataLoaded(success);
-		}
-
-		/**
-		 * This allows us to hook into an existing network call to show loading status
-		 */
-		public void setCallback(CheckpointCallback callback)
-		{
-			this.callback = callback;
 		}
 	}
 
 	private static class GetBlockTask extends AsyncTask<Void, Void, Block>
 	{
 		CheckpointRepository repository;
+		MyPlanRepository myPlanRepo;
 		final String blockFileName;
 		final int blockIndex;
 		CheckpointCallback callback;
 		Block block;
 
-		GetBlockTask(@NonNull CheckpointRepository repository,
+		GetBlockTask(@NonNull CheckpointRepository repository, @NonNull MyPlanRepository myPlanRepo,
 			@NonNull CheckpointCallback callback,
 			@NonNull String blockFileName,
 			int blockIndex)
 		{
 			this.repository = repository;
+			this.myPlanRepo = myPlanRepo;
 			this.callback = callback;
 			this.blockFileName = blockFileName;
 			this.blockIndex = blockIndex;
@@ -217,7 +254,7 @@ public class CheckpointRepository implements CheckpointInterface
 
 		protected Block doInBackground(Void... params)
 		{
-			block = repository.fetchBlock(blockFileName, blockIndex);
+			block = repository.fetchBlock(blockFileName, blockIndex, myPlanRepo);
 			return block;
 		}
 
@@ -250,45 +287,7 @@ public class CheckpointRepository implements CheckpointInterface
 		}
 	}
 
-	boolean fetchBlocks()
-	{
-		boolean success = false;
-		List<BlockInfo> blocks = null;
-
-		try
-		{
-			// load the block info
-			URL url = new URL(baseUrl + "blocks.json");
-			HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
-
-			InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
-
-			Type listType = new TypeToken<ArrayList<BlockInfo>>()
-			{
-			}.getType();
-			blocks = new Gson().fromJson(bufferedReader, listType);
-
-			urlConnection.disconnect();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-
-		if (blocks != null && !blocks.isEmpty())
-		{
-			synchronized (lock)
-			{
-				cachedBlockInfos = blocks;
-			}
-			success = true;
-		}
-
-		return success;
-	}
-
-	Block fetchBlock(String blockFileName, int index)
+	Block fetchBlock(String blockFileName, int index, @NonNull MyPlanRepository myPlanRepository)
 	{
 		Block block = null;
 
@@ -315,18 +314,19 @@ public class CheckpointRepository implements CheckpointInterface
 
 			if (block != null && block.stages != null && block.stages.size() > 0)
 			{
+				BlockInfo blockInfo;
+
 				// update the blockIndex for the newly loaded block
 				synchronized (lock)
 				{
 					// store the file name once loaded successfully
-					cachedBlockInfos.get(index).setBlockFileName(blockFileName);
-					// TODO: persist changes to data
+					blockInfo = cachedBlockInfos.get(index);
+					blockInfo.setBlockFileName(blockFileName);
 
 					currentBlock = block;
 					currentBlockIndex = index;
 					cachedBlocks.put(blockFileName, block);
 
-					BlockInfo blockInfo = cachedBlockInfos.get(index);
 					if (blockInfo.getIds() != null && blockInfo.getIds().contains(block.id))
 					{
 						Pair<Integer, Integer> status = blockStagesStatus(block);
@@ -335,6 +335,9 @@ public class CheckpointRepository implements CheckpointInterface
 						blockInfo.setBlockFileName(blockFileName);
 					}
 				}
+
+				// persist changes to the BlockInfo
+				myPlanRepository.update(blockInfo);
 			}
 		}
 		catch (IOException e)
@@ -449,24 +452,39 @@ public class CheckpointRepository implements CheckpointInterface
 		return null;
 	}
 
-	public void persistBlockCompletionInfo(int blockIndex)
+	public void persistBlockCompletionInfo(int blockIndex, MyPlanRepository myPlanRepository)
 	{
+		boolean dirty = false;
 		Block block = getBlock(blockIndex);
 		if (block != null)
 		{
 			Pair<Integer, Integer> status = blockStagesStatus(block);
-			cachedBlockInfos.get(blockIndex).setStagesComplete(status.first);
-			cachedBlockInfos.get(blockIndex).setStageCount(status.second);
+			BlockInfo blockInfo = cachedBlockInfos.get(blockIndex);
+
+			if (status.first != blockInfo.getStagesComplete())
+			{
+				blockInfo.setStagesComplete(status.first);
+				dirty = true;
+			}
+			if (status.second != blockInfo.getStageCount())
+			{
+				blockInfo.setStagesComplete(status.second);
+				dirty = true;
+			}
+			// TODO needed ?
 			//cachedBlockInfos.get(blockIndex).blockFileName = blockFileName;
 
-			// TODO persist block infos (ROOM ?)
+			if (dirty)
+				myPlanRepository.update(blockInfo);
 		}
+
+		Utils.d(TAG, "persistBlockCompletionInfo blockIndex=%d dirty=%s", blockIndex, dirty);
 	}
 
 	@Override
 	public Block getBlock(int blockIndex)
 	{
-		if (blockIndex >= 0 && blockIndex < cachedBlockInfos.size())
+		if (cachedBlockInfos != null && blockIndex >= 0 && blockIndex < cachedBlockInfos.size())
 		{
 			BlockInfo blockInfo = cachedBlockInfos.get(blockIndex);
 			if (blockInfo != null)

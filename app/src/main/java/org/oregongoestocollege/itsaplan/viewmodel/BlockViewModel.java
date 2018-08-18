@@ -15,6 +15,7 @@ import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.Block;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
+import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 
@@ -26,12 +27,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class BlockViewModel extends AndroidViewModel implements CheckpointInterface.CheckpointCallback
 {
+	private final CheckpointInterface repository;
+	private final MyPlanRepository myPlanRepository;
 	// service data
 	private Block model;
 	private int blockIndex;
 	private String blockFileName;
 	// view data
-	private final CheckpointInterface repository;
 	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
 	private List<BindingItem> items;
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
@@ -44,6 +46,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 		checkNotNull(context);
 
 		this.repository = CheckpointRepository.getInstance();
+		this.myPlanRepository = MyPlanRepository.getInstance(context);
 	}
 
 	public void start(int blockIndex, String blockFileName)
@@ -53,7 +56,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 
 		dataLoading.set(true);
 
-		repository.loadBlock(this, blockIndex, blockFileName);
+		repository.loadBlock(myPlanRepository, this, blockIndex, blockFileName);
 	}
 
 	public SingleLiveEvent<Void> getUpdateListEvent()

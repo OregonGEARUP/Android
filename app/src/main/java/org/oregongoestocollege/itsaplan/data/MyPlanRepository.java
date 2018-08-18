@@ -29,7 +29,7 @@ public class MyPlanRepository
 	private TestResultDao testResultDao;
 	private ResidencyDao residencyDao;
 	private PasswordsDao passwordsDao;
-	private BlockInfoDao blockInfoDao;
+	BlockInfoDao blockInfoDao;
 	private LiveData<List<College>> allColleges;
 	private LiveData<List<Scholarship>> allScholarships;
 	private LiveData<List<Password>> allPasswords;
