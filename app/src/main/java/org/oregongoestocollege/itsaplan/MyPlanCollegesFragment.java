@@ -19,7 +19,6 @@ import org.oregongoestocollege.itsaplan.data.College;
 import org.oregongoestocollege.itsaplan.databinding.FragmentMyPlanCollegesBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
-import org.oregongoestocollege.itsaplan.viewmodel.CollegeViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.CollegesViewModel;
 
 /**
@@ -28,6 +27,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.CollegesViewModel;
  */
 public class MyPlanCollegesFragment extends Fragment
 {
+	private static final String LOG_TAG = "GearUp_CollegeViewModel";
 	private FragmentMyPlanCollegesBinding binding;
 	private BindingItemsAdapter adapter;
 	private CollegesViewModel viewModel;
@@ -59,7 +59,7 @@ public class MyPlanCollegesFragment extends Fragment
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		Utils.d(CollegeViewModel.LOG_TAG, "onActivityCreated");
+		Utils.d(LOG_TAG, "onActivityCreated");
 
 		viewModel = ViewModelProviders.of(this).get(CollegesViewModel.class);
 		binding.setIsLoading(true);
@@ -71,7 +71,7 @@ public class MyPlanCollegesFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable List<College> colleges)
 			{
-				Utils.d(CollegeViewModel.LOG_TAG, String.format("All colleges changed hasData:%s",
+				Utils.d(LOG_TAG, String.format("All colleges changed hasData:%s",
 					colleges != null ? "true" : "false"));
 
 				if (colleges != null)

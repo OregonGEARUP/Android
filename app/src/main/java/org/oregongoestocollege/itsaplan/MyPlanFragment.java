@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -15,7 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.viewmodel.MyPlanViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.MyPlanNavViewModel;
 
 /**
  * MyPlanFragment
@@ -25,11 +26,18 @@ import org.oregongoestocollege.itsaplan.viewmodel.MyPlanViewModel;
  */
 public class MyPlanFragment extends Fragment implements OnFragmentInteractionListener
 {
-	private MyPlanViewModel viewModel;
+	private static final String LOG_TAG = "GearUp_MyPlanFrag";
+	private MyPlanNavViewModel viewModel;
 
 	public MyPlanFragment()
 	{
 		// Required empty public constructor
+	}
+
+	void onBackStackChanged()
+	{
+		// see if we need to set our title from a child fragment
+		Utils.updateTitleOnBackStackChanged(this, LOG_TAG);
 	}
 
 	@Override
@@ -37,10 +45,12 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 	{
 		super.onCreate(savedInstanceState);
 
-		Utils.d(MyPlanViewModel.LOG_TAG, "onCreate");
+		Utils.d(LOG_TAG, "onCreate");
 
-		viewModel = ViewModelProviders.of(getActivity()).get(MyPlanViewModel.class);
+		viewModel = ViewModelProviders.of(getActivity()).get(MyPlanNavViewModel.class);
 		viewModel.getCurrentTask().observe(this, this::showTask);
+
+		getChildFragmentManager().addOnBackStackChangedListener(this::onBackStackChanged);
 	}
 
 	@Override
@@ -65,48 +75,65 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 				currentFragment = manager.getFragments().get(1);
 
 			Fragment fragment = null;
+			@StringRes int title = 0;
 
 			switch (currentTask)
 			{
-			case MyPlanViewModel.MY_PLAN_COLLEGES:
+			case MyPlanNavViewModel.MY_PLAN_COLLEGES:
 				if (!(currentFragment instanceof MyPlanCollegesFragment))
+				{
 					fragment = new MyPlanCollegesFragment();
+					title = R.string.colleges;
+				}
 				break;
-			case MyPlanViewModel.MY_PLAN_SCHOLARSHIPS:
+			case MyPlanNavViewModel.MY_PLAN_SCHOLARSHIPS:
 				if (!(currentFragment instanceof MyPlanScholarshipsFragment))
+				{
 					fragment = new MyPlanScholarshipsFragment();
+					title = R.string.scholarships;
+				}
 				break;
-			case MyPlanViewModel.MY_PLAN_TESTS:
+			case MyPlanNavViewModel.MY_PLAN_TESTS:
 				if (!(currentFragment instanceof MyPlanTestResultsFragment))
+				{
 					fragment = new MyPlanTestResultsFragment();
+					title = R.string.actsat;
+				}
 				break;
-			case MyPlanViewModel.MY_PLAN_RESIDENCY:
+			case MyPlanNavViewModel.MY_PLAN_RESIDENCY:
 				if (!(currentFragment instanceof MyPlanResidencyFragment))
+				{
 					fragment = new MyPlanResidencyFragment();
+					title = R.string.residency;
+				}
 				break;
-			case MyPlanViewModel.MY_PLAN_CALENDAR:
+			case MyPlanNavViewModel.MY_PLAN_CALENDAR:
 				if (!(currentFragment instanceof MyPlanCalendarFragment))
+				{
 					fragment = new MyPlanCalendarFragment();
+					title = R.string.calendar;
+				}
 				break;
 			}
 
 			if (fragment != null)
 			{
 				// remove the current fragment outside of the transaction so when we pop the
-				// backstack we only revert the add
+				// back stack we only revert the add
 				if (currentFragment != null)
 					manager.popBackStack();
 
 				FragmentTransaction transaction = manager.beginTransaction();
 				transaction.add(R.id.my_plan_container, fragment);
 				transaction.addToBackStack(null);
+				transaction.setBreadCrumbTitle(title);
 				transaction.commit();
 			}
 
 			// show the back button
 			setHomeAsUpEnabled(true);
 
-			Utils.d(MyPlanViewModel.LOG_TAG, "showTask %s",
+			Utils.d(LOG_TAG, "showTask %s",
 				fragment == null ? "do nothing" : (currentFragment != null ? "pop/add" : "add only"));
 		}
 		else
@@ -116,9 +143,7 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 			// hide the back button
 			setHomeAsUpEnabled(false);
 
-			getActivity().setTitle(R.string.title_myplan);
-
-			Utils.d(MyPlanViewModel.LOG_TAG, "showTask pop backstack");
+			Utils.d(LOG_TAG, "showTask pop backstack");
 		}
 	}
 
@@ -136,7 +161,7 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 	@Override
 	public boolean handleBackPressed()
 	{
-		Utils.d(MyPlanViewModel.LOG_TAG, "handleBackPressed");
+		Utils.d(LOG_TAG, "handleBackPressed");
 
 		return viewModel.resetTask();
 	}
@@ -144,7 +169,7 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 	@Override
 	public boolean canHandleBackPressed()
 	{
-		Utils.d(MyPlanViewModel.LOG_TAG, "canHandleBackPressed");
+		Utils.d(LOG_TAG, "canHandleBackPressed");
 
 		return (!TextUtils.isEmpty(viewModel.getCurrentTask().getValue()));
 	}

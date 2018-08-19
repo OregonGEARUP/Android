@@ -19,7 +19,6 @@ import org.oregongoestocollege.itsaplan.data.Scholarship;
 import org.oregongoestocollege.itsaplan.databinding.FragmentMyPlanScholarshipsBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
-import org.oregongoestocollege.itsaplan.viewmodel.ScholarshipViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.ScholarshipsViewModel;
 
 /**
@@ -28,6 +27,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.ScholarshipsViewModel;
  */
 public class MyPlanScholarshipsFragment extends Fragment
 {
+	private static final String LOG_TAG = "GearUp_ScholarshipFrag";
 	private FragmentMyPlanScholarshipsBinding binding;
 	private BindingItemsAdapter adapter;
 	private ScholarshipsViewModel viewModel;
@@ -59,7 +59,7 @@ public class MyPlanScholarshipsFragment extends Fragment
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		Utils.d(ScholarshipViewModel.LOG_TAG, "onActivityCreated");
+		Utils.d(LOG_TAG, "onActivityCreated");
 
 		viewModel = ViewModelProviders.of(this).get(ScholarshipsViewModel.class);
 
@@ -70,7 +70,7 @@ public class MyPlanScholarshipsFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable List<Scholarship> scholarships)
 			{
-				Utils.d(ScholarshipViewModel.LOG_TAG, String.format("All scholarhips changed hasData:%s",
+				Utils.d(LOG_TAG, String.format("All scholarhips changed hasData:%s",
 					scholarships != null ? "true" : "false"));
 
 				if (scholarships != null)

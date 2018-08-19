@@ -13,14 +13,19 @@ import org.oregongoestocollege.itsaplan.Utils;
  * Use for navigation between My Plan tasks such as colleges, calendar, etc. When creating this
  * view model it should always be scoped to the activity so that the current task stays in sync.
  * Eg: {@link android.arch.lifecycle.ViewModelProviders#of(FragmentActivity)}
- *
+ * <p>
+ *  This class works slightly differently than {@link ChecklistNavViewModel}. For My Plan tasks
+ *  we use the {@link #resetTask()} to add/remove/pop child fragments. This allows us to keep
+ *  state in this class and only notify observers on change.
+ *  Future - could sync up how these operate.
+ * </p>
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-public class MyPlanViewModel extends ViewModel
+public class MyPlanNavViewModel extends ViewModel
 {
 	// debug
-	public static final String LOG_TAG = "GearUp_MyPlan";
+	private static final String LOG_TAG = "GearUp_MyPlanNavViewModel";
 	private static int count = 0;
 	public static final String MY_PLAN_COLLEGES = "colleges";
 	public static final String MY_PLAN_SCHOLARSHIPS = "scholarships";
@@ -30,7 +35,7 @@ public class MyPlanViewModel extends ViewModel
 	// the current My Plan task
 	private final SingleLiveEvent<String> currentTask = new SingleLiveEvent<>();
 
-	public MyPlanViewModel()
+	public MyPlanNavViewModel()
 	{
 		Utils.d(LOG_TAG, "create %d", ++count);
 	}

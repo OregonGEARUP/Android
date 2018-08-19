@@ -13,7 +13,7 @@ import android.view.MenuItem;
 
 import org.oregongoestocollege.itsaplan.support.BottomBarAdapter;
 import org.oregongoestocollege.itsaplan.support.NoSwipePager;
-import org.oregongoestocollege.itsaplan.viewmodel.MyPlanViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.MyPlanNavViewModel;
 
 /**
  * MainActivity
@@ -21,13 +21,14 @@ import org.oregongoestocollege.itsaplan.viewmodel.MyPlanViewModel;
  * <p>
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener
+public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener,
+	ViewPager.OnPageChangeListener
 {
 	public static final String LOG_TAG = "GearUp_MainActivity";
 	private int lastSelectedPosition = 0;
 	private NoSwipePager viewPager;
 	private BottomBarAdapter pagerAdapter;
-	private MyPlanViewModel viewModel;
+	private MyPlanNavViewModel viewModel;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -36,38 +37,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		setContentView(R.layout.activity_main);
 
 		BottomNavigationView navigation = findViewById(R.id.navigation);
-		navigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener()
-		{
-			@Override
-			public boolean onNavigationItemSelected(@NonNull MenuItem item)
-			{
-				int position;
-				String title;
-				switch (item.getItemId())
-				{
-				case R.id.navigation_info:
-					position = 3;
-					title = getResources().getString(R.string.title_info);
-					break;
-				case R.id.navigation_passwords:
-					position = 2;
-					title = getResources().getString(R.string.title_passwords);
-					break;
-				case R.id.navigation_myplan:
-					position = 1;
-					title = getResources().getString(R.string.title_myplan);
-					break;
-				case R.id.navigation_checklist:
-				default:
-					position = 0;
-					title = getResources().getString(R.string.app_name);
-					break;
-				}
-				viewPager.setCurrentItem(position);
-				setTitle(title);
-				return true;
-			}
-		});
+		navigation.setOnNavigationItemSelectedListener(this::onNavigationItemSelected);
 
 		pagerAdapter = new BottomBarAdapter(getSupportFragmentManager());
 
@@ -75,37 +45,77 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		viewPager = findViewById(R.id.viewpager);
 		viewPager.setPagingEnabled(false);
 		viewPager.setAdapter(pagerAdapter);
-		viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+		viewPager.addOnPageChangeListener(this);
+
+		viewModel = ViewModelProviders.of(this).get(MyPlanNavViewModel.class);
+	}
+
+	boolean onNavigationItemSelected(@NonNull MenuItem item)
+	{
+		int position;
+		String title;
+		switch (item.getItemId())
 		{
-			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
-			{
-				// no-op
-			}
+		case R.id.navigation_info:
+			position = 3;
+			title = getResources().getString(R.string.title_info);
+			break;
+		case R.id.navigation_passwords:
+			position = 2;
+			title = getResources().getString(R.string.title_passwords);
+			break;
+		case R.id.navigation_myplan:
+			position = 1;
+			title = getResources().getString(R.string.title_myplan);
+			break;
+		case R.id.navigation_checklist:
+		default:
+			position = 0;
+			title = getResources().getString(R.string.app_name);
+			break;
+		}
 
-			@Override
-			public void onPageSelected(int position)
-			{
-				if (Utils.DEBUG)
-					Utils.d(LOG_TAG, "onPageSelected last:%d current:%d", lastSelectedPosition, position);
+		// only set if it's not the current position, 2nd tap resets title
+		if (viewPager.getCurrentItem() != position)
+		{
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "onNavigationItemSelected setTitle=%s", title);
+			setTitle(title);
+			viewPager.setCurrentItem(position);
+		}
+		return true;
+	}
 
-				lastSelectedPosition = position;
+	@Override
+	public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels)
+	{
+		// no-op
+	}
 
-				Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
-				boolean showBack =
-					(fragment instanceof OnFragmentInteractionListener) &&
-						((OnFragmentInteractionListener)fragment).canHandleBackPressed();
-				getSupportActionBar().setDisplayHomeAsUpEnabled(showBack);
-			}
+	@Override
+	public void onPageSelected(int position)
+	{
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onPageSelected last:%d current:%d", lastSelectedPosition, position);
 
-			@Override
-			public void onPageScrollStateChanged(int state)
-			{
-				// no-op
-			}
-		});
+		lastSelectedPosition = position;
 
-		viewModel = ViewModelProviders.of(this).get(MyPlanViewModel.class);
+		Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
+		if (fragment != null)
+		{
+			boolean showBack = (fragment instanceof OnFragmentInteractionListener) &&
+				((OnFragmentInteractionListener)fragment).canHandleBackPressed();
+			getSupportActionBar().setDisplayHomeAsUpEnabled(showBack);
+
+			// see if we need to set our title from a child fragment
+			Utils.updateTitleOnBackStackChanged(fragment, LOG_TAG);
+		}
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int state)
+	{
+		// no-op
 	}
 
 	@Override

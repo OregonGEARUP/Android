@@ -42,7 +42,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class CheckpointRepository implements CheckpointInterface
 {
-	final static String LOG_TAG = "GearUp_CheckpointRepo";
+	private final static String LOG_TAG = "GearUp_CheckpointRepo";
 	private static final String baseUrl = "https://oregongoestocollege.org/mobileApp/json/";
 	private static CheckpointRepository instance;
 	private final List<String> traces = new ArrayList<>();

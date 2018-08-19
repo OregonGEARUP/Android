@@ -16,7 +16,7 @@ import org.oregongoestocollege.itsaplan.data.TestResult;
  */
 public class TestResultViewModel
 {
-	public static final String LOG_TAG = "GearUp_TestResult";
+	private static final String LOG_TAG = "GearUp_TestResultViewModel";
 	// UX fields
 	public final ObservableField<DateViewModel> testDateVm = new ObservableField<>();
 	public final ObservableField<String> composite = new ObservableField<>();

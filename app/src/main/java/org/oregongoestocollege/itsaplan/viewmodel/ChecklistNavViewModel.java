@@ -14,19 +14,23 @@ import static com.google.common.base.Verify.verifyNotNull;
 /**
  * Use for navigation between checklist tasks such as block, stage, etc. When creating this
  * view model it should always be scoped to the activity so that the current task stays in sync.
- * Eg: {@link android.arch.lifecycle.ViewModelProviders#of(FragmentActivity)}
- *
+ * Eg: {@link android.arch.lifecycle.ViewModelProviders#of(FragmentActivity)
+ * <p>
+ *  This class works slightly differently than {@link MyPlanNavViewModel}. For the checklist we pop
+ *  the backstack without a nav state change so we can get out of sync with the old / new state.
+ *  Therefore we all <em>clearing</em> the state and the observer should ignore events with null.
+ * </p>
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-public class ChecklistViewModel extends ViewModel
+public class ChecklistNavViewModel extends ViewModel
 {
-	public static final String LOG_TAG = "GearUp_Checklist";
+	private static final String LOG_TAG = "GearUp_ChecklistNavViewModel";
 	private static int count = 0;
 	// the current Checklist state
 	private final SingleLiveEvent<ChecklistState> currentState = new SingleLiveEvent<>();
 
-	public ChecklistViewModel()
+	public ChecklistNavViewModel()
 	{
 		Utils.d(LOG_TAG, "create %d", ++count);
 	}
@@ -44,19 +48,25 @@ public class ChecklistViewModel extends ViewModel
 
 		if (oldState == null)
 		{
-			Utils.d(ChecklistViewModel.LOG_TAG, "setCurrentState dirty=true");
+			Utils.d(LOG_TAG, "setCurrentState dirty=true");
 
 			currentState.setValue(newState);
 		}
 		else if (!oldState.equals(newState))
 		{
-			Utils.d(ChecklistViewModel.LOG_TAG, "setCurrentState dirty=true");
+			Utils.d(LOG_TAG, "setCurrentState dirty=true");
 
 			currentState.setValue(newState);
 		}
 		else
 		{
-			Utils.d(ChecklistViewModel.LOG_TAG, "setCurrentState dirty=false");
+			Utils.d(LOG_TAG, "setCurrentState dirty=false");
 		}
+	}
+
+	public void clear()
+	{
+		if (currentState.getValue() != null)
+			currentState.setValue(null);
 	}
 }

@@ -8,6 +8,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -21,7 +22,7 @@ import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
 import org.oregongoestocollege.itsaplan.support.ItemClickCallback;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockViewModel;
-import org.oregongoestocollege.itsaplan.viewmodel.ChecklistViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.ChecklistNavViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.StageItemViewModel;
 
 /**
@@ -33,7 +34,6 @@ public class ChecklistBlockFragment extends Fragment implements ItemClickCallbac
 	private static final String LOG_TAG = "GearUp_ChecklistBlockFrag";
 	private BindingItemsAdapter adapter;
 	private BlockViewModel viewModel;
-	private ChecklistViewModel checklistViewModel;
 	private int blockIndex = Utils.NO_INDEX;
 	private String blockFileName;
 
@@ -80,8 +80,6 @@ public class ChecklistBlockFragment extends Fragment implements ItemClickCallbac
 
 		viewModel = ViewModelProviders.of(this).get(BlockViewModel.class);
 		viewModel.getBlockItems().observe(this, this::onItemsChanged);
-
-		checklistViewModel = ViewModelProviders.of(getActivity()).get(ChecklistViewModel.class);
 	}
 
 	@Override
@@ -125,13 +123,18 @@ public class ChecklistBlockFragment extends Fragment implements ItemClickCallbac
 
 		if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED))
 		{
+			FragmentActivity activity = getActivity();
+			if (activity == null)
+				return;
+
 			StageItemViewModel itemViewModel = (StageItemViewModel)item;
 
 			ChecklistState state = new ChecklistState(viewModel.getBlockFileName(),
 				viewModel.getBlockIndex(), itemViewModel.getStageIndex());
 
 			// trigger a state change to load the correct fragment
-			checklistViewModel.setCurrentState(state);
+			ChecklistNavViewModel cvm = ViewModelProviders.of(getActivity()).get(ChecklistNavViewModel.class);
+			cvm.setCurrentState(state);
 		}
 	}
 

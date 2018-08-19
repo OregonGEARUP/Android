@@ -21,6 +21,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.ResidencyViewModel;
  */
 public class MyPlanResidencyFragment extends Fragment
 {
+	private static final String LOG_TAG = "GearUp_ResidencyFrag";
 	private FragmentMyPlanResidencyBinding binding;
 	private ResidencyViewModel viewModel;
 
@@ -44,7 +45,7 @@ public class MyPlanResidencyFragment extends Fragment
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		Utils.d(ResidencyViewModel.LOG_TAG, "onActivityCreated");
+		Utils.d(LOG_TAG, "onActivityCreated");
 
 		ResidencyViewModel.Factory factory = new ResidencyViewModel.Factory(getActivity().getApplication());
 
@@ -59,7 +60,7 @@ public class MyPlanResidencyFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable Residency residency)
 			{
-				Utils.d(ResidencyViewModel.LOG_TAG, String.format("Residency changed hasData:%s",
+				Utils.d(LOG_TAG, String.format("Residency changed hasData:%s",
 					residency != null ? "true" : "false"));
 
 				// could add progress - when loading can start out null followed quickly by non-null
@@ -72,7 +73,7 @@ public class MyPlanResidencyFragment extends Fragment
 	@Override
 	public void onDetach()
 	{
-		Utils.d(ResidencyViewModel.LOG_TAG, "onDetach");
+		Utils.d(LOG_TAG, "onDetach");
 
 		// persist any user entered data
 		if (viewModel != null)

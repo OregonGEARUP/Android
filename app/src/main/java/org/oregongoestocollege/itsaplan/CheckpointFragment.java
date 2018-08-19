@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.NavigationState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
-import org.oregongoestocollege.itsaplan.viewmodel.ChecklistViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.ChecklistNavViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
 /**
@@ -22,7 +22,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
  */
 public class CheckpointFragment extends Fragment
 {
-	private static final String LOG_TAG = "GearUp_CheckpointFragment";
+	private static final String LOG_TAG = "GearUp_CheckpointFrag";
 	private OnFragmentInteractionListener listener;
 	private CheckpointViewModel checkpointViewModel;
 	private int blockIndex = Utils.NO_INDEX;
@@ -107,7 +107,7 @@ public class CheckpointFragment extends Fragment
 
 	void onStateChanged(ChecklistState state)
 	{
-		ChecklistViewModel cvm = ViewModelProviders.of(getActivity()).get(ChecklistViewModel.class);
+		ChecklistNavViewModel cvm = ViewModelProviders.of(getActivity()).get(ChecklistNavViewModel.class);
 		cvm.setCurrentState(state);
 	}
 

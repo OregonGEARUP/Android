@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.TestResult;
 import org.oregongoestocollege.itsaplan.databinding.FragmentMyPlanTestResultsBinding;
-import org.oregongoestocollege.itsaplan.viewmodel.TestResultViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.TestResultsViewModel;
 
 /**
@@ -22,6 +21,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.TestResultsViewModel;
  */
 public class MyPlanTestResultsFragment extends Fragment
 {
+	private static final String LOG_TAG = "GearUp_TestResultFrag";
 	private FragmentMyPlanTestResultsBinding binding;
 	private TestResultsViewModel viewModel;
 
@@ -45,7 +45,7 @@ public class MyPlanTestResultsFragment extends Fragment
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		Utils.d(TestResultViewModel.LOG_TAG, "onActivityCreated");
+		Utils.d(LOG_TAG, "onActivityCreated");
 
 		viewModel = ViewModelProviders.of(this).get(TestResultsViewModel.class);
 
@@ -58,7 +58,7 @@ public class MyPlanTestResultsFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable TestResult testResult)
 			{
-				Utils.d(TestResultViewModel.LOG_TAG, String.format("ACT TestResult changed hasData:%s",
+				Utils.d(LOG_TAG, String.format("ACT TestResult changed hasData:%s",
 					testResult != null ? "true" : "false"));
 
 				// could add progress - when loading can start out null followed quickly by non-null
@@ -74,7 +74,7 @@ public class MyPlanTestResultsFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable TestResult testResult)
 			{
-				Utils.d(TestResultViewModel.LOG_TAG, String.format("SAT TestResult changed hasData:%s",
+				Utils.d(LOG_TAG, String.format("SAT TestResult changed hasData:%s",
 					testResult != null ? "true" : "false"));
 
 				// could add progress - when loading can start out null followed quickly by non-null

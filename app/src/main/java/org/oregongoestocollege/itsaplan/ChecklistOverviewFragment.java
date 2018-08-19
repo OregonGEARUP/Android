@@ -20,7 +20,7 @@ import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
 import org.oregongoestocollege.itsaplan.support.ItemClickCallback;
 import org.oregongoestocollege.itsaplan.viewmodel.BlockInfoItemViewModel;
-import org.oregongoestocollege.itsaplan.viewmodel.ChecklistViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.ChecklistNavViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.OverviewViewModel;
 
 /**
@@ -29,7 +29,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.OverviewViewModel;
  */
 public class ChecklistOverviewFragment extends Fragment implements ItemClickCallback
 {
-	public static final String LOG_TAG = "GearUp_ChecklistOverviewFrag";
+	private static final String LOG_TAG = "GearUp_ChecklistOverviewFrag";
 	private BindingItemsAdapter adapter;
 	private OverviewViewModel viewModel;
 
@@ -106,7 +106,7 @@ public class ChecklistOverviewFragment extends Fragment implements ItemClickCall
 					new ChecklistState(itemViewModel.getBlockFileName(), itemViewModel.getBlockIndex());
 
 				// trigger a state change to load the correct fragment
-				ChecklistViewModel cvm = ViewModelProviders.of(getActivity()).get(ChecklistViewModel.class);
+				ChecklistNavViewModel cvm = ViewModelProviders.of(getActivity()).get(ChecklistNavViewModel.class);
 				cvm.setCurrentState(state);
 			}
 		}

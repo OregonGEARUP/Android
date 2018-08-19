@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.oregongoestocollege.itsaplan.viewmodel.MyPlanViewModel;
+import org.oregongoestocollege.itsaplan.viewmodel.MyPlanNavViewModel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -23,7 +23,7 @@ import butterknife.Unbinder;
  */
 public class MyPlanOptionsFragment extends Fragment implements View.OnClickListener
 {
-	private MyPlanViewModel viewModel;
+	private MyPlanNavViewModel viewModel;
 	// bind to views using Butterknife, need to unbind when used in Fragment
 	private Unbinder unbinder;
 	@BindView(R.id.topic_colleges)
@@ -47,7 +47,7 @@ public class MyPlanOptionsFragment extends Fragment implements View.OnClickListe
 	{
 		super.onCreate(savedInstanceState);
 
-		viewModel = ViewModelProviders.of(getActivity()).get(MyPlanViewModel.class);
+		viewModel = ViewModelProviders.of(getActivity()).get(MyPlanNavViewModel.class);
 	}
 
 	@Override
@@ -80,15 +80,15 @@ public class MyPlanOptionsFragment extends Fragment implements View.OnClickListe
 		String task = null;
 
 		if (view == textViewColleges)
-			task = MyPlanViewModel.MY_PLAN_COLLEGES;
+			task = MyPlanNavViewModel.MY_PLAN_COLLEGES;
 		else if (view == textViewScholarships)
-			task = MyPlanViewModel.MY_PLAN_SCHOLARSHIPS;
+			task = MyPlanNavViewModel.MY_PLAN_SCHOLARSHIPS;
 		else if (view == textViewTests)
-			task = MyPlanViewModel.MY_PLAN_TESTS;
+			task = MyPlanNavViewModel.MY_PLAN_TESTS;
 		else if (view == textViewResidency)
-			task = MyPlanViewModel.MY_PLAN_RESIDENCY;
+			task = MyPlanNavViewModel.MY_PLAN_RESIDENCY;
 		else if (view == textViewCalendar)
-			task = MyPlanViewModel.MY_PLAN_CALENDAR;
+			task = MyPlanNavViewModel.MY_PLAN_CALENDAR;
 
 		if (!TextUtils.isEmpty(task))
 			viewModel.setCurrentTask(task);

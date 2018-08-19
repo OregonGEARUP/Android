@@ -1,5 +1,7 @@
 package org.oregongoestocollege.itsaplan;
 
+import java.util.Locale;
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,12 +12,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.oregongoestocollege.itsaplan.data.BlockInfo;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
-import org.oregongoestocollege.itsaplan.viewmodel.ChecklistViewModel;
+import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
+import org.oregongoestocollege.itsaplan.data.Stage;
+import org.oregongoestocollege.itsaplan.viewmodel.ChecklistNavViewModel;
 
 /**
  * Oregon GEAR UP App
@@ -27,6 +33,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	private static final String FRAG_OVERVIEW = "frag-overview";
 	private static final String FRAG_BLOCK = "frag-block";
 	private static final String FRAG_STAGE = "frag-stage";
+	private ChecklistNavViewModel navViewModel;
 
 	public ChecklistFragment()
 	{
@@ -40,8 +47,10 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 
 		Utils.d(LOG_TAG, "onCreate");
 
-		ChecklistViewModel cvm = ViewModelProviders.of(getActivity()).get(ChecklistViewModel.class);
-		cvm.getCurrentState().observe(this, this::onStateChanged);
+		navViewModel = ViewModelProviders.of(getActivity()).get(ChecklistNavViewModel.class);
+		navViewModel.getCurrentState().observe(this, this::onChecklistNavStateChanged);
+
+		getChildFragmentManager().addOnBackStackChangedListener(this::onBackStackChanged);
 	}
 
 	@Override
@@ -68,33 +77,42 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		return v;
 	}
 
-	private void onStateChanged(ChecklistState state)
+	void onBackStackChanged()
 	{
-		boolean enableBackButton = false;
+		// see if we need to set our title from a child fragment
+		int backStackCount = Utils.updateTitleOnBackStackChanged(this, LOG_TAG);
 
-		if (state != null && state.hasBlockAndStageIndex())
+		// show / hide the back button as appropriate
+		setHomeAsUpEnabled(backStackCount > 0);
+
+		// clear the last nav we might have seen since it's no longer accurate
+		navViewModel.clear();
+	}
+
+	void onChecklistNavStateChanged(ChecklistState state)
+	{
+		// if the state was cleared, do nothing
+		if (state == null)
+			return;
+
+		if (state.hasBlockAndStageIndex())
 		{
-			Utils.d(LOG_TAG, "onStateChanged stage");
+			Utils.d(LOG_TAG, "onChecklistNavStateChanged Stage");
 
 			showStage(state.blockIndex, state.stageIndex);
-			enableBackButton = true;
 		}
-		else if (state != null && state.hasBlockIndexAndFile())
+		else if (state.hasBlockIndexAndFile())
 		{
-			Utils.d(LOG_TAG, "onStateChanged Block");
+			Utils.d(LOG_TAG, "onChecklistNavStateChanged Block");
 
 			showBlock(state.blockIndex, state.blockFileName);
-			enableBackButton = true;
 		}
 		else
 		{
-			Utils.d(LOG_TAG, "onStateChanged Overview");
+			Utils.d(LOG_TAG, "onChecklistNavStateChanged Overview");
 
 			showOverview();
 		}
-
-		// show / hide the back button as appropriate
-		setHomeAsUpEnabled(enableBackButton);
 	}
 
 	private void setHomeAsUpEnabled(boolean enabled)
@@ -119,11 +137,15 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		{
 			FragmentTransaction transaction = manager.beginTransaction();
 			transaction.replace(R.id.fragment_container_checklist, ChecklistOverviewFragment.newInstance());
+			transaction.setBreadCrumbTitle(R.string.app_name);
 			transaction.addToBackStack(FRAG_OVERVIEW);
 			transaction.commit();
 		}
 		else
 			manager.popBackStack(FRAG_OVERVIEW, 0);
+
+		// show / hide the back button as appropriate
+		setHomeAsUpEnabled(false);
 	}
 
 	private void showBlock(int blockIndex, String blockFileName)
@@ -137,11 +159,22 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		if (manager.getBackStackEntryCount() == 2)
 			manager.popBackStackImmediate();
 
+		// match the fragment title to the block title
+		BlockInfo blockInfo = CheckpointRepository.getInstance(getContext()).getBlockInfo(blockIndex);
+		String title = null;
+		if (blockInfo != null)
+			title = String.format(Locale.getDefault(), "%d. %s", blockIndex + 1, blockInfo.getTitle());
+
 		FragmentTransaction transaction = manager.beginTransaction();
 		transaction.replace(R.id.fragment_container_checklist,
 			ChecklistBlockFragment.newInstance(blockIndex, blockFileName));
+		if (!TextUtils.isEmpty(title))
+			transaction.setBreadCrumbTitle(title);
 		transaction.addToBackStack(FRAG_BLOCK);
 		transaction.commit();
+
+		// show / hide the back button as appropriate
+		setHomeAsUpEnabled(true);
 	}
 
 	private void showStage(int blockIndex, int stageIndex)
@@ -155,12 +188,21 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		if (manager.getBackStackEntryCount() == 3)
 			manager.popBackStackImmediate();
 
+		// match the fragment title to the stage title
+		Stage stage = CheckpointRepository.getInstance(getContext()).getStage(blockIndex, stageIndex);
+		String title = stage != null ? stage.title : null;
+
 		// then add our new one
 		FragmentTransaction transaction = manager.beginTransaction();
 		transaction.replace(R.id.fragment_container_checklist,
 			ChecklistStageFragment.newInstance(blockIndex, stageIndex));
+		if (!TextUtils.isEmpty(title))
+			transaction.setBreadCrumbTitle(title);
 		transaction.addToBackStack(FRAG_STAGE);
 		transaction.commit();
+
+		// show / hide the back button as appropriate
+		setHomeAsUpEnabled(true);
 	}
 
 	@Override
@@ -169,7 +211,7 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		Utils.d(LOG_TAG, "handleBackPressed");
 
 		FragmentManager manager = getChildFragmentManager();
-		if (manager.getBackStackEntryCount() > 0)
+		if (manager.getBackStackEntryCount() > 1)
 		{
 			manager.popBackStack();
 			return true;
@@ -184,6 +226,6 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		Utils.d(LOG_TAG, "canHandleBackPressed");
 
 		FragmentManager manager = getChildFragmentManager();
-		return manager.getBackStackEntryCount() > 0;
+		return manager.getBackStackEntryCount() > 1;
 	}
 }

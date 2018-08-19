@@ -391,7 +391,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		//  check for special app destination URLs first
 		if (url.startsWith("itsaplan://myplan/"))
 		{
-			String option = MyPlanViewModel.getOptionFromUrl(url);
+			String option = MyPlanNavViewModel.getOptionFromUrl(url);
 
 			// switch to My Plan tab
 			navigationEvent.setValue(new NavigationState(1, option));

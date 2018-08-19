@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -149,13 +148,6 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 
 				if (count > MAX_CHECKPOINTS)
 					break;
-			}
-
-			if (!TextUtils.isEmpty(stage.title))
-			{
-				Activity activity = getActivity();
-				if (activity != null)
-					activity.setTitle(stage.title);
 			}
 		}
 
