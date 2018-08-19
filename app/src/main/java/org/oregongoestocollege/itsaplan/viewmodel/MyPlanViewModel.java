@@ -10,7 +10,7 @@ import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.Utils;
 
 /**
- * Use for navigation between My Plan tasks such as colleges, calendard, etc. When creating this
+ * Use for navigation between My Plan tasks such as colleges, calendar, etc. When creating this
  * view model it should always be scoped to the activity so that the current task stays in sync.
  * Eg: {@link android.arch.lifecycle.ViewModelProviders#of(FragmentActivity)}
  *
@@ -22,7 +22,6 @@ public class MyPlanViewModel extends ViewModel
 	// debug
 	public static final String LOG_TAG = "GearUp_MyPlan";
 	private static int count = 0;
-	private int mycount;
 	public static final String MY_PLAN_COLLEGES = "colleges";
 	public static final String MY_PLAN_SCHOLARSHIPS = "scholarships";
 	public static final String MY_PLAN_TESTS = "tests";
@@ -33,8 +32,7 @@ public class MyPlanViewModel extends ViewModel
 
 	public MyPlanViewModel()
 	{
-		mycount = ++count;
-		Utils.d(LOG_TAG, "create %d", mycount);
+		Utils.d(LOG_TAG, "create %d", ++count);
 	}
 
 	public LiveData<String> getCurrentTask()

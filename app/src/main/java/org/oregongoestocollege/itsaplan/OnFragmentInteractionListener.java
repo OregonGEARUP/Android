@@ -16,10 +16,6 @@ import android.support.annotation.Nullable;
  */
 public interface OnFragmentInteractionListener
 {
-	default void onShowBlock(int blockIndex, String blockFileName) { }
-
-	default void onShowStage(int blockIndex, int stageIndex) { }
-
 	default void onNavigate(int index, @Nullable String option) { }
 
 	boolean handleBackPressed();

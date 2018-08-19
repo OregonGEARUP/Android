@@ -519,10 +519,10 @@ public class MyPlanRepository
 	}
 
 	/**
-	 * Wrapper to get all block infors from the database. Room executes all queries on a separate thread.
+	 * Wrapper to get all block info-s from the database. Room executes all queries on a separate thread.
 	 * Observed LiveData will notify the observer when the data has changed.
 	 */
-	public LiveData<List<BlockInfo>> getAllBlockInfos()
+	LiveData<List<BlockInfo>> getAllBlockInfos()
 	{
 		return allBlockInfos;
 	}
@@ -531,7 +531,7 @@ public class MyPlanRepository
 	 * Wrapper to update a college. You must call this on a non-UI thread or your app will crash.
 	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
 	 */
-	public void update(BlockInfo blockInfo)
+	void update(BlockInfo blockInfo)
 	{
 		new UpdateBlockInfoAsyncTask(blockInfoDao).execute(blockInfo);
 	}
@@ -540,7 +540,7 @@ public class MyPlanRepository
 	 * Wrapper to insert a new scholarship. You must call this on a non-UI thread or your app will crash.
 	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
 	 */
-	public void insertBlockInfos(@NonNull List<BlockInfo> list)
+	void insertBlockInfos(@NonNull List<BlockInfo> list)
 	{
 		if (list.isEmpty())
 			return;

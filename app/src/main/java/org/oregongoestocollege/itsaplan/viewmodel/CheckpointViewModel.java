@@ -66,7 +66,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		// To avoid leaks, force use of application context
 		super(context);
 
-		this.repository = CheckpointRepository.getInstance();
+		this.repository = CheckpointRepository.getInstance(context);
 	}
 
 	public void start(Context context, int blockIndex, int stageIndex, int checkpointIndex)

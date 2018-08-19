@@ -136,12 +136,16 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 	@Override
 	public boolean handleBackPressed()
 	{
+		Utils.d(MyPlanViewModel.LOG_TAG, "handleBackPressed");
+
 		return viewModel.resetTask();
 	}
 
 	@Override
 	public boolean canHandleBackPressed()
 	{
+		Utils.d(MyPlanViewModel.LOG_TAG, "canHandleBackPressed");
+
 		return (!TextUtils.isEmpty(viewModel.getCurrentTask().getValue()));
 	}
 }

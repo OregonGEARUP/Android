@@ -1,5 +1,7 @@
 package org.oregongoestocollege.itsaplan.data;
 
+import java.util.List;
+
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
@@ -18,11 +20,13 @@ public interface CheckpointInterface
 
 	LiveData<Boolean> blockInfoListLoading();
 
-	void resumeCheckpoints(@NonNull MyPlanRepository myPlanRepo);
+	void loadBlockInfoList(@NonNull MyPlanRepository myPlanRepo);
 
 	void loadBlock(@NonNull MyPlanRepository myPlanRepo, @NonNull CheckpointCallback callback, int blockIndex, String blockFileName);
 
 	int getCountOfBlocks();
+
+	LiveData<List<BlockInfo>> getBlockInfoList(@NonNull MyPlanRepository myPlanRepository);
 
 	BlockInfo getBlockInfo(int blockIndex);
 

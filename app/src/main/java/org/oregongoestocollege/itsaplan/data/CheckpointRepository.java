@@ -21,6 +21,7 @@ import java.util.Set;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -56,7 +57,7 @@ public class CheckpointRepository implements CheckpointInterface
 	// cached Block(s)
 	private final Map<String, Block> cachedBlocks = new HashMap<>();
 	// current state
-	private Block currentBlock;
+	private String currentBlockFileName;
 	private int currentBlockIndex = 0;
 	private int currentStageIndex = 0;
 	private int currentCheckpointIndex = 0;
@@ -65,11 +66,23 @@ public class CheckpointRepository implements CheckpointInterface
 	/**
 	 * @return a shared instance of the Manager
 	 */
-	public static CheckpointRepository getInstance()
+	public static CheckpointRepository getInstance(@NonNull Context context)
 	{
 		if (instance == null)
-			instance = new CheckpointRepository();
+		{
+			instance = new CheckpointRepository(context);
+		}
 		return instance;
+	}
+
+	private CheckpointRepository(@NonNull Context context)
+	{
+		UserEntriesInterface userEntries = new UserEntries(context);
+		ChecklistState currentState = userEntries.getChecklistState();
+		currentBlockFileName = currentState.blockFileName;
+		currentBlockIndex = currentState.blockIndex;
+		currentStageIndex = currentState.stageIndex;
+		currentCheckpointIndex = currentState.checkpointIndex;
 	}
 
 	@Override
@@ -79,7 +92,7 @@ public class CheckpointRepository implements CheckpointInterface
 	}
 
 	@Override
-	public void resumeCheckpoints(@NonNull MyPlanRepository myPlanRepo)
+	public void loadBlockInfoList(@NonNull MyPlanRepository myPlanRepo)
 	{
 		checkNotNull(myPlanRepo);
 
@@ -93,7 +106,7 @@ public class CheckpointRepository implements CheckpointInterface
 				currentBlockInfoTask = newTask;
 			}
 			else
-				Utils.d(LOG_TAG, "resumeCheckpoints pending");
+				Utils.d(LOG_TAG, "loadBlockInfoList pending");
 		}
 
 		// if we didn't have a task executing, do it now
@@ -148,7 +161,12 @@ public class CheckpointRepository implements CheckpointInterface
 		if (data != null)
 		{
 			Utils.d(LOG_TAG, "Block from cache");
-			currentBlock = data;
+
+			currentBlockFileName = fileName;
+			currentBlockIndex = blockIndex;
+			currentStageIndex = Utils.NO_INDEX;
+			currentCheckpointIndex = Utils.NO_INDEX;
+
 			callback.onDataLoaded(true);
 		}
 		else if (newTask != null)
@@ -287,7 +305,7 @@ public class CheckpointRepository implements CheckpointInterface
 		}
 	}
 
-	Block fetchBlock(String blockFileName, int index, @NonNull MyPlanRepository myPlanRepository)
+	Block fetchBlock(String blockFileName, int blockIndex, @NonNull MyPlanRepository myPlanRepository)
 	{
 		Block block = null;
 
@@ -320,11 +338,14 @@ public class CheckpointRepository implements CheckpointInterface
 				synchronized (lock)
 				{
 					// store the file name once loaded successfully
-					blockInfo = cachedBlockInfos.get(index);
+					blockInfo = cachedBlockInfos.get(blockIndex);
 					blockInfo.setBlockFileName(blockFileName);
 
-					currentBlock = block;
-					currentBlockIndex = index;
+					currentBlockFileName = blockFileName;
+					currentBlockIndex = blockIndex;
+					currentStageIndex = Utils.NO_INDEX;
+					currentCheckpointIndex = Utils.NO_INDEX;
+
 					cachedBlocks.put(blockFileName, block);
 
 					if (blockInfo.getIds() != null && blockInfo.getIds().contains(block.id))
@@ -332,7 +353,6 @@ public class CheckpointRepository implements CheckpointInterface
 						Pair<Integer, Integer> status = blockStagesStatus(block);
 						blockInfo.setStagesComplete(status.first);
 						blockInfo.setStageCount(status.second);
-						blockInfo.setBlockFileName(blockFileName);
 					}
 				}
 
@@ -369,23 +389,27 @@ public class CheckpointRepository implements CheckpointInterface
 	{
 		boolean completed = true;
 
-		List<Stage> stages = currentBlock.stages;
-		if (stages != null && stageIndex >= 0 && stageIndex < stages.size())
+		Block block = getBlock(currentBlockIndex);
+		if (block != null)
 		{
-			Stage stage = stages.get(stageIndex);
-			if (stage != null)
+			List<Stage> stages = block.stages;
+			if (stages != null && stageIndex >= 0 && stageIndex < stages.size())
 			{
-				List<Checkpoint> checkpoints = stage.checkpoints;
-				if (checkpoints != null)
+				Stage stage = stages.get(stageIndex);
+				if (stage != null)
 				{
-					for (int i = 0; i < checkpoints.size(); i++)
+					List<Checkpoint> checkpoints = stage.checkpoints;
+					if (checkpoints != null)
 					{
-						completed = completed && checkpointCompleted(i, stageIndex, stage);
+						for (int i = 0; i < checkpoints.size(); i++)
+						{
+							completed = completed && checkpointCompleted(i, stageIndex, stage);
 
-						// check for completed route cp at the end of the stage, as soon as we find one visited
-						// route cp then we are good for the stage (this assumes that route cps are always at the end of a stage)
-						if (completed && checkpoints.get(i).entryType == EntryType.route)
-							break;
+							// check for completed route cp at the end of the stage, as soon as we find one visited
+							// route cp then we are good for the stage (this assumes that route cps are always at the end of a stage)
+							if (completed && checkpoints.get(i).entryType == EntryType.route)
+								break;
+						}
 					}
 				}
 			}
@@ -482,6 +506,13 @@ public class CheckpointRepository implements CheckpointInterface
 	}
 
 	@Override
+	public LiveData<List<BlockInfo>> getBlockInfoList(@NonNull MyPlanRepository myPlanRepository)
+	{
+		return myPlanRepository.getAllBlockInfos();
+	}
+
+
+	@Override
 	public Block getBlock(int blockIndex)
 	{
 		if (cachedBlockInfos != null && blockIndex >= 0 && blockIndex < cachedBlockInfos.size())
@@ -538,16 +569,16 @@ public class CheckpointRepository implements CheckpointInterface
 
 	public String keyForBlockIndex(int stageIndex, int checkpointIndex)
 	{
-		Block block = currentBlock;
-		Stage stage = currentBlock.stages.get(stageIndex);
+		Block block = getBlock(currentBlockIndex);
+		Stage stage = block.stages.get(stageIndex);
 		Checkpoint cp = stage.checkpoints.get(checkpointIndex);
 		return String.format(Locale.US, "%s_%s_%s", block.id, stage.id, cp.id);
 	}
 
 	public String keyForBlockIndex(int blockIndex, int stageIndex, int checkpointIndex, int instanceIndex)
 	{
-		Block block = currentBlock;
-		Stage stage = currentBlock.stages.get(stageIndex);
+		Block block = getBlock(blockIndex);
+		Stage stage = block.stages.get(stageIndex);
 		Checkpoint cp = stage.checkpoints.get(checkpointIndex);
 		Instance inst = cp.instances.get(instanceIndex);
 		return String.format(Locale.US, "%s_%s_%s_%s", block.id, stage.id, cp.id, inst.getId());

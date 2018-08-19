@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import org.oregongoestocollege.itsaplan.Utils;
+
 /**
  * This class is used to retrieve and store user entered data.
  * For now storing in shared preferences since it's reasonable size list of
@@ -73,6 +75,28 @@ public class UserEntries implements UserEntriesInterface
 			editor.remove(key);
 		else
 			editor.putLong(key, value);
+		editor.apply();
+	}
+
+	public ChecklistState getChecklistState()
+	{
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		return new ChecklistState(
+			prefs.getString("currentBlockFileName", null),
+			prefs.getInt("currentBlockIndex", Utils.NO_INDEX),
+			prefs.getInt("currentStageIndex", Utils.NO_INDEX),
+			prefs.getInt("currentCheckpointIndex", Utils.NO_INDEX));
+	}
+
+	public void setChecklistState(@NonNull ChecklistState checklistState)
+	{
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences.Editor editor = prefs.edit();
+
+		editor.putString("currentBlockFileName", checklistState.blockFileName);
+		editor.putInt("currentBlockIndex", checklistState.blockIndex);
+		editor.putInt("currentStageIndex", checklistState.stageIndex);
+		editor.putInt("currentCheckpointIndex", checklistState.checkpointIndex);
 		editor.apply();
 	}
 }

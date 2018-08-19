@@ -1,5 +1,7 @@
 package org.oregongoestocollege.itsaplan.data;
 
+import android.support.annotation.NonNull;
+
 /**
  * This class is a interface used to retrieve and store user entered data.
  *
@@ -19,4 +21,8 @@ public interface UserEntriesInterface
 	void setValue(String key, boolean value);
 
 	void setValue(String key, long value);
+
+	ChecklistState getChecklistState();
+
+	void setChecklistState(@NonNull ChecklistState checklistState);
 }

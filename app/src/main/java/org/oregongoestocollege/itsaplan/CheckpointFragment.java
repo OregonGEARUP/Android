@@ -1,12 +1,10 @@
 package org.oregongoestocollege.itsaplan;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +13,7 @@ import android.view.ViewGroup;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.NavigationState;
 import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
+import org.oregongoestocollege.itsaplan.viewmodel.ChecklistViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
 /**
@@ -92,37 +91,24 @@ public class CheckpointFragment extends Fragment
 		checkpointViewModel = ViewModelProviders.of(this).get(CheckpointViewModel.class);
 		binding.setUxContent(checkpointViewModel);
 
-		checkpointViewModel.getNextStageEvent().observe(this, new Observer<ChecklistState>()
-		{
-			@Override
-			public void onChanged(@Nullable ChecklistState state)
-			{
-				if (listener != null && state != null)
-					listener.onShowStage(state.blockIndex, state.stageIndex);
-			}
-		});
+		checkpointViewModel.getNextStageEvent().observe(this, this::onStateChanged);
+		checkpointViewModel.getNextBlockEvent().observe(this, this::onStateChanged);
+		checkpointViewModel.getNavigationEvent().observe(this, this::onNavigationChanged);
 
-		checkpointViewModel.getNextBlockEvent().observe(this, new Observer<ChecklistState>()
-		{
-			@Override
-			public void onChanged(@Nullable ChecklistState state)
-			{
-				if (listener != null && state != null)
-					listener.onShowBlock(state.blockIndex, state.blockFileName);
-			}
-		});
-
-		checkpointViewModel.getNavigationEvent().observe(this, new Observer<NavigationState>()
-		{
-			@Override
-			public void onChanged(@Nullable NavigationState navigationState)
-			{
-				if (listener != null && navigationState != null)
-					listener.onNavigate(navigationState.index, navigationState.option);
-			}
-		});
 
 		return v;
+	}
+
+	void onNavigationChanged(NavigationState navigationState)
+	{
+		if (listener != null && navigationState != null)
+			listener.onNavigate(navigationState.index, navigationState.option);
+	}
+
+	void onStateChanged(ChecklistState state)
+	{
+		ChecklistViewModel cvm = ViewModelProviders.of(getActivity()).get(ChecklistViewModel.class);
+		cvm.setCurrentState(state);
 	}
 
 	@Override

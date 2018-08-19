@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
+import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.EntryType;
 import org.oregongoestocollege.itsaplan.data.Stage;
@@ -31,32 +32,14 @@ import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 public class ChecklistStageFragment extends Fragment implements ViewPager.OnPageChangeListener
 {
 	private static final String LOG_TAG = "GearUp_ChecklistStageFrag";
-	private final int MAX_CHECKPOINTS = 7;
-	private OnFragmentInteractionListener listener;
 	private int blockIndex = Utils.NO_INDEX;
 	private int stageIndex = Utils.NO_INDEX;
-	private ViewPager viewPager;
 	private CheckpointPagerAdapter pagerAdapter;
 	private int lastVisitedPosition;
 
 	public ChecklistStageFragment()
 	{
 		// Required empty public constructor
-	}
-
-	/**
-	 * Use this factory method to create a new instance of this fragment.
-	 *
-	 * @return A new instance of fragment ChecklistStageFragment.
-	 */
-	public static ChecklistStageFragment newInstance(int blockIndex, int stageIndex)
-	{
-		ChecklistStageFragment fragment = new ChecklistStageFragment();
-		Bundle args = new Bundle();
-		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
-		args.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
-		fragment.setArguments(args);
-		return fragment;
 	}
 
 	@Override
@@ -72,6 +55,9 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		Utils.d(LOG_TAG, "onCreate");
+
 		if (getArguments() != null)
 		{
 			blockIndex = getArguments().getInt(Utils.PARAM_BLOCK_INDEX);
@@ -92,15 +78,17 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 			stageIndex = savedInstanceState.getInt(Utils.PARAM_STAGE_INDEX, Utils.NO_INDEX);
 		}
 
-		Context context = getContext();
+		Context context = v.getContext();
+		CheckpointInterface checkpointInterface = CheckpointRepository.getInstance(context);
 		List<CheckpointFragment> fragments = new ArrayList<>();
 
 		// we only use Stage/Checkpoint model classes to make sure all is valid and setup indexes
-		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
-		if (stage != null && stage.checkpoints != null && context != null)
+		Stage stage = checkpointInterface.getStage(blockIndex, stageIndex);
+		if (stage != null && stage.checkpoints != null)
 		{
 			UserEntriesInterface userEntries = new UserEntries(context);
 
+			final int MAX_CHECKPOINTS = 7;
 			int count = 0;
 			int size = stage.checkpoints.size();
 			for (int i = 0; i < size; i++)
@@ -116,7 +104,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 						{
 							String log =
 								String.format(Locale.US, "nextCheckpoint does meet criteria for %s, will route to %s",
-									CheckpointRepository.getInstance().keyForBlockIndex(stageIndex, i),
+									checkpointInterface.keyForBlockIndex(stageIndex, i),
 									checkpoint.routeFileName);
 							Utils.d(LOG_TAG, log);
 						}
@@ -124,7 +112,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 						{
 							String log = String.format(Locale.US,
 								"nextCheckpoint does meet criteria for %s,  but is MISSING a routeFileName for route checkpoint %s",
-								CheckpointRepository.getInstance().keyForBlockIndex(stageIndex, i),
+								checkpointInterface.keyForBlockIndex(stageIndex, i),
 								checkpoint.routeFileName);
 							Utils.d(LOG_TAG, log);
 
@@ -135,14 +123,14 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 					{
 						String log =
 							String.format(Locale.US, "nextCheckpoint does NOT meet criteria for %s",
-								CheckpointRepository.getInstance().keyForBlockIndex(stageIndex, i));
+								checkpointInterface.keyForBlockIndex(stageIndex, i));
 						Utils.d(LOG_TAG, log);
 					}
 
 					if (!meetsCriteria)
 					{
 						// unmet criteria == visited
-						CheckpointRepository.getInstance().markVisited(stageIndex, i);
+						checkpointInterface.markVisited(stageIndex, i);
 
 						// skip this checkpoint
 						continue;
@@ -177,7 +165,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 
 		pagerAdapter = new CheckpointPagerAdapter(getChildFragmentManager(), fragments);
 
-		viewPager = v.findViewById(R.id.viewpager_checkpoints);
+		ViewPager viewPager = v.findViewById(R.id.viewpager_checkpoints);
 		viewPager.setPadding(padding, padding, padding, padding);
 		viewPager.setClipToPadding(false);
 		viewPager.setPageMargin(margin);
@@ -185,7 +173,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 		viewPager.setAdapter(pagerAdapter);
 
 		setAsVisited(v.getContext(), 0);
-		CheckpointRepository.getInstance().markVisited(stageIndex, 0);
+		checkpointInterface.markVisited(stageIndex, 0);
 
 		return v;
 	}
@@ -206,27 +194,17 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 	}
 
 	@Override
-	public void onAttach(Context context)
-	{
-		super.onAttach(context);
-
-		if (context instanceof OnFragmentInteractionListener)
-			listener = (OnFragmentInteractionListener)context;
-		else
-			throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
-
-		Utils.d(LOG_TAG, "onAttach");
-	}
-
-	@Override
 	public void onDetach()
 	{
+		Context context = getContext();
+		if (context == null)
+			return;
+
 		CheckpointViewModel viewModel = pagerAdapter.getCurrentViewModel(lastVisitedPosition);
 		if (viewModel != null)
-			viewModel.saveCheckpointEntries(new UserEntries(getContext()));
+			viewModel.saveCheckpointEntries(new UserEntries(context));
 
 		super.onDetach();
-		listener = null;
 	}
 
 	@Override
@@ -238,7 +216,11 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 	@Override
 	public void onPageSelected(int position)
 	{
-		setAsVisited(getContext(), position);
+		Context context = getContext();
+		if (context == null)
+			return;
+
+		setAsVisited(context, position);
 		//Utils.d(LOG_TAG, "onPageSelected position:%d", position);
 	}
 
@@ -246,5 +228,20 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 	public void onPageScrollStateChanged(int state)
 	{
 		// no-op
+	}
+
+	/**
+	 * Use this factory method to create a new instance of this fragment.
+	 *
+	 * @return A new instance of fragment ChecklistStageFragment.
+	 */
+	public static ChecklistStageFragment newInstance(int blockIndex, int stageIndex)
+	{
+		ChecklistStageFragment fragment = new ChecklistStageFragment();
+		Bundle args = new Bundle();
+		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		args.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
+		fragment.setArguments(args);
+		return fragment;
 	}
 }

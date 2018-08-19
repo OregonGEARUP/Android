@@ -1,24 +1,21 @@
 package org.oregongoestocollege.itsaplan;
 
-import java.util.Locale;
-
-import android.content.Context;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
-import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
-import org.oregongoestocollege.itsaplan.data.Stage;
+import org.oregongoestocollege.itsaplan.data.ChecklistState;
+import org.oregongoestocollege.itsaplan.viewmodel.ChecklistViewModel;
 
 /**
  * Oregon GEAR UP App
@@ -27,12 +24,9 @@ import org.oregongoestocollege.itsaplan.data.Stage;
 public class ChecklistFragment extends Fragment implements OnFragmentInteractionListener
 {
 	private static final String LOG_TAG = "GearUp_ChecklistFrag";
-	private OnFragmentInteractionListener listener;
-	private int identifier;
-	private String currentBlockFileName;
-	private int currentBlockIndex = -1;
-	private int currentStageIndex = -1;
-	boolean firstBlockInfoAppearance = true;
+	private static final String FRAG_OVERVIEW = "frag-overview";
+	private static final String FRAG_BLOCK = "frag-block";
+	private static final String FRAG_STAGE = "frag-stage";
 
 	public ChecklistFragment()
 	{
@@ -40,16 +34,14 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	}
 
 	@Override
-	public void onSaveInstanceState(@NonNull Bundle outState)
+	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
-		super.onSaveInstanceState(outState);
+		super.onCreate(savedInstanceState);
 
-		if (!TextUtils.isEmpty(currentBlockFileName))
-			outState.putString(Utils.PARAM_BLOCK_FILE_NAME, currentBlockFileName);
-		if (currentBlockIndex != Utils.NO_INDEX)
-			outState.putInt(Utils.PARAM_BLOCK_INDEX, currentBlockIndex);
-		if (currentStageIndex != Utils.NO_INDEX)
-			outState.putInt(Utils.PARAM_STAGE_INDEX, currentStageIndex);
+		Utils.d(LOG_TAG, "onCreate");
+
+		ChecklistViewModel cvm = ViewModelProviders.of(getActivity()).get(ChecklistViewModel.class);
+		cvm.getCurrentState().observe(this, this::onStateChanged);
 	}
 
 	@Override
@@ -59,149 +51,139 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_checklist, container, false);
 
-		if (savedInstanceState != null)
-		{
-			// if we have state than our current fragment will get re-created
-			currentBlockFileName = savedInstanceState.getString(Utils.PARAM_BLOCK_FILE_NAME);
-			currentBlockIndex = savedInstanceState.getInt(Utils.PARAM_BLOCK_INDEX, Utils.NO_INDEX);
-			currentStageIndex = savedInstanceState.getInt(Utils.PARAM_STAGE_INDEX, Utils.NO_INDEX);
-		}
-		else
+		if (savedInstanceState == null)
 		{
 			// TODO - start where we left off...
-		}
 
-		if (currentBlockIndex >= 0 && currentStageIndex >= 0)
+			showOverview();
+
+			/*if (currentBlockIndex >= 0 && currentStageIndex >= 0)
 			showStage(currentBlockIndex, currentStageIndex);
 		else if (currentBlockIndex >= 0)
 			showBlock(currentBlockIndex, currentBlockFileName);
 		else
-			showBlocks();
+			showBlocks();*/
+		}
 
 		return v;
 	}
 
-	private void setHomeAsUpEnabled(boolean enabled)
+	private void onStateChanged(ChecklistState state)
 	{
-		ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
-		if (actionBar != null)
-			actionBar.setDisplayHomeAsUpEnabled(enabled);
-	}
+		boolean enableBackButton = false;
 
-	private void showBlocks()
-	{
-		ChecklistOverviewFragment newFragment = ChecklistOverviewFragment.newInstance();
-
-		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.fragment_container_checklist, newFragment);
-		transaction.commit();
-
-		if (!firstBlockInfoAppearance)
+		if (state != null && state.hasBlockAndStageIndex())
 		{
-			CheckpointRepository.getInstance().persistBlockCompletionInfo(currentBlockIndex,
-				MyPlanRepository.getInstance(getContext()));
+			Utils.d(LOG_TAG, "onStateChanged stage");
+
+			showStage(state.blockIndex, state.stageIndex);
+			enableBackButton = true;
+		}
+		else if (state != null && state.hasBlockIndexAndFile())
+		{
+			Utils.d(LOG_TAG, "onStateChanged Block");
+
+			showBlock(state.blockIndex, state.blockFileName);
+			enableBackButton = true;
+		}
+		else
+		{
+			Utils.d(LOG_TAG, "onStateChanged Overview");
+
+			showOverview();
 		}
 
-		identifier = 1;
-		currentBlockFileName = null;
-		currentBlockIndex = -1;
-		currentStageIndex = -1;
+		// show / hide the back button as appropriate
+		setHomeAsUpEnabled(enableBackButton);
+	}
 
-		setHomeAsUpEnabled(false);
-		firstBlockInfoAppearance = false;
+	private void setHomeAsUpEnabled(boolean enabled)
+	{
+		FragmentActivity activity = getActivity();
+		if (activity != null)
+		{
+			ActionBar actionBar = ((AppCompatActivity)activity).getSupportActionBar();
+			if (actionBar != null)
+				actionBar.setDisplayHomeAsUpEnabled(enabled);
+		}
+	}
+
+	private void showOverview()
+	{
+		Utils.d(LOG_TAG, "showOverview");
+
+		// make sure to use getChildFragmentManager versus getSupportFragmentManager
+		FragmentManager manager = getChildFragmentManager();
+
+		if (manager.getBackStackEntryCount() <= 0)
+		{
+			FragmentTransaction transaction = manager.beginTransaction();
+			transaction.replace(R.id.fragment_container_checklist, ChecklistOverviewFragment.newInstance());
+			transaction.addToBackStack(FRAG_OVERVIEW);
+			transaction.commit();
+		}
+		else
+			manager.popBackStack(FRAG_OVERVIEW, 0);
 	}
 
 	private void showBlock(int blockIndex, String blockFileName)
 	{
-		CheckpointRepository.getInstance().persistBlockCompletionInfo(currentBlockIndex,
-			MyPlanRepository.getInstance(getContext()));
+		Utils.d(LOG_TAG, "showBlock");
 
-		ChecklistBlockFragment newFragment = ChecklistBlockFragment.newInstance(blockIndex, blockFileName);
-		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.fragment_container_checklist, newFragment);
+		// make sure to use getChildFragmentManager versus getSupportFragmentManager
+		FragmentManager manager = getChildFragmentManager();
+
+		// if we have 2 entries than we are showing a Block so pop it off
+		if (manager.getBackStackEntryCount() == 2)
+			manager.popBackStackImmediate();
+
+		FragmentTransaction transaction = manager.beginTransaction();
+		transaction.replace(R.id.fragment_container_checklist,
+			ChecklistBlockFragment.newInstance(blockIndex, blockFileName));
+		transaction.addToBackStack(FRAG_BLOCK);
 		transaction.commit();
-
-		identifier = 2;
-		currentBlockFileName = blockFileName;
-		currentBlockIndex = blockIndex;
-		currentStageIndex = -1;
-
-		setHomeAsUpEnabled(true);
 	}
 
 	private void showStage(int blockIndex, int stageIndex)
 	{
-		Stage stage = CheckpointRepository.getInstance().getStage(blockIndex, stageIndex);
-		if (stage == null)
-		{
-			// this shouldn't happen
-			Log.w(LOG_TAG, String.format(Locale.US, "Invalid block:%d stage:%d", blockIndex, stageIndex));
-			return;
-		}
+		Utils.d(LOG_TAG, "showStage");
 
-		ChecklistStageFragment newFragment = ChecklistStageFragment.newInstance(blockIndex, stageIndex);
-		FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-		transaction.replace(R.id.fragment_container_checklist, newFragment);
+		// make sure to use getChildFragmentManager versus getSupportFragmentManager
+		FragmentManager manager = getChildFragmentManager();
+
+		// if we have 3 entries than we are showing a Stage so pop it off
+		if (manager.getBackStackEntryCount() == 3)
+			manager.popBackStackImmediate();
+
+		// then add our new one
+		FragmentTransaction transaction = manager.beginTransaction();
+		transaction.replace(R.id.fragment_container_checklist,
+			ChecklistStageFragment.newInstance(blockIndex, stageIndex));
+		transaction.addToBackStack(FRAG_STAGE);
 		transaction.commit();
-
-		identifier = 3;
-		currentBlockIndex = blockIndex;
-		currentStageIndex = stageIndex;
-
-		setHomeAsUpEnabled(true);
-	}
-
-	@Override
-	public void onAttach(Context context)
-	{
-		super.onAttach(context);
-
-		if (context instanceof OnFragmentInteractionListener)
-			listener = (OnFragmentInteractionListener)context;
-		else
-			throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
-
-		Utils.d(LOG_TAG, "onAttach");
-	}
-
-	@Override
-	public void onDetach()
-	{
-		super.onDetach();
-		listener = null;
-	}
-
-	@Override
-	public void onShowBlock(int blockIndex, String blockFileName)
-	{
-		showBlock(blockIndex, blockFileName);
-	}
-
-	@Override
-	public void onShowStage(int blockIndex, int stageIndex)
-	{
-		showStage(blockIndex, stageIndex);
 	}
 
 	@Override
 	public boolean handleBackPressed()
 	{
-		if (identifier == 3)
+		Utils.d(LOG_TAG, "handleBackPressed");
+
+		FragmentManager manager = getChildFragmentManager();
+		if (manager.getBackStackEntryCount() > 0)
 		{
-			showBlock(currentBlockIndex, currentBlockFileName);
+			manager.popBackStack();
 			return true;
 		}
-		if (identifier == 2)
-		{
-			showBlocks();
-			return true;
-		}
+
 		return false;
 	}
 
 	@Override
 	public boolean canHandleBackPressed()
 	{
-		return (identifier > 1);
+		Utils.d(LOG_TAG, "canHandleBackPressed");
+
+		FragmentManager manager = getChildFragmentManager();
+		return manager.getBackStackEntryCount() > 0;
 	}
 }

@@ -109,28 +109,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 	}
 
 	@Override
-	public void onShowBlock(int blockIndex, String blockFileName)
-	{
-		if (lastSelectedPosition != -1)
-		{
-			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
-			if (fragment instanceof OnFragmentInteractionListener)
-				((OnFragmentInteractionListener)fragment).onShowBlock(blockIndex, blockFileName);
-		}
-	}
-
-	@Override
-	public void onShowStage(int blockIndex, int stageIndex)
-	{
-		if (lastSelectedPosition != -1)
-		{
-			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
-			if (fragment instanceof OnFragmentInteractionListener)
-				((OnFragmentInteractionListener)fragment).onShowStage(blockIndex, stageIndex);
-		}
-	}
-
-	@Override
 	public void onNavigate(int index, @Nullable String task)
 	{
 		if (!getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED))

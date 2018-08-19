@@ -6,20 +6,19 @@ import java.util.Locale;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.databinding.ObservableBoolean;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import org.oregongoestocollege.itsaplan.R;
-import org.oregongoestocollege.itsaplan.SingleLiveEvent;
 import org.oregongoestocollege.itsaplan.data.Block;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Oregon GEAR UP App
@@ -34,8 +33,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 	private int blockIndex;
 	private String blockFileName;
 	// view data
-	private final SingleLiveEvent<Void> updateListEvent = new SingleLiveEvent<>();
-	private List<BindingItem> items;
+	private MutableLiveData<List<BindingItem>> itemViewModels = new MutableLiveData<>();
 	public final ObservableBoolean dataLoading = new ObservableBoolean(false);
 
 	public BlockViewModel(@NonNull Application context)
@@ -43,9 +41,7 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 		// To avoid leaks, force use of application context
 		super(context);
 
-		checkNotNull(context);
-
-		this.repository = CheckpointRepository.getInstance();
+		this.repository = CheckpointRepository.getInstance(context);
 		this.myPlanRepository = MyPlanRepository.getInstance(context);
 	}
 
@@ -59,14 +55,12 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 		repository.loadBlock(myPlanRepository, this, blockIndex, blockFileName);
 	}
 
-	public SingleLiveEvent<Void> getUpdateListEvent()
+	/**
+	 * Expose the LiveData request so the UI can observe it.
+	 */
+	public LiveData<List<BindingItem>> getBlockItems()
 	{
-		return updateListEvent;
-	}
-
-	public List<BindingItem> getItems()
-	{
-		return items;
+		return itemViewModels;
 	}
 
 	@Override
@@ -77,13 +71,15 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 			Block block = repository.getBlock(blockIndex);
 			if (block != null)
 			{
+				List<BindingItem> viewModels = null;
+
 				List<Stage> stages = block.stages;
 				if (stages != null)
 				{
 					int size = stages.size();
 					if (size > 0)
 					{
-						List<BindingItem> viewModels = new ArrayList<>(size);
+						viewModels = new ArrayList<>(size);
 
 						for (int i = 0; i < size; i++)
 						{
@@ -92,12 +88,11 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 								blockIndex, i));
 						}
 
-						items = viewModels;
 						model = block;
 					}
 				}
 
-				updateListEvent.call();
+				itemViewModels.setValue(viewModels);
 			}
 		}
 		else
@@ -115,5 +110,15 @@ public class BlockViewModel extends AndroidViewModel implements CheckpointInterf
 		return model != null ?
 			String.format(Locale.getDefault(), "%d. %s", blockIndex + 1, model.blocktitle) :
 			null;
+	}
+
+	public int getBlockIndex()
+	{
+		return blockIndex;
+	}
+
+	public String getBlockFileName()
+	{
+		return blockFileName;
 	}
 }

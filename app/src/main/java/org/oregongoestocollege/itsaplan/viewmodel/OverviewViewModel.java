@@ -25,26 +25,26 @@ public class OverviewViewModel extends AndroidViewModel
 	private final CheckpointInterface checkpointRepo;
 	private final MyPlanRepository myPlanRepo;
 	private LiveData<List<BindingItem>> itemViewModels;
-	private LiveData<Boolean> state;
-	private ObservableBoolean dataLoading;
+	private LiveData<Boolean> listLoading;
+	public final ObservableBoolean dataLoading = new ObservableBoolean();
 
 	public OverviewViewModel(@NonNull Application context)
 	{
 		// To avoid leaks, force use of application context
 		super(context);
 
-		checkpointRepo = CheckpointRepository.getInstance();
+		checkpointRepo = CheckpointRepository.getInstance(context);
 		myPlanRepo = MyPlanRepository.getInstance(context);
 
-		// talk to the database to get our data
-		LiveData<List<BlockInfo>> blockInfoList = myPlanRepo.getAllBlockInfos();
-		itemViewModels = Transformations.map(blockInfoList, this::onApply);
+		// listen for data changes
+		LiveData<List<BlockInfo>> blockInfoList = checkpointRepo.getBlockInfoList(myPlanRepo);
+		itemViewModels = Transformations.map(blockInfoList, this::onApplyList);
 
-		// talk to the checkpoint repo to get our
-		//checkpointRepo.blockInfoListLoading().observe(getApplication(), this::onLoading);
+		// listen for loading changes
+		listLoading = checkpointRepo.blockInfoListLoading();
 	}
 
-	private List<BindingItem> onApply(List<BlockInfo> input)
+	private List<BindingItem> onApplyList(List<BlockInfo> input)
 	{
 		if (input == null)
 			return null;
@@ -62,11 +62,6 @@ public class OverviewViewModel extends AndroidViewModel
 		return items;
 	}
 
-	private void onLoading(Boolean loading)
-	{
-		dataLoading.set(loading);
-	}
-
 	/**
 	 * Expose the LiveData request so the UI can observe it.
 	 */
@@ -78,14 +73,14 @@ public class OverviewViewModel extends AndroidViewModel
 	/**
 	 * Expose the LiveData request so the UI can observe it.
 	 */
-	public ObservableBoolean isDataLoading()
+	public LiveData<Boolean> getListLoading()
 	{
-		return dataLoading;
+		return listLoading;
 	}
 
 	public void start()
 	{
 		// make sure the repo has the latest
-		checkpointRepo.resumeCheckpoints(myPlanRepo);
+		checkpointRepo.loadBlockInfoList(myPlanRepo);
 	}
 }
