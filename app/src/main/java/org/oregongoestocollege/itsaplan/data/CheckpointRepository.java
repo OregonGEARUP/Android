@@ -293,18 +293,6 @@ public class CheckpointRepository implements CheckpointInterface
 		}
 	}
 
-	private static void simulateNetworkDelay()
-	{
-		try
-		{
-			Thread.sleep(5000L);
-		}
-		catch (InterruptedException e)
-		{
-			Thread.currentThread().interrupt();
-		}
-	}
-
 	Block fetchBlock(String blockFileName, int blockIndex, @NonNull MyPlanRepository myPlanRepository)
 	{
 		Block block = null;

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<item>
+		<!-- As we can't use themed ColorStateLists in L, we'll use a Drawable selector which
+			 changes the shape's fill color. -->
+		<selector>
+			<item android:state_enabled="false">
+				<shape android:shape="rectangle">
+					<corners android:radius="@dimen/button_corner_radius" />
+					<solid android:color="@color/button_disabled_background_light" />
+					<padding
+						android:bottom="@dimen/button_padding_vertical"
+						android:left="@dimen/button_padding_horizontal"
+						android:right="@dimen/button_padding_horizontal"
+						android:top="@dimen/button_padding_vertical" />
+				</shape>
+			</item>
+			<item android:state_enabled="true">
+				<shape android:shape="rectangle">
+					<corners android:radius="@dimen/button_corner_radius" />
+					<solid android:color="@color/colorAccent" />
+					<padding
+						android:bottom="@dimen/button_padding_vertical"
+						android:left="@dimen/button_padding_horizontal"
+						android:right="@dimen/button_padding_horizontal"
+						android:top="@dimen/button_padding_vertical" />
+				</shape>
+			</item>
+		</selector>
+	</item>
+
+</selector>

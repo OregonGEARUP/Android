@@ -126,4 +126,7 @@
 	<string name="username">Username</string>
 	<string name="organization">Organization</string>
 	<string name="extra_login_2_title">Extra Login #2</string>
+	<string name="welcome_title">College is right around the corner.</string>
+	<string name="welcome_message">Use the It\'s A Plan app regularly throughout your senior year to stay on track and store the info you need. Apply, pay and go to college by following our 10 key steps.</string>
+	<string name="welcome_confirm">Let\'s get started!</string>
 </resources>

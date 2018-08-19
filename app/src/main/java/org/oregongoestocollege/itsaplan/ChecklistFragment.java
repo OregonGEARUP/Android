@@ -3,7 +3,10 @@ package org.oregongoestocollege.itsaplan;
 import java.util.Locale;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,10 +15,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import org.oregongoestocollege.itsaplan.data.BlockInfo;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
@@ -34,6 +41,8 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 	private static final String FRAG_BLOCK = "frag-block";
 	private static final String FRAG_STAGE = "frag-stage";
 	private ChecklistNavViewModel navViewModel;
+	private ViewGroup welcomeContainer;
+	private View welcomeView;
 
 	public ChecklistFragment()
 	{
@@ -60,12 +69,13 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		// Inflate the layout for this fragment
 		View v = inflater.inflate(R.layout.fragment_checklist, container, false);
 
+		showWelcome(inflater, (ViewGroup)v);
+
 		if (savedInstanceState == null)
 		{
-			// TODO - start where we left off...
-
 			showOverview();
 
+			// TODO - start where we left off...
 			/*if (currentBlockIndex >= 0 && currentStageIndex >= 0)
 			showStage(currentBlockIndex, currentStageIndex);
 		else if (currentBlockIndex >= 0)
@@ -203,6 +213,47 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 
 		// show / hide the back button as appropriate
 		setHomeAsUpEnabled(true);
+	}
+
+	private void showWelcome(@NonNull LayoutInflater inflater, @Nullable ViewGroup container)
+	{
+		if (container == null || welcomeView != null)
+			return;
+
+		// have we shown the welcome screen?
+		Context context = getContext();
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		if (!prefs.getBoolean("welcome_done", false))
+		{
+			welcomeView = inflater.inflate(R.layout.layout_welcome, null);
+			// apply green to the number 10
+			TextView textView = welcomeView.findViewById(R.id.text2);
+			String msg = context.getString(R.string.welcome_message);
+			int startIndex = msg.indexOf("10");
+			int endIndex = startIndex + 2;
+			SpannableString ss = new SpannableString(textView.getText());
+			ss.setSpan(new TextAppearanceSpan(context, R.style.GearUpWelcomeCountGreen), startIndex, endIndex, 0);
+			textView.setText(ss);
+
+			Button btn = welcomeView.findViewById(R.id.button);
+			btn.setOnClickListener(this::hideWelcome);
+			container.addView(welcomeView);
+			welcomeContainer = container;
+		}
+	}
+
+	private void hideWelcome(View view)
+	{
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(view.getContext());
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putBoolean("welcome_done", true).apply();
+
+		if (welcomeView != null)
+		{
+			welcomeContainer.removeView(welcomeView);
+			welcomeView = null;
+			welcomeContainer = null;
+		}
 	}
 
 	@Override
