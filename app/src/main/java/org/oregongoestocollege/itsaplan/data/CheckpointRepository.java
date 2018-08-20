@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -52,16 +51,16 @@ public class CheckpointRepository implements CheckpointInterface
 	// sync access to cached data
 	private final Object lock = new Object();
 	// cached BlockInfo list
-	private List<BlockInfo> cachedBlockInfos;
+	List<BlockInfo> cachedBlockInfos;
 	private MutableLiveData<Boolean> blockInfosLoading = new MutableLiveData<>();
 	// cached Block(s)
-	private final Map<String, Block> cachedBlocks = new HashMap<>();
+	final Map<String, Block> cachedBlocks = new HashMap<>();
 	// current state
 	private String currentBlockFileName;
 	private int currentBlockIndex = 0;
 	private int currentStageIndex = 0;
 	private int currentCheckpointIndex = 0;
-	private final Set<String> visited = new HashSet<>();
+	Set<String> visited;
 
 	/**
 	 * @return a shared instance of the Manager
@@ -178,7 +177,7 @@ public class CheckpointRepository implements CheckpointInterface
 			Utils.d(LOG_TAG, "GetBlockTask pending");
 	}
 
-	private static class GetBlockInfoTask extends AsyncTask<Void, Void, Boolean>
+	protected static class GetBlockInfoTask extends AsyncTask<Void, Void, Boolean>
 	{
 		CheckpointRepository repository;
 		MyPlanRepository myPlanRepo;
@@ -229,6 +228,14 @@ public class CheckpointRepository implements CheckpointInterface
 				}
 				else
 					Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from cache");
+
+				// determine if we already have all the visited keys
+				if (repository.visited == null)
+				{
+					VisitedKey [] keys = myPlanRepo.visitedKeyDao.getAllDirect();
+					repository.visited = VisitedKey.toSet(keys);
+				}
+
 			}
 			catch (IOException e)
 			{
@@ -537,6 +544,12 @@ public class CheckpointRepository implements CheckpointInterface
 				return checkpoints.get(checkpointIndex);
 		}
 		return null;
+	}
+
+	@Override
+	public void persistVisited(@NonNull MyPlanRepository myPlanRepo)
+	{
+		myPlanRepo.replaceVisitedKeys(visited);
 	}
 
 	@Override

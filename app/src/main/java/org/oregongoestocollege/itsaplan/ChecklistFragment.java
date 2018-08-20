@@ -165,9 +165,9 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		// make sure to use getChildFragmentManager versus getSupportFragmentManager
 		FragmentManager manager = getChildFragmentManager();
 
-		// if we have 2 entries than we are showing a Block so pop it off
-		if (manager.getBackStackEntryCount() == 2)
-			manager.popBackStackImmediate();
+		// if we have more than 1 entry, pop back to overview
+		if (manager.getBackStackEntryCount() > 1)
+			manager.popBackStack(FRAG_OVERVIEW, 0);
 
 		// match the fragment title to the block title
 		BlockInfo blockInfo = CheckpointRepository.getInstance(getContext()).getBlockInfo(blockIndex);
@@ -194,9 +194,9 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		// make sure to use getChildFragmentManager versus getSupportFragmentManager
 		FragmentManager manager = getChildFragmentManager();
 
-		// if we have 3 entries than we are showing a Stage so pop it off
-		if (manager.getBackStackEntryCount() == 3)
-			manager.popBackStackImmediate();
+		// if we have more than 2 entries, pop back to block
+		if (manager.getBackStackEntryCount() > 2)
+			manager.popBackStack(FRAG_BLOCK, 0);
 
 		// match the fragment title to the stage title
 		Stage stage = CheckpointRepository.getInstance(getContext()).getStage(blockIndex, stageIndex);

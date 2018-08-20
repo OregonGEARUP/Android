@@ -119,6 +119,14 @@ public class CheckpointFragment extends Fragment
 	}
 
 	@Override
+	public void onStop()
+	{
+		super.onStop();
+
+		Utils.d(LOG_TAG, "onStop");
+	}
+
+	@Override
 	public void onAttach(Context context)
 	{
 		super.onAttach(context);
@@ -136,6 +144,7 @@ public class CheckpointFragment extends Fragment
 	{
 		super.onDetach();
 		listener = null;
+		Utils.d(LOG_TAG, "onDetach");
 	}
 
 	public CheckpointViewModel getCheckpointViewModel()

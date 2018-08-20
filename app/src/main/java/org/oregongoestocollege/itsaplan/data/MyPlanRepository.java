@@ -1,11 +1,13 @@
 package org.oregongoestocollege.itsaplan.data;
 
 import java.util.List;
+import java.util.Set;
 
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.data.dao.BlockInfoDao;
@@ -15,6 +17,7 @@ import org.oregongoestocollege.itsaplan.data.dao.PasswordsDao;
 import org.oregongoestocollege.itsaplan.data.dao.ResidencyDao;
 import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
 import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
+import org.oregongoestocollege.itsaplan.data.dao.VisitedKeyDao;
 
 /**
  * Oregon GEAR UP App
@@ -29,11 +32,13 @@ public class MyPlanRepository
 	private TestResultDao testResultDao;
 	private ResidencyDao residencyDao;
 	private PasswordsDao passwordsDao;
-	BlockInfoDao blockInfoDao;
 	private LiveData<List<College>> allColleges;
 	private LiveData<List<Scholarship>> allScholarships;
 	private LiveData<List<Password>> allPasswords;
 	private LiveData<List<BlockInfo>> allBlockInfos;
+	// allow for direct access for queries performed on a background thread
+	BlockInfoDao blockInfoDao;
+	VisitedKeyDao visitedKeyDao;
 
 	/**
 	 * Constructor to initialize the database and variables
@@ -52,6 +57,7 @@ public class MyPlanRepository
 		allPasswords = passwordsDao.getAll();
 		blockInfoDao = database.blockInfoDao();
 		allBlockInfos = blockInfoDao.getAll();
+		visitedKeyDao = database.visitedKeyDao();
 	}
 
 	public static MyPlanRepository getInstance(@NonNull Context context)
@@ -290,6 +296,26 @@ public class MyPlanRepository
 			return null;
 		}
 	}
+
+	private static class DeleteAndInsertVisitedKeysAsyncTask extends AsyncTask<VisitedKey, Void, Void>
+	{
+		private VisitedKeyDao mAsyncTaskDao;
+
+		DeleteAndInsertVisitedKeysAsyncTask(VisitedKeyDao dao)
+		{
+			mAsyncTaskDao = dao;
+		}
+
+		@Override
+		protected Void doInBackground(VisitedKey... visitedKeys)
+		{
+			mAsyncTaskDao.deleteAll();
+			if (visitedKeys != null)
+				mAsyncTaskDao.insertAll(visitedKeys);
+			return null;
+		}
+	}
+
 
 	/**
 	 * Wrapper to get all colleges from the database. Room executes all queries on a separate thread.
@@ -537,16 +563,25 @@ public class MyPlanRepository
 	}
 
 	/**
-	 * Wrapper to insert a new scholarship. You must call this on a non-UI thread or your app will crash.
-	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 * Insert all BlockInfo(s) into the database
 	 */
 	void insertBlockInfos(@NonNull List<BlockInfo> list)
 	{
 		if (list.isEmpty())
 			return;
 
-		BlockInfo[] array = list.toArray(new BlockInfo[list.size()]);
+		final BlockInfo[] array = list.toArray(new BlockInfo[list.size()]);
 
 		new InsertBlockInfoAsyncTask(blockInfoDao).execute(array);
+	}
+
+	/**
+	 * Insert the list of visited keys, deleting all the ones that existed before.
+	 */
+	void replaceVisitedKeys(@Nullable Set<String> keys)
+	{
+		final VisitedKey[] array = VisitedKey.toArrayList(keys);
+
+		new DeleteAndInsertVisitedKeysAsyncTask(visitedKeyDao).execute(array);
 	}
 }

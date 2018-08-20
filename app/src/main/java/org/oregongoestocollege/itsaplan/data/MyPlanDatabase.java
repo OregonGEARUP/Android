@@ -16,6 +16,7 @@ import org.oregongoestocollege.itsaplan.data.dao.PasswordsDao;
 import org.oregongoestocollege.itsaplan.data.dao.ResidencyDao;
 import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
 import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
+import org.oregongoestocollege.itsaplan.data.dao.VisitedKeyDao;
 
 /**
  * MyPlanDatabase - persist data for My Plan tab
@@ -23,7 +24,8 @@ import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
  *
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-@Database(entities = { College.class, Scholarship.class, TestResult.class, Residency.class, Password.class, BlockInfo.class },
+@Database(entities = { College.class, Scholarship.class, TestResult.class, Residency.class,
+	Password.class, BlockInfo.class, VisitedKey.class },
 	version = 1,
 	exportSchema = false)
 @TypeConverters(DateConverter.class)
@@ -103,4 +105,6 @@ abstract class MyPlanDatabase extends RoomDatabase
 	public abstract PasswordsDao passwordsDao();
 
 	public abstract BlockInfoDao blockInfoDao();
+
+	public abstract VisitedKeyDao visitedKeyDao();
 }

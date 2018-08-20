@@ -19,6 +19,7 @@ import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.EntryType;
+import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.data.UserEntries;
 import org.oregongoestocollege.itsaplan.data.UserEntriesInterface;
@@ -186,8 +187,10 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 	}
 
 	@Override
-	public void onDetach()
+	public void onStop()
 	{
+		Utils.d(LOG_TAG, "onStop");
+
 		Context context = getContext();
 		if (context == null)
 			return;
@@ -196,7 +199,12 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 		if (viewModel != null)
 			viewModel.saveCheckpointEntries(new UserEntries(context));
 
-		super.onDetach();
+		MyPlanRepository myPlanRepository = MyPlanRepository.getInstance(context);
+		CheckpointInterface checkpointInterface = CheckpointRepository.getInstance(context);
+		checkpointInterface.persistVisited(myPlanRepository);
+		checkpointInterface.persistBlockCompletionInfo(blockIndex, myPlanRepository);
+
+		super.onStop();
 	}
 
 	@Override

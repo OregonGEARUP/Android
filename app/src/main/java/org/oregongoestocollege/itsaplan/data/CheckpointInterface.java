@@ -43,6 +43,10 @@ public interface CheckpointInterface
 
 	void markVisited(int stageIndex, int checkpointIndex);
 
+	void persistVisited(@NonNull MyPlanRepository myPlanRepo);
+
+	void persistBlockCompletionInfo(int blockIndex, MyPlanRepository myPlanRepository);
+
 	/**
 	 * Keeps a list of trace statements that can be used to debug the app in the field.
 	 * This should be kept to simple / short messages since we keep them in memory.

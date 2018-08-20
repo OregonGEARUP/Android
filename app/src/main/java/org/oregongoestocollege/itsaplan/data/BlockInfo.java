@@ -5,7 +5,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 /**
- * Block
+ * BlockInfo
  * Oregon GEAR UP App
  *
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
