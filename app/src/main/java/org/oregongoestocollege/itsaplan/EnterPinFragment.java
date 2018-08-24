@@ -1,11 +1,12 @@
 package org.oregongoestocollege.itsaplan;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AppCompatDialogFragment;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -13,7 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-public class EnterPinFragment extends AppCompatDialogFragment
+public class EnterPinFragment extends Fragment
 {
 	public interface OnPinEnteredListener
 	{
@@ -35,23 +36,23 @@ public class EnterPinFragment extends AppCompatDialogFragment
 	{
 		View view = inflater.inflate(R.layout.enter_pin, container, false);
 
+		view.findViewById(R.id.setup_pin_message).setVisibility(View.INVISIBLE);
 		setPinButton = view.findViewById(R.id.set_pin_button);
 		setPinButton.setText(android.R.string.ok);
 		setPinButton.setEnabled(false);
 		setPinButton.setOnClickListener(v ->
 		{
 			SharedPreferences preferences = getActivity().getSharedPreferences(PasswordsFragment.GEAR_UP_PREFERENCES,
-				getActivity().MODE_PRIVATE);
-			String storedPin = preferences.getString("passwords_pin", null);
+				Context.MODE_PRIVATE);
+			String storedPin = preferences.getString(PasswordContainerFragment.PIN_PREFERENCES_KEY, null);
 
 			if (pinEditText.getText().toString().equals(storedPin))
 			{
 				callback.onPinEntered();
-				EnterPinFragment.this.dismiss();
 			}
 			else
 			{
-				setPinButton.setError("PIN doesn't match");
+				pinEditText.setError("PIN doesn't match");
 			}
 
 		});

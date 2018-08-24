@@ -7,7 +7,7 @@ import org.oregongoestocollege.itsaplan.ChecklistFragment;
 import org.oregongoestocollege.itsaplan.InfoFragment;
 import org.oregongoestocollege.itsaplan.MainActivity;
 import org.oregongoestocollege.itsaplan.MyPlanFragment;
-import org.oregongoestocollege.itsaplan.PasswordsFragment;
+import org.oregongoestocollege.itsaplan.PasswordContainerFragment;
 import org.oregongoestocollege.itsaplan.Utils;
 
 /**
@@ -34,7 +34,7 @@ public class BottomBarAdapter extends SmartFragmentStatePageAdapter
 		if (position == 3)
 			return new InfoFragment();
 		else if (position == 2)
-			return new PasswordsFragment();
+			return new PasswordContainerFragment();
 		else if (position == 1)
 			return new MyPlanFragment();
 		else

@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 	android:id="@+id/container"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:minWidth="200dp"
-	android:orientation="vertical">
+	android:layout_height="match_parent"
+	android:layout_marginLeft="16dp"
+	android:layout_marginRight="16dp"
+	android:layout_marginTop="16dp">
+
+	<TextView
+		android:layout_centerHorizontal="true"
+		android:id="@+id/setup_pin_message"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/setup_pin_message"
+		android:layout_marginBottom="32dp"/>
 
 	<android.support.design.widget.TextInputLayout
 		android:id="@+id/text_input_pin"
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content">
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/setup_pin_message">
 
 		<android.support.design.widget.TextInputEditText
 			android:id="@+id/enter_pin"
@@ -28,7 +38,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:measureWithLargestChild="true"
-		android:orientation="horizontal"
+		android:layout_below="@+id/text_input_pin"
 		android:paddingTop="0dip" >
 
 		<Button
@@ -41,4 +51,4 @@
 	</LinearLayout>
 	
 	
-</LinearLayout>
+</RelativeLayout>
