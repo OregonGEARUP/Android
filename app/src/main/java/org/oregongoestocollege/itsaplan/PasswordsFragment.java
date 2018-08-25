@@ -3,7 +3,6 @@ package org.oregongoestocollege.itsaplan;
 import java.util.Arrays;
 import java.util.List;
 
-import android.app.AlertDialog;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.text.method.PasswordTransformationMethod;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,12 +35,13 @@ import butterknife.Unbinder;
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-public class PasswordsFragment extends Fragment implements CreatePinFragment.OnPinCreatedListener, EnterPinFragment.OnPinEnteredListener
+public class PasswordsFragment extends Fragment
 {
 	private static final String LOG_TAG = "GearUp_PasswordsFrag";
 
 	public static final String GEAR_UP_PREFERENCES = "gearUpSharedPreferences";
 	public static final String IS_FIRST_TIME_PASSWORDS = "passwordsIsFirstTime";
+	public static final String IS_LOCKED_ARGUMENT_KEY = "is_locked_argument_key";
 
 	public static final String EDIT_SSN_KEY = "edit_ssn";
 	public static final String EDIT_SSN_1_KEY = "edit_ssn1";
@@ -133,6 +132,16 @@ public class PasswordsFragment extends Fragment implements CreatePinFragment.OnP
 	// make sure all fields can be viewed when scrolling, with/without keyboard visible
 	// other ??
 
+	public static PasswordsFragment newInstance(boolean isLocked)
+	{
+		Bundle args = new Bundle();
+		args.putBoolean(IS_LOCKED_ARGUMENT_KEY, isLocked);
+
+		PasswordsFragment fragment = new PasswordsFragment();
+		fragment.setArguments(args);
+		return fragment;
+	}
+
 	public PasswordsFragment()
 	{
 		// Required empty public constructor
@@ -163,38 +172,24 @@ public class PasswordsFragment extends Fragment implements CreatePinFragment.OnP
 		View view = inflater.inflate(R.layout.fragment_passwords, container, false);
 		unbinder = ButterKnife.bind(this, view);
 
+		repository = MyPlanRepository.getInstance(getActivity());
+		allPasswords = repository.getAllPasswords();
+
 		// keep a list of all edit controls so we can show/hide values when we lock/unlock
 		editableViews = Arrays.asList(editSsn, editSsn1, editSsn2, editDriverLic, editFsaUsername, editFsaPassword,
 			editApplicationEmail, editApplicationPassword, editOrsaaUsername, editOrsaaPassword, editCssUsername,
 			editCssPassword, editExtraLogin1Organization, editExtraLogin1Username, editExtraLogin1Password,
 			editExtraLogin2Organization, editExtraLogin2Username, editExtraLogin2Password, editOsacUsername, editOsacPassword);
 
+		PasswordOnFocusChangeListener focusChangeListener = new PasswordOnFocusChangeListener();
+
+		for (TextInputEditText editText : editableViews)
+			editText.setOnFocusChangeListener(focusChangeListener);
+
 		// if this is the first time we don't need to start locked
-		toggleEditableValues(isFirstTime);
-		locked = !isFirstTime;
-
-		if (isFirstTime)
-		{
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder
-				.setMessage(R.string.setup_pin_message)
-				.setCancelable(false)
-				.setPositiveButton(R.string.setup_pin_button_text, (dialog, which) ->
-				{
-					FragmentManager fm = getActivity().getSupportFragmentManager();
-					CreatePinFragment cpf = new CreatePinFragment();
-					cpf.setCallback(PasswordsFragment.this);
-					cpf.setCancelable(false);
-					cpf.show(fm, "create_pin_fragment");
-				});
-			builder.create().show();
-
-
-		}
-
-
-		repository = MyPlanRepository.getInstance(getActivity());
-		allPasswords = repository.getAllPasswords();
+		locked = getArguments().getBoolean(IS_LOCKED_ARGUMENT_KEY, true);
+		// Toggle editable values asks for boolean showCharacters and we only want to show characters when we are not locked
+		toggleEditableValues(!locked);
 
 		allPasswords.observe(this, passwords ->
 		{
@@ -300,11 +295,12 @@ public class PasswordsFragment extends Fragment implements CreatePinFragment.OnP
 		{
 			if (locked)
 			{
-				// 'unlock' so we see our values
-				FragmentManager fm = getActivity().getSupportFragmentManager();
-				EnterPinFragment epf = new EnterPinFragment();
-				epf.setCallback(this);
-				epf.show(fm, "enter_pin_fragment");
+				Fragment fragment = getParentFragment();
+
+				if (fragment instanceof PasswordContainerFragment)
+					((PasswordContainerFragment)fragment).launchUnlockFragment();
+
+				// todo tell containing fragment to show the enter pin
 			}
 			else
 			{
@@ -432,17 +428,81 @@ public class PasswordsFragment extends Fragment implements CreatePinFragment.OnP
 		}
 	}
 
-	@Override
-	public void onPinCreated(String pin)
+	public class PasswordOnFocusChangeListener implements View.OnFocusChangeListener
 	{
-		sharedPreferences.edit().putString("passwords_pin", pin).apply();
-	}
+		@Override
+		public void onFocusChange(View v, boolean hasFocus)
+		{
+			if (hasFocus)
+				return;
 
-	@Override
-	public void onPinEntered()
-	{
-		toggleEditableValues(true);
-		locked = false;
-		getActivity().invalidateOptionsMenu();
+			String name = null;
+			switch (v.getId())
+			{
+			case R.id.edit_ssn:
+				name = EDIT_SSN_KEY;
+				break;
+			case R.id.edit_ssn1:
+				name = EDIT_SSN_1_KEY;
+				break;
+			case R.id.edit_ssn2:
+				name = EDIT_SSN_2_KEY;
+				break;
+			case R.id.edit_driver_lic:
+				name = EDIT_DRIVER_LIC_KEY;
+				break;
+			case R.id.edit_fsa_username:
+				name = FSA_USERNAME_KEY;
+				break;
+			case R.id.edit_fsa_password:
+				name = FSA_PASSWORD_KEY;
+				break;
+			case R.id.edit_application_email:
+				name = APPLICATION_EMAIL_KEY;
+				break;
+			case R.id.edit_application_password:
+				name = APPLICATION_PASSWORD_KEY;
+				break;
+			case R.id.edit_orsaa_username:
+				name = ORSAA_USERNAME_KEY;
+				break;
+			case R.id.edit_orsaa_password:
+				name = ORSAA_PASSWORD_KEY;
+				break;
+			case R.id.edit_css_username:
+				name = CSS_USERNAME_KEY;
+				break;
+			case R.id.edit_css_password:
+				name = CSS_PASSWORD_KEY;
+				break;
+			case R.id.edit_extra_login_1_organization:
+				name = EXTRA_LOGIN_1_ORGANIZATION;
+				break;
+			case R.id.edit_extra_login_1_username:
+				name = EXTRA_LOGIN_1_USERNAME;
+				break;
+			case R.id.edit_extra_login_1_password:
+				name = EXTRA_LOGIN_1_PASSWORD;
+				break;
+			case R.id.edit_extra_login_2_organization:
+				name = EXTRA_LOGIN_2_ORGANIZATION;
+				break;
+			case R.id.edit_extra_login_2_username:
+				name = EXTRA_LOGIN_2_USERNAME;
+				break;
+			case R.id.edit_extra_login_2_password:
+				name = EXTRA_LOGIN_2_PASSWORD;
+				break;
+			case R.id.edit_osac_username:
+				name = OSAC_USERNAME;
+				break;
+			case R.id.edit_osac_password:
+				name = OSAC_PASSWORD;
+				break;
+			}
+
+			if (repository != null && name != null && v instanceof TextInputEditText)
+				repository.insertPassword(name, ((TextInputEditText)v).getText().toString());
+		}
 	}
 }

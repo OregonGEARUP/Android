@@ -3,7 +3,7 @@ package org.oregongoestocollege.itsaplan;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatDialogFragment;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class CreatePinFragment extends AppCompatDialogFragment
+public class CreatePinFragment extends Fragment
 {
 
 	public interface OnPinCreatedListener
@@ -47,7 +47,6 @@ public class CreatePinFragment extends AppCompatDialogFragment
 		{
 			if (callback != null)
 				callback.onPinCreated(pinEditText.getText().toString());
-			CreatePinFragment.this.dismiss();
 		});
 
 		pinEditText = view.findViewById(R.id.enter_pin);
