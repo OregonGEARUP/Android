@@ -36,13 +36,15 @@ public class UserEntries implements UserEntriesInterface
 	public boolean getValueAsBoolean(String key)
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
-		return prefs.getBoolean(key, false);
+		String value = prefs.getString(key, null);
+		return "true".equals(value);
 	}
 
 	public long getValueAsLong(String key)
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
-		return prefs.getLong(key, 0);
+		String value = prefs.getString(key, null);
+		return !TextUtils.isEmpty(value) ? Long.parseLong(value) : 0;
 	}
 
 	public void setValue(String key, String value)
@@ -63,7 +65,7 @@ public class UserEntries implements UserEntriesInterface
 		if (!value)
 			editor.remove(key);
 		else
-			editor.putBoolean(key, true);
+			editor.putString(key, "true");
 		editor.apply();
 	}
 
@@ -74,7 +76,7 @@ public class UserEntries implements UserEntriesInterface
 		if (value <= 0)
 			editor.remove(key);
 		else
-			editor.putLong(key, value);
+			editor.putString(key, Long.toString(value));
 		editor.apply();
 	}
 

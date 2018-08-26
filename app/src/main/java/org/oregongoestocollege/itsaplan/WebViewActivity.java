@@ -51,6 +51,7 @@ public class WebViewActivity extends AppCompatActivity
 
 		Intent i = new Intent(context, WebViewActivity.class);
 		i.putExtra(InfoFragment.EXTRA_URL, url);
+		i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(i);
 	}
 }

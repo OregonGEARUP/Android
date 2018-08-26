@@ -16,109 +16,113 @@
 			type="org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel" />
 	</data>
 
-	<RelativeLayout
+	<FrameLayout
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:background="@drawable/checkpoint_background"
-		android:onLongClick="@{(view) -> uxContent.onShowDebug(view)}"
-		android:orientation="vertical"
-		android:paddingBottom="@dimen/activity_horizontal_margin"
-		android:paddingEnd="@dimen/activity_vertical_margin"
-		android:paddingStart="@dimen/activity_vertical_margin"
-		android:paddingTop="@dimen/activity_horizontal_margin">
+		android:layout_height="wrap_content"
+		android:background="@drawable/checkpoint_background">
 
-		<TextView
-			android:id="@+id/text"
-			style="@style/GearUpTextAppearance.SubTitle"
+		<ScrollView
+			android:id="@+id/scroll_view"
 			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:text="@{uxContent.description}"
-			android:textColor="@{uxContent.descriptionTextColor}"
-			tools:text="You have reached the end of this section." />
+			android:layout_height="match_parent">
 
-		<include
-			layout="@layout/layout_entry_radio"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/text"
-			android:layout_marginTop="@dimen/baseline_unit_2x"
-			android:visibility="@{uxContent.showEntryType(EntryType.radio, true) ? View.VISIBLE : View.GONE, default=gone}"
-			app:uxContent="@{uxContent}"
-			tools:visibility="gone" />
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				android:paddingBottom="@dimen/activity_horizontal_margin"
+				android:paddingEnd="@dimen/activity_vertical_margin"
+				android:paddingStart="@dimen/activity_vertical_margin"
+				android:paddingTop="@dimen/activity_horizontal_margin"
+				android:onLongClick="@{(view) -> uxContent.onShowDebug(view)}">
 
-		<include
-			layout="@layout/layout_entry_checkbox"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/text"
-			android:layout_marginTop="@dimen/baseline_unit_2x"
-			android:visibility="@{uxContent.showEntryType(EntryType.checkbox, true) ? View.VISIBLE : View.GONE, default=gone}"
-			app:uxContent="@{uxContent}"
-			tools:visibility="gone" />
+				<TextView
+					android:id="@+id/text"
+					style="@style/GearUpTextAppearance.SubTitle"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@{uxContent.description}"
+					android:textColor="@{uxContent.descriptionTextColor}"
+					tools:text="You have reached the end of this section." />
 
-		<include
-			layout="@layout/date_layout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/text"
-			android:layout_marginTop="@dimen/baseline_unit_2x"
-			android:visibility="@{uxContent.showEntryType(EntryType.dateOnly, true) ? View.VISIBLE : View.GONE, default=gone}"
-			app:viewModel="@{uxContent.dateOnlyVm}"
-			tools:visibility="visible" />
+				<include
+					layout="@layout/layout_entry_radio"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/baseline_unit_2x"
+					android:visibility="@{uxContent.showEntryType(EntryType.radio, true) ? View.VISIBLE : View.GONE, default=gone}"
+					app:uxContent="@{uxContent}"
+					tools:visibility="gone" />
 
-		<include
-			layout="@layout/layout_entry_date_text"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/text"
-			android:layout_marginTop="@dimen/baseline_unit_2x"
-			android:visibility="@{uxContent.showEntryType(EntryType.dateAndText, true) ? View.VISIBLE : View.GONE, default=gone}"
-			app:uxContent="@{uxContent}"
-			tools:visibility="visible" />
+				<include
+					layout="@layout/layout_entry_checkbox"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/baseline_unit_2x"
+					android:visibility="@{uxContent.showEntryType(EntryType.checkbox, true) ? View.VISIBLE : View.GONE, default=gone}"
+					app:uxContent="@{uxContent}"
+					tools:visibility="gone" />
 
-		<include
-			layout="@layout/layout_entry_field"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/text"
-			android:layout_marginTop="@dimen/baseline_unit_2x"
-			android:visibility="@{uxContent.showEntryType(EntryType.field, true) ? View.VISIBLE : View.GONE, default=gone}"
-			app:uxContent="@{uxContent}"
-			tools:visibility="visible" />
+				<include
+					layout="@layout/date_layout"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/baseline_unit_2x"
+					android:visibility="@{uxContent.showEntryType(EntryType.dateOnly, true) ? View.VISIBLE : View.GONE, default=gone}"
+					app:viewModel="@{uxContent.dateOnlyVm}"
+					tools:visibility="visible" />
 
-		<Button
-			style="@style/GearUpButton"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/text"
-			android:layout_marginTop="@dimen/baseline_unit_5x"
-			android:onClick="@{() -> uxContent.onNextClick()}"
-			android:text="@{uxContent.nextText}"
-			android:visibility="@{uxContent.showNextText ? View.VISIBLE : View.GONE, default=gone}"
-			tools:text="Let's keep going"
-			tools:visibility="gone" />
+				<include
+					layout="@layout/layout_entry_date_text"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/baseline_unit_2x"
+					android:visibility="@{uxContent.showEntryType(EntryType.dateAndText, true) ? View.VISIBLE : View.GONE, default=gone}"
+					app:uxContent="@{uxContent}"
+					tools:visibility="visible" />
+
+				<include
+					layout="@layout/layout_entry_field"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/baseline_unit_2x"
+					android:visibility="@{uxContent.showEntryType(EntryType.field, true) ? View.VISIBLE : View.GONE, default=gone}"
+					app:uxContent="@{uxContent}"
+					tools:visibility="visible" />
+
+				<Button
+					style="@style/GearUpButton"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/baseline_unit_5x"
+					android:onClick="@{() -> uxContent.onNextClick()}"
+					android:text="@{uxContent.nextText}"
+					android:visibility="@{uxContent.showNextText ? View.VISIBLE : View.GONE, default=gone}"
+					tools:text="Let's keep going"
+					tools:visibility="gone" />
+
+			</LinearLayout>
+
+		</ScrollView>
 
 		<Button
 			style="@style/GearUpButtonBorderless"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
-			android:layout_centerHorizontal="true"
-			android:layout_centerVertical="false"
+			android:layout_gravity="center_horizontal|bottom"
+			android:onClick="@{() -> uxContent.onUrlClick()}"
 			android:text="@{uxContent.urlText}"
 			android:visibility="@{uxContent.urlText != null ? View.VISIBLE : View.GONE, default=gone}"
-			android:onClick="@{() -> uxContent.onUrlClick()}"
 			tools:text="Get more information"
 			tools:visibility="visible" />
 
 		<ImageView
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
+			android:layout_gravity="bottom"
 			android:scaleType="fitCenter"
 			android:src="@{uxContent.image}"
 			android:visibility="@{uxContent.showStars ? View.VISIBLE : View.GONE, default=gone}"
 			tools:visibility="visible" />
-
-	</RelativeLayout>
+	</FrameLayout>
 </layout>

@@ -133,7 +133,7 @@ public class ChecklistBlockFragment extends Fragment implements ItemClickCallbac
 				viewModel.getBlockIndex(), itemViewModel.getStageIndex());
 
 			// trigger a state change to load the correct fragment
-			ChecklistNavViewModel cvm = ViewModelProviders.of(getActivity()).get(ChecklistNavViewModel.class);
+			ChecklistNavViewModel cvm = ViewModelProviders.of(activity).get(ChecklistNavViewModel.class);
 			cvm.setCurrentState(state);
 		}
 	}
