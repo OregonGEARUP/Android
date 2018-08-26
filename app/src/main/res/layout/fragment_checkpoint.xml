@@ -5,6 +5,8 @@
 
 	<data>
 
+		<import type="android.text.TextUtils" />
+
 		<import type="android.view.View" />
 
 		<import type="org.oregongoestocollege.itsaplan.data.EntryType" />
@@ -29,27 +31,38 @@
 			<LinearLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:onLongClick="@{(view) -> uxContent.onShowDebug(view)}"
 				android:orientation="vertical"
 				android:paddingBottom="@dimen/activity_horizontal_margin"
 				android:paddingEnd="@dimen/activity_vertical_margin"
 				android:paddingStart="@dimen/activity_vertical_margin"
-				android:paddingTop="@dimen/activity_horizontal_margin"
-				android:onLongClick="@{(view) -> uxContent.onShowDebug(view)}">
+				android:paddingTop="@dimen/activity_horizontal_margin">
 
 				<TextView
-					android:id="@+id/text"
+					style="@style/GearUpTextAppearance.Title"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_marginBottom="@dimen/baseline_unit_2x"
+					android:text="@{uxContent.title}"
+					android:visibility="@{!TextUtils.isEmpty(uxContent.title) ? View.VISIBLE : View.GONE, default=gone}"
+					tools:text="Optional Title"
+					tools:visibility="visible" />
+
+				<TextView
 					style="@style/GearUpTextAppearance.SubTitle"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:layout_marginBottom="@dimen/baseline_unit_2x"
 					android:text="@{uxContent.description}"
 					android:textColor="@{uxContent.descriptionTextColor}"
-					tools:text="You have reached the end of this section." />
+					android:visibility="@{!TextUtils.isEmpty(uxContent.description) ? View.VISIBLE : View.GONE, default=gone}"
+					tools:text="You have reached the end of this section."
+					tools:visibility="visible" />
 
 				<include
 					layout="@layout/layout_entry_radio"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/baseline_unit_2x"
 					android:visibility="@{uxContent.showEntryType(EntryType.radio, true) ? View.VISIBLE : View.GONE, default=gone}"
 					app:uxContent="@{uxContent}"
 					tools:visibility="gone" />
@@ -58,7 +71,6 @@
 					layout="@layout/layout_entry_checkbox"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/baseline_unit_2x"
 					android:visibility="@{uxContent.showEntryType(EntryType.checkbox, true) ? View.VISIBLE : View.GONE, default=gone}"
 					app:uxContent="@{uxContent}"
 					tools:visibility="gone" />
@@ -67,7 +79,6 @@
 					layout="@layout/date_layout"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/baseline_unit_2x"
 					android:visibility="@{uxContent.showEntryType(EntryType.dateOnly, true) ? View.VISIBLE : View.GONE, default=gone}"
 					app:viewModel="@{uxContent.dateOnlyVm}"
 					tools:visibility="visible" />
@@ -76,7 +87,6 @@
 					layout="@layout/layout_entry_date_text"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/baseline_unit_2x"
 					android:visibility="@{uxContent.showEntryType(EntryType.dateAndText, true) ? View.VISIBLE : View.GONE, default=gone}"
 					app:uxContent="@{uxContent}"
 					tools:visibility="visible" />
@@ -85,7 +95,6 @@
 					layout="@layout/layout_entry_field"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/baseline_unit_2x"
 					android:visibility="@{uxContent.showEntryType(EntryType.field, true) ? View.VISIBLE : View.GONE, default=gone}"
 					app:uxContent="@{uxContent}"
 					tools:visibility="visible" />
@@ -94,7 +103,7 @@
 					style="@style/GearUpButton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/baseline_unit_5x"
+					android:layout_marginTop="@dimen/baseline_unit_3x"
 					android:onClick="@{() -> uxContent.onNextClick()}"
 					android:text="@{uxContent.nextText}"
 					android:visibility="@{uxContent.showNextText ? View.VISIBLE : View.GONE, default=gone}"

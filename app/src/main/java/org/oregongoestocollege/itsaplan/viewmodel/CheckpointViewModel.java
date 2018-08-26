@@ -3,6 +3,8 @@ package org.oregongoestocollege.itsaplan.viewmodel;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -37,6 +39,7 @@ import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
  */
 public class CheckpointViewModel extends AndroidViewModel
 {
+	private static final Pattern PATTERN_TEMPLATE = Pattern.compile("##[^(##)]+##");
 	// service data
 	private Checkpoint model;
 	private int blockIndex;
@@ -49,6 +52,7 @@ public class CheckpointViewModel extends AndroidViewModel
 	private final SingleLiveEvent<ChecklistState> nextStageEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<ChecklistState> nextBlockEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<NavigationState> navigationEvent = new SingleLiveEvent<>();
+	public String title;
 	public String description;
 	public int descriptionTextColor;
 	public Drawable image;
@@ -69,6 +73,39 @@ public class CheckpointViewModel extends AndroidViewModel
 		this.repository = CheckpointRepository.getInstance(context);
 	}
 
+	String stringWithSubstitutions(String original, UserEntriesInterface entries)
+	{
+		if (!TextUtils.isEmpty(original))
+		{
+			// replacing values with patterns such as
+			// "##b2_s3_cp2_i1_text##",
+			// "##b2_s3_cp2_i1_text##, due ##b2_s3_cp2_i1_date##"
+
+			Matcher matcher = PATTERN_TEMPLATE.matcher(original);
+			StringBuffer sb = new StringBuffer();
+			while (matcher.find())
+			{
+				String substring = original.substring(matcher.start(), matcher.end());
+				int length = substring.length();
+				if (length > 4)
+				{
+					String key = substring.substring(2, length - 2);
+					String replacement = entries.getValue(key);
+
+					if (TextUtils.isEmpty(replacement))
+						replacement = String.format(Locale.getDefault(), "<< missing value for (%s) >>", key);
+
+					matcher.appendReplacement(sb, replacement);
+				}
+			}
+			matcher.appendTail(sb);
+			if (sb.length() > 0)
+				return sb.toString();
+		}
+
+		return original;
+	}
+
 	public void start(Context context, int blockIndex, int stageIndex, int checkpointIndex)
 	{
 		this.blockIndex = blockIndex;
@@ -81,6 +118,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		if (model != null)
 		{
 			// setup defaults
+			title = stringWithSubstitutions(model.title, entries);
 			description = model.description;
 			descriptionTextColor = ContextCompat.getColor(context, R.color.text_primary);
 			// url / help
@@ -122,7 +160,10 @@ public class CheckpointViewModel extends AndroidViewModel
 		return nextBlockEvent;
 	}
 
-	public SingleLiveEvent<NavigationState> getNavigationEvent() { return navigationEvent; }
+	public SingleLiveEvent<NavigationState> getNavigationEvent()
+	{
+		return navigationEvent;
+	}
 
 	private void setupFieldEntry(@NonNull UserEntriesInterface entries)
 	{
