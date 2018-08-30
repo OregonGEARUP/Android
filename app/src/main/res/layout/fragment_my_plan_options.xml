@@ -1,5 +1,4 @@
-<ScrollView
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:paddingBottom="@dimen/activity_horizontal_margin"
@@ -19,8 +18,7 @@
 			android:layout_marginBottom="@dimen/activity_horizontal_margin"
 			android:text="@string/header_myplan" />
 
-		<ImageView
-			style="@style/GearUpOptionSeparator" />
+		<ImageView style="@style/GearUpOptionSeparator" />
 
 		<TextView
 			android:id="@+id/topic_colleges"
@@ -58,11 +56,9 @@
 			android:id="@+id/topic_calendar"
 			style="@style/GearUpTextAppearance.Option"
 			android:drawableStart="@mipmap/calendar"
-			android:text="@string/calendar"
-			android:visibility="gone"/>
+			android:text="@string/calendar" />
 
-		<ImageView style="@style/GearUpOptionSeparator"
-			android:visibility="gone"/>
+		<ImageView style="@style/GearUpOptionSeparator" />
 
 	</LinearLayout>
 </ScrollView>

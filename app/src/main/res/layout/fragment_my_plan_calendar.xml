@@ -3,10 +3,32 @@
 	android:layout_height="match_parent"
 	android:background="@color/white">
 
-	<!-- TODO: Update blank fragment layout -->
-	<TextView
+	<LinearLayout
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:text="my plan calendar" />
+		android:layout_height="wrap_content"
+		android:layout_marginEnd="@dimen/activity_horizontal_margin"
+		android:layout_marginStart="@dimen/activity_horizontal_margin"
+		android:layout_marginTop="@dimen/activity_vertical_margin"
+		android:orientation="vertical">
+
+		<TextView
+			style="@style/GearUpTextAppearance.Title"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="@dimen/baseline_unit_2x"
+			android:layout_marginTop="@dimen/baseline_unit_2x"
+			android:text="My Plan Calendar"
+			android:textAlignment="center"
+			android:textColor="@color/colorPrimary" />
+
+		<TextView
+			style="@style/GearUpTextAppearance.SubTitle"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginBottom="@dimen/baseline_unit_2x"
+			android:layout_marginTop="@dimen/baseline_unit_2x"
+			android:text="Coming Soon..."
+			android:textAlignment="center" />
+	</LinearLayout>
 
 </FrameLayout>
