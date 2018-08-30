@@ -19,6 +19,15 @@
 		<!-- hint will not move up above EditText when user has valued,
 		 seems to be a binding issue -->
 
+		<!-- additional TextView not seen often, see block 6 -->
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:text="@{uxContent.getInstancePrompt(0)}"
+			android:visibility="@{uxContent.hasInstancePrompt(0) ? View.VISIBLE : View.GONE, default=gone}"
+			tools:text="How much does it cost to apply?"
+			tools:visibility="visible" />
+
 		<android.support.design.widget.TextInputLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">
@@ -30,6 +39,15 @@
 				android:inputType="text"
 				android:text="@={uxContent.getInstance(0).textEntry}" />
 		</android.support.design.widget.TextInputLayout>
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/baseline_unit_1_half"
+			android:text="@{uxContent.getInstancePrompt(1)}"
+			android:visibility="@{uxContent.hasInstancePrompt(1) ? View.VISIBLE : View.GONE, default=gone}"
+			tools:text="Can I use a waiver?"
+			tools:visibility="visible" />
 
 		<android.support.design.widget.TextInputLayout
 			android:layout_width="match_parent"
@@ -44,6 +62,13 @@
 				android:text="@={uxContent.getInstance(1).textEntry}" />
 		</android.support.design.widget.TextInputLayout>
 
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/baseline_unit_1_half"
+			android:text="@{uxContent.getInstancePrompt(2)}"
+			android:visibility="@{uxContent.hasInstancePrompt(2) ? View.VISIBLE : View.GONE, default=gone}" />
+
 		<android.support.design.widget.TextInputLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -56,6 +81,13 @@
 				android:inputType="text"
 				android:text="@={uxContent.getInstance(2).textEntry}" />
 		</android.support.design.widget.TextInputLayout>
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/baseline_unit_1_half"
+			android:text="@{uxContent.getInstancePrompt(3)}"
+			android:visibility="@{uxContent.hasInstancePrompt(3) ? View.VISIBLE : View.GONE, default=gone}" />
 
 		<android.support.design.widget.TextInputLayout
 			android:layout_width="match_parent"
@@ -70,6 +102,13 @@
 				android:text="@={uxContent.getInstance(3).textEntry}" />
 		</android.support.design.widget.TextInputLayout>
 
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/baseline_unit_1_half"
+			android:text="@{uxContent.getInstancePrompt(4)}"
+			android:visibility="@{uxContent.hasInstancePrompt(4) ? View.VISIBLE : View.GONE, default=gone}" />
+
 		<android.support.design.widget.TextInputLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
@@ -82,6 +121,14 @@
 				android:inputType="text"
 				android:text="@={uxContent.getInstance(4).textEntry}" />
 		</android.support.design.widget.TextInputLayout>
+
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/baseline_unit_1_half"
+			android:text="@{uxContent.getInstancePrompt(5)}"
+			android:visibility="@{uxContent.hasInstancePrompt(5) ? View.VISIBLE : View.GONE, default=gone}"
+			tools:text="Your birthdate" />
 
 		<android.support.design.widget.TextInputLayout
 			android:layout_width="match_parent"

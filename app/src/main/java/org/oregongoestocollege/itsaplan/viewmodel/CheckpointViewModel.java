@@ -291,6 +291,11 @@ public class CheckpointViewModel extends AndroidViewModel
 		return showInstance(instance) ? instances.get(instance).getPrompt() : null;
 	}
 
+	public boolean hasInstancePrompt(int instance)
+	{
+		return showInstance(instance) ? !TextUtils.isEmpty(instances.get(instance).getPrompt()) : false;
+	}
+
 	public void onNextClick()
 	{
 		if (EntryType.route.equals(model.entryType))
