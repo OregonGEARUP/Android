@@ -11,7 +11,7 @@
 			type="org.oregongoestocollege.itsaplan.viewmodel.BlockViewModel" />
 	</data>
 
-	<RelativeLayout
+	<FrameLayout
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:padding="@dimen/activity_vertical_margin">
@@ -20,7 +20,7 @@
 			android:id="@+id/progress_bar"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_centerInParent="true"
+			android:layout_gravity="center"
 			android:visibility="@{uxContext.dataLoading ? View.VISIBLE : View.GONE}"
 			tools:visibility="visible" />
 
@@ -30,5 +30,5 @@
 			android:layout_height="match_parent"
 			android:visibility="@{uxContext.dataLoading ? View.GONE : View.VISIBLE}" />
 
-	</RelativeLayout>
+	</FrameLayout>
 </layout>

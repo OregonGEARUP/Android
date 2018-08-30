@@ -37,7 +37,7 @@ public class UserEntries implements UserEntriesInterface
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
 		String value = prefs.getString(key, null);
-		return "true".equals(value);
+		return "1".equals(value);
 	}
 
 	public long getValueAsLong(String key)
@@ -62,10 +62,11 @@ public class UserEntries implements UserEntriesInterface
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
 		SharedPreferences.Editor editor = prefs.edit();
+		// use '1' for true, we later match criteria based on this value
 		if (!value)
 			editor.remove(key);
 		else
-			editor.putString(key, "true");
+			editor.putString(key, "1");
 		editor.apply();
 	}
 

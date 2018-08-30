@@ -120,6 +120,7 @@ public class CheckpointRepository implements CheckpointInterface
 		@NonNull CheckpointCallback callback, int blockIndex,
 		String blockFileName)
 	{
+		checkNotNull(myPlanRepo);
 		checkNotNull(callback);
 
 		// we must have our BlockInfo before we can load a block
@@ -127,11 +128,14 @@ public class CheckpointRepository implements CheckpointInterface
 		if (cachedBlockInfos != null && blockIndex >= 0 && blockIndex < cachedBlockInfos.size())
 			blockInfo = cachedBlockInfos.get(blockIndex);
 
-		// load either saved blockFileName or first from the BlockInfo
-		String fileName = blockInfo != null ? blockInfo.getBlockFileName() : null;
-		// or we could be loading a new block
-		if (TextUtils.isEmpty(fileName))
+		String fileName;
+
+		// load the block file name specified, may be different from the stored file name
+		// if the user went back and changed entries related to routing
+		if (!TextUtils.isEmpty(blockFileName))
 			fileName = blockFileName;
+		else
+			fileName = blockInfo != null ? blockInfo.getBlockFileName() : null;
 
 		if (blockInfo == null || TextUtils.isEmpty(fileName))
 		{
@@ -140,41 +144,29 @@ public class CheckpointRepository implements CheckpointInterface
 			return;
 		}
 
-		Block data;
+		// setup a background task or hookup to our existing one
 		GetBlockTask newTask = null;
-
 		synchronized (lock)
 		{
-			data = cachedBlocks.get(fileName);
-			if (data == null)
+			GetBlockTask currentTask = currentBlockTasks.get(fileName);
+			if (currentTask == null)
 			{
-				GetBlockTask currentTask = currentBlockTasks.get(fileName);
-				if (currentTask != null)
-					currentTask.setCallback(callback);
-				else
-					newTask = new GetBlockTask(this, myPlanRepo, callback, fileName, blockIndex);
+				newTask = new GetBlockTask(this, myPlanRepo, callback, fileName, blockIndex);
+
+				// keep track of the pending task
+				currentBlockTasks.put(fileName, newTask);
+			}
+			else
+			{
+				currentTask.setCallback(callback);
+
+				Utils.d(LOG_TAG, "GetBlockTask pending");
 			}
 		}
 
-		// response immediately if we have the data cached
-		if (data != null)
-		{
-			Utils.d(LOG_TAG, "Block from cache");
-
-			currentBlockFileName = fileName;
-			currentBlockIndex = blockIndex;
-			currentStageIndex = Utils.NO_INDEX;
-			currentCheckpointIndex = Utils.NO_INDEX;
-
-			callback.onDataLoaded(true);
-		}
-		else if (newTask != null)
-		{
-			Utils.d(LOG_TAG, "Block from network");
+		// if we didn't have a task executing, do it now
+		if (newTask != null)
 			newTask.execute();
-		}
-		else
-			Utils.d(LOG_TAG, "GetBlockTask pending");
 	}
 
 	protected static class GetBlockInfoTask extends AsyncTask<Void, Void, Boolean>
@@ -193,7 +185,7 @@ public class CheckpointRepository implements CheckpointInterface
 		{
 			try
 			{
-				// determine if I already have data
+				// determine if we already have data
 				BlockInfo [] dbList = myPlanRepo.blockInfoDao.getAllDirect();
 
 				if (dbList == null || dbList.length < 1)
@@ -272,14 +264,78 @@ public class CheckpointRepository implements CheckpointInterface
 			this.callback = callback;
 			this.blockFileName = blockFileName;
 			this.blockIndex = blockIndex;
-
-			// keep track of the pending task
-			repository.currentBlockTasks.put(blockFileName, this);
 		}
 
 		protected Block doInBackground(Void... params)
 		{
-			block = repository.fetchBlock(blockFileName, blockIndex, myPlanRepo);
+			try
+			{
+				// determine if we already have data
+				block = repository.cachedBlocks.get(blockFileName);
+
+				if (block == null)
+				{
+					Utils.d(CheckpointRepository.LOG_TAG, "Block %s from network", blockFileName);
+
+					URL url = new URL(baseUrl + blockFileName);
+					HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+
+					InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
+					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
+
+					Type listType = new TypeToken<List<Block>>()
+					{
+					}.getType();
+					List<Block> blocks = new Gson().fromJson(bufferedReader, listType);
+
+					urlConnection.disconnect();
+
+					if (blocks != null)
+					{
+						block = blocks.get(0);
+						block.addNextStageCheckpoint();
+					}
+
+					// cache the data
+					repository.cachedBlocks.put(blockFileName, block);
+				}
+				else
+					Utils.d(CheckpointRepository.LOG_TAG, "Block %ss from cache", blockFileName);
+
+				// TODO persistBlockCompletionInfo() on previous block before changing to new block?
+				repository.persistBlockCompletionInfo(repository.currentBlockIndex, myPlanRepo);
+
+				if (block != null && block.stages != null && block.stages.size() > 0)
+				{
+					BlockInfo blockInfo;
+
+					// update the blockIndex for the newly loaded block
+					//synchronized (lock)
+					{
+						blockInfo = repository.cachedBlockInfos.get(blockIndex);
+						blockInfo.setBlockFileName(blockFileName);
+
+						repository.currentBlockFileName = blockFileName;
+						repository.currentBlockIndex = blockIndex;
+						repository.currentStageIndex = Utils.NO_INDEX;
+						repository.currentCheckpointIndex = Utils.NO_INDEX;
+
+						if (blockInfo.getIds() != null && blockInfo.getIds().contains(block.id))
+						{
+							Pair<Integer, Integer> status = repository.blockStagesStatus(block);
+							blockInfo.setStagesComplete(status.first);
+							blockInfo.setStageCount(status.second);
+						}
+					}
+
+					// persist changes to the BlockInfo
+					myPlanRepo.update(blockInfo);
+				}
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 			return block;
 		}
 
@@ -298,68 +354,6 @@ public class CheckpointRepository implements CheckpointInterface
 		{
 			this.callback = callback;
 		}
-	}
-
-	Block fetchBlock(String blockFileName, int blockIndex, @NonNull MyPlanRepository myPlanRepository)
-	{
-		Block block = null;
-
-		try
-		{
-			URL url = new URL(baseUrl + blockFileName);
-			HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
-
-			InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream));
-
-			Type listType = new TypeToken<List<Block>>()
-			{
-			}.getType();
-			List<Block> blocks = new Gson().fromJson(bufferedReader, listType);
-
-			urlConnection.disconnect();
-
-			if (blocks != null)
-			{
-				block = blocks.get(0);
-				block.addNextStageCheckpoint();
-			}
-
-			if (block != null && block.stages != null && block.stages.size() > 0)
-			{
-				BlockInfo blockInfo;
-
-				// update the blockIndex for the newly loaded block
-				synchronized (lock)
-				{
-					// store the file name once loaded successfully
-					blockInfo = cachedBlockInfos.get(blockIndex);
-					blockInfo.setBlockFileName(blockFileName);
-
-					currentBlockFileName = blockFileName;
-					currentBlockIndex = blockIndex;
-					currentStageIndex = Utils.NO_INDEX;
-					currentCheckpointIndex = Utils.NO_INDEX;
-
-					cachedBlocks.put(blockFileName, block);
-
-					if (blockInfo.getIds() != null && blockInfo.getIds().contains(block.id))
-					{
-						Pair<Integer, Integer> status = blockStagesStatus(block);
-						blockInfo.setStagesComplete(status.first);
-						blockInfo.setStageCount(status.second);
-					}
-				}
-
-				// persist changes to the BlockInfo
-				myPlanRepository.update(blockInfo);
-			}
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		return block;
 	}
 
 	private Pair<Integer, Integer> blockStagesStatus(@NonNull Block block)
@@ -490,8 +484,6 @@ public class CheckpointRepository implements CheckpointInterface
 				blockInfo.setStagesComplete(status.second);
 				dirty = true;
 			}
-			// TODO needed ?
-			//cachedBlockInfos.get(blockIndex).blockFileName = blockFileName;
 
 			if (dirty)
 				myPlanRepository.update(blockInfo);

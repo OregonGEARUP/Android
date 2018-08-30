@@ -139,6 +139,11 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 					CheckpointFragment fragment = CheckpointFragment.newInstance(blockIndex, stageIndex, i);
 					fragments.add(fragment);
 					count++;
+
+					// Once we match on a route entry (eg. block3undoc.json, block3visa.json) we stop. The last
+					// route entry doesn't have any criteria and is used as a fail safe (eg. block3citizen.json)
+					if (meetsCriteria)
+						break;
 				}
 				else
 				{
