@@ -20,7 +20,7 @@ public class BottomBarAdapter extends SmartFragmentStatePageAdapter
 {
 	public BottomBarAdapter(FragmentManager fragmentManager)
 	{
-		super(fragmentManager);
+		super(MainActivity.LOG_TAG, fragmentManager);
 	}
 
 	@Override

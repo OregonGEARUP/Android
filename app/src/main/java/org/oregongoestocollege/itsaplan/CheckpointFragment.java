@@ -22,7 +22,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
  */
 public class CheckpointFragment extends Fragment
 {
-	private static final String LOG_TAG = "GearUp_CheckpointFrag";
+	static final String LOG_TAG = "GearUp_CheckpointFrag";
 	private OnFragmentInteractionListener listener;
 	private CheckpointViewModel checkpointViewModel;
 	private int blockIndex = Utils.NO_INDEX;
@@ -32,22 +32,6 @@ public class CheckpointFragment extends Fragment
 	public CheckpointFragment()
 	{
 		// Required empty public constructor
-	}
-
-	/**
-	 * Use this factory method to create a new instance of this fragment.
-	 *
-	 * @return A new instance of fragment CheckpointFragment.
-	 */
-	public static CheckpointFragment newInstance(int blockIndex, int stageIndex, int checkpointIndex)
-	{
-		CheckpointFragment fragment = new CheckpointFragment();
-		Bundle args = new Bundle();
-		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
-		args.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
-		args.putInt(Utils.PARAM_CHECKPOINT_INDEX, checkpointIndex);
-		fragment.setArguments(args);
-		return fragment;
 	}
 
 	@Override
@@ -95,7 +79,6 @@ public class CheckpointFragment extends Fragment
 		checkpointViewModel.getNextBlockEvent().observe(this, this::onStateChanged);
 		checkpointViewModel.getNavigationEvent().observe(this, this::onNavigationChanged);
 
-
 		return v;
 	}
 
@@ -123,7 +106,8 @@ public class CheckpointFragment extends Fragment
 	{
 		super.onStop();
 
-		Utils.d(LOG_TAG, "onStop");
+		Utils.d(LOG_TAG, "onStop blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
+			blockIndex, stageIndex, checkpointIndex);
 	}
 
 	@Override
@@ -135,8 +119,6 @@ public class CheckpointFragment extends Fragment
 			listener = (OnFragmentInteractionListener)context;
 		else
 			throw new RuntimeException(context.toString() + " must implement OnFragmentInteractionListener");
-
-		Utils.d(LOG_TAG, "onAttach");
 	}
 
 	@Override
@@ -144,11 +126,26 @@ public class CheckpointFragment extends Fragment
 	{
 		super.onDetach();
 		listener = null;
-		Utils.d(LOG_TAG, "onDetach");
 	}
 
 	public CheckpointViewModel getCheckpointViewModel()
 	{
 		return checkpointViewModel;
+	}
+
+	/**
+	 * Use this factory method to create a new instance of this fragment.
+	 *
+	 * @return A new instance of fragment CheckpointFragment.
+	 */
+	public static CheckpointFragment newInstance(int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		CheckpointFragment fragment = new CheckpointFragment();
+		Bundle args = new Bundle();
+		args.putInt(Utils.PARAM_BLOCK_INDEX, blockIndex);
+		args.putInt(Utils.PARAM_STAGE_INDEX, stageIndex);
+		args.putInt(Utils.PARAM_CHECKPOINT_INDEX, checkpointIndex);
+		fragment.setArguments(args);
+		return fragment;
 	}
 }

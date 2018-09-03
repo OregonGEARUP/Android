@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
@@ -34,8 +35,10 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 	private static final String LOG_TAG = "GearUp_ChecklistStageFrag";
 	private int blockIndex = Utils.NO_INDEX;
 	private int stageIndex = Utils.NO_INDEX;
+	private ViewPager viewPager;
 	private CheckpointPagerAdapter pagerAdapter;
 	private int lastVisitedPosition;
+	private int currentPosition;
 
 	public ChecklistStageFragment()
 	{
@@ -80,7 +83,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 
 		Context context = v.getContext();
 		CheckpointInterface checkpointInterface = CheckpointRepository.getInstance(context);
-		List<CheckpointFragment> fragments = new ArrayList<>();
+		List<ChecklistState> checklistStates = new ArrayList<>();
 
 		// we only use Stage/Checkpoint model classes to make sure all is valid and setup indexes
 		Stage stage = checkpointInterface.getStage(blockIndex, stageIndex);
@@ -136,8 +139,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 						continue;
 					}
 
-					CheckpointFragment fragment = CheckpointFragment.newInstance(blockIndex, stageIndex, i);
-					fragments.add(fragment);
+					checklistStates.add(new ChecklistState(blockIndex, stageIndex, i));
 					count++;
 
 					// Once we match on a route entry (eg. block3undoc.json, block3visa.json) we stop. The last
@@ -147,8 +149,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 				}
 				else
 				{
-					CheckpointFragment fragment = CheckpointFragment.newInstance(blockIndex, stageIndex, i);
-					fragments.add(fragment);
+					checklistStates.add(new ChecklistState(blockIndex, stageIndex, i));
 					count++;
 				}
 
@@ -161,9 +162,9 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 		int padding = resources.getDimensionPixelSize(R.dimen.checkpoint_pager_padding);
 		int margin = resources.getDimensionPixelSize(R.dimen.checkpoint_pager_margin);
 
-		pagerAdapter = new CheckpointPagerAdapter(getChildFragmentManager(), fragments);
+		pagerAdapter = new CheckpointPagerAdapter(getChildFragmentManager(), checklistStates);
 
-		ViewPager viewPager = v.findViewById(R.id.viewpager_checkpoints);
+		viewPager = v.findViewById(R.id.viewpager_checkpoints);
 		viewPager.setPadding(padding, padding, padding, padding);
 		viewPager.setClipToPadding(false);
 		viewPager.setPageMargin(margin);
@@ -225,8 +226,20 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 		if (context == null)
 			return;
 
-		setAsVisited(context, position);
-		//Utils.d(LOG_TAG, "onPageSelected position:%d", position);
+		boolean isValid = true; // <-- here, you need to check yourself valid or not
+		if (!isValid)
+		{
+			viewPager.setCurrentItem(currentPosition);
+		}
+		else
+		{
+			//viewPager.setCurrentItem(position);
+			currentPosition = position;
+
+			setAsVisited(context, position);
+		}
+
+		Utils.d(LOG_TAG, "onPageSelected isValid:%s position:%d", isValid, position);
 	}
 
 	@Override

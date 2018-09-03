@@ -32,6 +32,11 @@ public class ChecklistState
 		this(null, blockIndex, stageIndex, Utils.NO_INDEX);
 	}
 
+	public ChecklistState(int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		this(null, blockIndex, stageIndex, checkpointIndex);
+	}
+
 	public ChecklistState(String blockFileName, int blockIndex, int stageIndex, int checkpointIndex)
 	{
 		this.blockFileName = blockFileName;
