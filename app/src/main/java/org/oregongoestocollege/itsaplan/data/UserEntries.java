@@ -20,36 +20,36 @@ import org.oregongoestocollege.itsaplan.Utils;
  */
 public class UserEntries implements UserEntriesInterface
 {
-	private WeakReference<Context> weakRef;
+	private WeakReference<SharedPreferences> weakRef;
 
 	public UserEntries(@NonNull Context context)
 	{
-		weakRef = new WeakReference<>(context);
+		weakRef = new WeakReference<>(PreferenceManager.getDefaultSharedPreferences(context));
 	}
 
 	public String getValue(String key)
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences prefs = weakRef.get();
 		return prefs.getString(key, null);
 	}
 
 	public boolean getValueAsBoolean(String key)
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences prefs = weakRef.get();
 		String value = prefs.getString(key, null);
 		return "1".equals(value);
 	}
 
 	public long getValueAsLong(String key)
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences prefs = weakRef.get();
 		String value = prefs.getString(key, null);
 		return !TextUtils.isEmpty(value) ? Long.parseLong(value) : 0;
 	}
 
 	public void setValue(String key, String value)
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences prefs = weakRef.get();
 		SharedPreferences.Editor editor = prefs.edit();
 		if (TextUtils.isEmpty(value))
 			editor.remove(key);
@@ -60,7 +60,7 @@ public class UserEntries implements UserEntriesInterface
 
 	public void setValue(String key, boolean value)
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences prefs = weakRef.get();
 		SharedPreferences.Editor editor = prefs.edit();
 		// use '1' for true, we later match criteria based on this value
 		if (!value)
@@ -72,7 +72,7 @@ public class UserEntries implements UserEntriesInterface
 
 	public void setValue(String key, long value)
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences prefs = weakRef.get();
 		SharedPreferences.Editor editor = prefs.edit();
 		if (value <= 0)
 			editor.remove(key);
@@ -83,7 +83,7 @@ public class UserEntries implements UserEntriesInterface
 
 	public ChecklistState getChecklistState()
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences prefs = weakRef.get();
 		return new ChecklistState(
 			prefs.getString("currentBlockFileName", null),
 			prefs.getInt("currentBlockIndex", Utils.NO_INDEX),
@@ -93,7 +93,7 @@ public class UserEntries implements UserEntriesInterface
 
 	public void setChecklistState(@NonNull ChecklistState checklistState)
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(weakRef.get());
+		SharedPreferences prefs = weakRef.get();
 		SharedPreferences.Editor editor = prefs.edit();
 
 		editor.putString("currentBlockFileName", checklistState.blockFileName);

@@ -2,7 +2,6 @@ package org.oregongoestocollege.itsaplan;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -96,6 +95,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 			int size = stage.checkpoints.size();
 			for (int i = 0; i < size; i++)
 			{
+				boolean lastBlock = (checkpointInterface.getCountOfBlocks() - 1) == blockIndex;
 				Checkpoint checkpoint = stage.checkpoints.get(i);
 
 				if (checkpoint.entryType == EntryType.route)
@@ -105,29 +105,23 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 					{
 						if (!TextUtils.isEmpty(checkpoint.routeFileName))
 						{
-							String log =
-								String.format(Locale.US, "nextCheckpoint does meet criteria for %s, will route to %s",
-									checkpointInterface.keyForBlockIndex(stageIndex, i),
-									checkpoint.routeFileName);
-							Utils.d(LOG_TAG, log);
+							Utils.d(LOG_TAG, "nextCheckpoint meets criteria for %s, will route to %s",
+								checkpointInterface.keyForBlockIndex(stageIndex, i),
+								checkpoint.routeFileName);
 						}
 						else
 						{
-							String log = String.format(Locale.US,
-								"nextCheckpoint does meet criteria for %s,  but is MISSING a routeFileName for route checkpoint %s",
+							Utils.d(LOG_TAG, "nextCheckpoint meets criteria for %s, but is MISSING a routeFileName for route checkpoint %s",
 								checkpointInterface.keyForBlockIndex(stageIndex, i),
 								checkpoint.routeFileName);
-							Utils.d(LOG_TAG, log);
 
 							meetsCriteria = false;
 						}
 					}
 					else
 					{
-						String log =
-							String.format(Locale.US, "nextCheckpoint does NOT meet criteria for %s",
-								checkpointInterface.keyForBlockIndex(stageIndex, i));
-						Utils.d(LOG_TAG, log);
+						Utils.d(LOG_TAG, "nextCheckpoint does NOT meet criteria for %s",
+							checkpointInterface.keyForBlockIndex(stageIndex, i));
 					}
 
 					if (!meetsCriteria)
@@ -135,8 +129,9 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 						// unmet criteria == visited
 						checkpointInterface.markVisited(stageIndex, i);
 
-						// skip this checkpoint
-						continue;
+						// skip this checkpoint unless last one
+						if (!lastBlock)
+							continue;
 					}
 
 					checklistStates.add(new ChecklistState(blockIndex, stageIndex, i));
@@ -220,26 +215,43 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 	}
 
 	@Override
-	public void onPageSelected(int position)
+	public void onPageSelected(int newPosition)
 	{
 		Context context = getContext();
 		if (context == null)
 			return;
 
-		boolean isValid = true; // <-- here, you need to check yourself valid or not
-		if (!isValid)
+		CheckpointViewModel viewModel = null;
+		boolean isCompleted = true;
+		if (lastVisitedPosition != newPosition)
 		{
+			viewModel = pagerAdapter.getCurrentViewModel(lastVisitedPosition);
+			if (viewModel != null)
+			{
+				if (newPosition > lastVisitedPosition)
+					isCompleted = viewModel.isCompleted();
+			}
+		}
+
+		if (!isCompleted)
+		{
+			viewModel.showIncomplete.set(true);
+
+			// force back to checkpoint that needs completing
 			viewPager.setCurrentItem(currentPosition);
 		}
 		else
 		{
-			//viewPager.setCurrentItem(position);
-			currentPosition = position;
+			if (viewModel != null)
+				viewModel.showIncomplete.set(false);
 
-			setAsVisited(context, position);
+			// checkpoint is done, move on
+			currentPosition = newPosition;
+
+			setAsVisited(context, newPosition);
 		}
 
-		Utils.d(LOG_TAG, "onPageSelected isValid:%s position:%d", isValid, position);
+		Utils.d(LOG_TAG, "onPageSelected isCompleted:%s position:%d", isCompleted, currentPosition);
 	}
 
 	@Override

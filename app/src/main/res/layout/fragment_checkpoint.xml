@@ -108,7 +108,20 @@
 					android:text="@{uxContent.nextText}"
 					android:visibility="@{uxContent.showNextText ? View.VISIBLE : View.GONE, default=gone}"
 					tools:text="Let's keep going"
-					tools:visibility="gone" />
+					tools:visibility="visible" />
+
+				<TextView
+					style="@style/GearUpTextAppearance.Title"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_gravity="bottom"
+					android:textAlignment="center"
+					android:layout_marginTop="@dimen/baseline_unit_3x"
+					android:layout_marginBottom="@dimen/baseline_unit_2x"
+					android:text="@string/checkpoint_incomplete"
+					android:textColor="@color/red"
+					android:visibility="@{uxContent.showIncomplete ? View.VISIBLE : View.GONE, default=gone}"
+					tools:visibility="visible" />
 
 			</LinearLayout>
 

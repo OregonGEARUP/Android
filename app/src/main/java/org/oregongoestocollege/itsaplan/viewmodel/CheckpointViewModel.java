@@ -10,16 +10,19 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.content.Context;
 import android.content.res.Resources;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Toast;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;
+import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.WebViewActivity;
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.Checkpoint;
@@ -39,6 +42,7 @@ import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
  */
 public class CheckpointViewModel extends AndroidViewModel
 {
+	private static final String LOG_TAG = "GearUp_CheckpointViewModel";
 	private static final Pattern PATTERN_TEMPLATE = Pattern.compile("##[^(##)]+##");
 	// service data
 	private Checkpoint model;
@@ -47,6 +51,7 @@ public class CheckpointViewModel extends AndroidViewModel
 	private int checkpointIndex;
 	private final CheckpointInterface repository;
 	// view data
+	public final ObservableBoolean showIncomplete = new ObservableBoolean();
 	public final ObservableField<DateViewModel> dateOnlyVm = new ObservableField<>();
 	public final ObservableField<DateViewModel> dateAndTextVm = new ObservableField<>();
 	private final SingleLiveEvent<ChecklistState> nextStageEvent = new SingleLiveEvent<>();
@@ -90,7 +95,17 @@ public class CheckpointViewModel extends AndroidViewModel
 				if (length > 4)
 				{
 					String key = substring.substring(2, length - 2);
-					String replacement = entries.getValue(key);
+					String replacement = null;
+
+					if (key.endsWith("_date"))
+					{
+						long value = entries.getValueAsLong(key);
+						Date date = value > 0 ? DateConverter.toDate(value) : null;
+						if (date != null)
+							replacement = DateFormat.getLongDateFormat(getApplication()).format(date);
+					}
+					else
+						replacement = entries.getValue(key);
 
 					if (TextUtils.isEmpty(replacement))
 						replacement = String.format(Locale.getDefault(), "<< missing value for (%s) >>", key);
@@ -111,6 +126,9 @@ public class CheckpointViewModel extends AndroidViewModel
 		this.blockIndex = blockIndex;
 		this.stageIndex = stageIndex;
 		this.checkpointIndex = checkpointIndex;
+
+		Utils.d(LOG_TAG, "start blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
+			blockIndex, stageIndex, checkpointIndex);
 
 		UserEntriesInterface entries = new UserEntries(context);
 
@@ -271,9 +289,14 @@ public class CheckpointViewModel extends AndroidViewModel
 			nextText = resources.getString(R.string.checkpoint_next_keep_going);
 		}
 
+		boolean lastBlock = (blockIndex == repository.getCountOfBlocks() - 1);
+
 		// don't show button if route CP for the last block
-		showNextText = (!EntryType.route.equals(model.entryType) ||
-			blockIndex != repository.getCountOfBlocks() - 1);
+		showNextText = (!EntryType.route.equals(model.entryType) || !lastBlock);
+
+		// and clear the description
+		if (EntryType.route.equals(model.entryType) && lastBlock)
+			description = null;
 	}
 
 	public boolean showInstance(int instance)
@@ -294,6 +317,46 @@ public class CheckpointViewModel extends AndroidViewModel
 	public boolean hasInstancePrompt(int instance)
 	{
 		return showInstance(instance) ? !TextUtils.isEmpty(instances.get(instance).getPrompt()) : false;
+	}
+
+	// equivalent of iOS isCurrentCheckpointCompleted()
+	public boolean isCompleted()
+	{
+		if (model == null || !model.required())
+			return true;
+
+		switch (model.entryType)
+		{
+		case info:
+		case route:
+		case nextstage:
+			return true;
+		case checkbox:
+		case radio:
+		{
+			boolean oneSelected = false;
+			for (int i = 0; i < instanceCount && !oneSelected; i++)
+				oneSelected = instances.get(i).isChecked;
+			return oneSelected;
+		}
+		case field:
+		{
+			boolean allFilled = true;
+			for (int i = 0; i < instanceCount; i++)
+			{
+				allFilled = !TextUtils.isEmpty(instances.get(i).textEntry.get());
+				if (!allFilled)
+					break;
+			}
+			return allFilled;
+		}
+		case dateOnly:
+			return dateOnlyVm.get().hasSelectedDate();
+		case dateAndText:
+			return dateAndTextVm.get().hasSelectedDate() && !TextUtils.isEmpty(instances.get(0).textEntry.get());
+		}
+
+		return true;
 	}
 
 	public void onNextClick()

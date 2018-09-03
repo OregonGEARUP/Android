@@ -70,6 +70,11 @@ public class DateViewModel implements BindingItem
 		return selectedDate;
 	}
 
+	public boolean hasSelectedDate()
+	{
+		return selectedDate != null;
+	}
+
 	public void onChangeDate(View view)
 	{
 		final Context context = view.getContext();
