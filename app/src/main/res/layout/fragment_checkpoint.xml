@@ -1,5 +1,4 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
 	tools:context="org.oregongoestocollege.itsaplan.ChecklistFragment">
 
@@ -59,45 +58,10 @@
 					tools:text="You have reached the end of this section."
 					tools:visibility="visible" />
 
-				<include
-					layout="@layout/layout_entry_radio"
+				<FrameLayout
+					android:id="@+id/container"
 					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:visibility="@{uxContent.showEntryType(EntryType.radio, true) ? View.VISIBLE : View.GONE, default=gone}"
-					app:uxContent="@{uxContent}"
-					tools:visibility="gone" />
-
-				<include
-					layout="@layout/layout_entry_checkbox"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:visibility="@{uxContent.showEntryType(EntryType.checkbox, true) ? View.VISIBLE : View.GONE, default=gone}"
-					app:uxContent="@{uxContent}"
-					tools:visibility="gone" />
-
-				<include
-					layout="@layout/date_layout"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:visibility="@{uxContent.showEntryType(EntryType.dateOnly, true) ? View.VISIBLE : View.GONE, default=gone}"
-					app:viewModel="@{uxContent.dateOnlyVm}"
-					tools:visibility="visible" />
-
-				<include
-					layout="@layout/layout_entry_date_text"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:visibility="@{uxContent.showEntryType(EntryType.dateAndText, true) ? View.VISIBLE : View.GONE, default=gone}"
-					app:uxContent="@{uxContent}"
-					tools:visibility="visible" />
-
-				<include
-					layout="@layout/layout_entry_field"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:visibility="@{uxContent.showEntryType(EntryType.field, true) ? View.VISIBLE : View.GONE, default=gone}"
-					app:uxContent="@{uxContent}"
-					tools:visibility="visible" />
+					android:layout_height="wrap_content"/>
 
 				<Button
 					style="@style/GearUpButton"

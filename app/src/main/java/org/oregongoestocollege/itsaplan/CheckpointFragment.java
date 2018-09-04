@@ -3,16 +3,17 @@ package org.oregongoestocollege.itsaplan;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.data.NavigationState;
-import org.oregongoestocollege.itsaplan.databinding.FragmentCheckpointBinding;
 import org.oregongoestocollege.itsaplan.viewmodel.ChecklistNavViewModel;
 import org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel;
 
@@ -60,11 +61,6 @@ public class CheckpointFragment extends Fragment
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState)
 	{
-		// Inflate the layout for this fragment
-		FragmentCheckpointBinding binding =
-			DataBindingUtil.inflate(inflater, R.layout.fragment_checkpoint, container, false);
-		View v = binding.getRoot();
-
 		if (savedInstanceState != null)
 		{
 			blockIndex = savedInstanceState.getInt(Utils.PARAM_BLOCK_INDEX, Utils.NO_INDEX);
@@ -72,8 +68,38 @@ public class CheckpointFragment extends Fragment
 			checkpointIndex = savedInstanceState.getInt(Utils.PARAM_CHECKPOINT_INDEX, Utils.NO_INDEX);
 		}
 
+		// init the view model first so we can correctly setup the layouts
 		checkpointViewModel = ViewModelProviders.of(this).get(CheckpointViewModel.class);
-		binding.setUxContent(checkpointViewModel);
+		checkpointViewModel.init(getContext(), blockIndex, stageIndex, checkpointIndex);
+
+		// Inflate the layout for this fragment
+		ViewDataBinding fragmentBinding;
+		if (checkpointViewModel.isFinalCheckpoint())
+		{
+			fragmentBinding = DataBindingUtil.inflate(inflater,
+				R.layout.fragment_checkpoint_congrats, container, false);
+		}
+		else
+		{
+			fragmentBinding = DataBindingUtil.inflate(inflater,
+				R.layout.fragment_checkpoint, container, false);
+		}
+
+		View v = fragmentBinding.getRoot();
+
+		// add Entry specific layout
+		ViewDataBinding layoutBinding = null;
+		int entryLayoutId = checkpointViewModel.getEntryLayout();
+		if (entryLayoutId != 0)
+		{
+			layoutBinding = DataBindingUtil.inflate(inflater, entryLayoutId, container, false);
+			FrameLayout frameLayout = v.findViewById(R.id.container);
+			frameLayout.addView(layoutBinding.getRoot());
+		}
+
+		fragmentBinding.setVariable(BR.uxContent, checkpointViewModel);
+		if (layoutBinding != null)
+			layoutBinding.setVariable(BR.uxContent, checkpointViewModel);
 
 		checkpointViewModel.getNextStageEvent().observe(this, this::onStateChanged);
 		checkpointViewModel.getNextBlockEvent().observe(this, this::onStateChanged);
@@ -98,7 +124,9 @@ public class CheckpointFragment extends Fragment
 	public void onResume()
 	{
 		super.onResume();
-		checkpointViewModel.start(getContext(), blockIndex, stageIndex, checkpointIndex);
+
+		Utils.d(LOG_TAG, "onResume blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
+			blockIndex, stageIndex, checkpointIndex);
 	}
 
 	@Override

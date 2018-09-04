@@ -25,7 +25,7 @@
 			android:onCheckedChanged="@{(view, checked) -> uxContent.getInstance(0).onInstanceChecked(checked)}"
 			tools:text="instance option 1" />
 
-		<android.support.v7.widget.AppCompatCheckBox
+		<CheckBox
 			android:id="@+id/check_instance_1"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"

@@ -1,5 +1,6 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -44,19 +45,23 @@ public class CheckpointViewModel extends AndroidViewModel
 {
 	private static final String LOG_TAG = "GearUp_CheckpointViewModel";
 	private static final Pattern PATTERN_TEMPLATE = Pattern.compile("##[^(##)]+##");
+	private static final int MAX_DATES = 3;
 	// service data
 	private Checkpoint model;
 	private int blockIndex;
 	private int stageIndex;
 	private int checkpointIndex;
 	private final CheckpointInterface repository;
-	// view data
-	public final ObservableBoolean showIncomplete = new ObservableBoolean();
-	public final ObservableField<DateViewModel> dateOnlyVm = new ObservableField<>();
-	public final ObservableField<DateViewModel> dateAndTextVm = new ObservableField<>();
+	// events
 	private final SingleLiveEvent<ChecklistState> nextStageEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<ChecklistState> nextBlockEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<NavigationState> navigationEvent = new SingleLiveEvent<>();
+	private boolean finalCheckpoint;
+	private int entryLayout;
+	// view data
+	public final ObservableBoolean showIncomplete = new ObservableBoolean();
+	public final List<ObservableField<DateViewModel>> dateOnlyVms;
+	public final List<ObservableField<DateViewModel>> dateAndTextVms;
 	public String title;
 	public String description;
 	public int descriptionTextColor;
@@ -76,6 +81,64 @@ public class CheckpointViewModel extends AndroidViewModel
 		super(context);
 
 		this.repository = CheckpointRepository.getInstance(context);
+
+		dateOnlyVms = new ArrayList<>(MAX_DATES);
+		dateAndTextVms = new ArrayList<>(MAX_DATES);
+	}
+
+	public void init(Context context, int blockIndex, int stageIndex, int checkpointIndex)
+	{
+		this.blockIndex = blockIndex;
+		this.stageIndex = stageIndex;
+		this.checkpointIndex = checkpointIndex;
+
+		Utils.d(LOG_TAG, "init blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
+			blockIndex, stageIndex, checkpointIndex);
+
+		UserEntriesInterface entries = new UserEntries(context);
+
+		model = repository.getCheckpoint(blockIndex, stageIndex, checkpointIndex);
+		if (model == null)
+			return;
+
+		// setup defaults
+		title = stringWithSubstitutions(model.title, entries);
+		description = model.description;
+		descriptionTextColor = ContextCompat.getColor(context, R.color.text_primary);
+
+		// url / help
+		urlText = model.getVerifiedUrlText();
+
+		switch (model.entryType)
+		{
+		case info:
+			// url only for now
+			break;
+		case field:
+			entryLayout = R.layout.layout_entry_field;
+			setupFieldEntry(entries);
+			break;
+		case checkbox:
+			entryLayout = R.layout.layout_entry_checkbox;
+			setupCheckboxAndRadioEntry(entries);
+			break;
+		case radio:
+			entryLayout = R.layout.layout_entry_radio;
+			setupCheckboxAndRadioEntry(entries);
+			break;
+		case dateOnly:
+			entryLayout = R.layout.layout_entry_date_only;
+			setupDateOnlyEntry(context, entries);
+			break;
+		case dateAndText:
+			entryLayout = R.layout.layout_entry_date_text;
+			setupDateAndTextEntry(context, entries);
+			break;
+		case route:
+		case nextstage:
+			setupRouteEntry(context);
+			break;
+		}
 	}
 
 	String stringWithSubstitutions(String original, UserEntriesInterface entries)
@@ -121,51 +184,14 @@ public class CheckpointViewModel extends AndroidViewModel
 		return original;
 	}
 
-	public void start(Context context, int blockIndex, int stageIndex, int checkpointIndex)
+	public boolean isFinalCheckpoint()
 	{
-		this.blockIndex = blockIndex;
-		this.stageIndex = stageIndex;
-		this.checkpointIndex = checkpointIndex;
+		return finalCheckpoint;
+	}
 
-		Utils.d(LOG_TAG, "start blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
-			blockIndex, stageIndex, checkpointIndex);
-
-		UserEntriesInterface entries = new UserEntries(context);
-
-		model = repository.getCheckpoint(blockIndex, stageIndex, checkpointIndex);
-		if (model != null)
-		{
-			// setup defaults
-			title = stringWithSubstitutions(model.title, entries);
-			description = model.description;
-			descriptionTextColor = ContextCompat.getColor(context, R.color.text_primary);
-			// url / help
-			urlText = model.getVerifiedUrlText();
-
-			switch (model.entryType)
-			{
-			case info:
-				// url only for now
-				break;
-			case field:
-				setupFieldEntry(entries);
-				break;
-			case checkbox:
-			case radio:
-				setupCheckboxAndRadioEntry(entries);
-				break;
-			case dateOnly:
-				setupDateOnlyEntry(context, entries);
-				break;
-			case dateAndText:
-				setupDateAndTextEntry(context, entries);
-				break;
-			case route:
-			case nextstage:
-				setupRouteEntry(context);
-				break;
-			}
-		}
+	public int getEntryLayout()
+	{
+		return entryLayout;
 	}
 
 	public SingleLiveEvent<ChecklistState> getNextStageEvent()
@@ -198,7 +224,7 @@ public class CheckpointViewModel extends AndroidViewModel
 				instanceCount = size > MAX_FIELDS ? MAX_FIELDS : size;
 				instances = modelInstances.subList(0, instanceCount);
 
-				for (int i = 0; i < instances.size(); i++)
+				for (int i = 0; i < instanceCount; i++)
 				{
 					instances.get(i).textEntry.set(
 						entries.getValue(repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i)));
@@ -222,7 +248,7 @@ public class CheckpointViewModel extends AndroidViewModel
 				instanceCount = size > MAX_BUTTONS ? MAX_BUTTONS : size;
 				instances = modelInstances.subList(0, instanceCount);
 
-				for (int i = 0; i < instances.size(); i++)
+				for (int i = 0; i < instanceCount; i++)
 				{
 					instances.get(i).isChecked = (
 						entries.getValueAsBoolean(
@@ -237,16 +263,25 @@ public class CheckpointViewModel extends AndroidViewModel
 		List<Instance> modelInstances = model.instances;
 		if (modelInstances != null && !modelInstances.isEmpty())
 		{
-			// we only use the first instance for date
-			instanceCount = 1;
-			instances = modelInstances;
+			int size = modelInstances.size();
+			if (size > 0)
+			{
+				Instance instance;
 
-			Instance instance = instances.get(0);
-			String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
-			long value = entries.getValueAsLong(key);
-			Date date = value > 0 ? DateConverter.toDate(value) : null;
+				// limit instances to our maximum
+				instanceCount = size > MAX_DATES ? MAX_DATES : size;
+				instances = modelInstances.subList(0, instanceCount);
 
-			dateOnlyVm.set(DateViewModel.build(context, date, instance.getPrompt()));
+				for (int i = 0; i < instanceCount; i++)
+				{
+					instance = instances.get(i);
+					String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i) + "_date";
+					long value = entries.getValueAsLong(key);
+					Date date = value > 0 ? DateConverter.toDate(value) : null;
+
+					dateOnlyVms.add(new ObservableField<>(DateViewModel.build(context, date, instance.getPrompt())));
+				}
+			}
 		}
 	}
 
@@ -255,18 +290,27 @@ public class CheckpointViewModel extends AndroidViewModel
 		List<Instance> modelInstances = model.instances;
 		if (modelInstances != null && !modelInstances.isEmpty())
 		{
-			// we only use the first instance for date
-			instanceCount = 1;
-			instances = modelInstances;
+			int size = modelInstances.size();
+			if (size > 0)
+			{
+				Instance instance;
 
-			Instance instance = instances.get(0);
-			final String baseKey = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0);
+				// limit instances to our maximum
+				instanceCount = size > MAX_DATES ? MAX_DATES : size;
+				instances = modelInstances.subList(0, instanceCount);
 
-			long value = entries.getValueAsLong(baseKey + "_date");
-			Date date = value > 0 ? DateConverter.toDate(value) : null;
-			dateAndTextVm.set(DateViewModel.build(context, date, instance.getPrompt()));
+				for (int i = 0; i < instanceCount; i++)
+				{
+					instance = instances.get(i);
+					final String baseKey = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i);
 
-			instance.textEntry.set(entries.getValue(baseKey + "_text"));
+					long value = entries.getValueAsLong(baseKey + "_date");
+					Date date = value > 0 ? DateConverter.toDate(value) : null;
+					dateAndTextVms.add(new ObservableField<>(DateViewModel.build(context, date, instance.getPrompt())));
+
+					instance.textEntry.set(entries.getValue(baseKey + "_text"));
+				}
+			}
 		}
 	}
 
@@ -294,9 +338,8 @@ public class CheckpointViewModel extends AndroidViewModel
 		// don't show button if route CP for the last block
 		showNextText = (!EntryType.route.equals(model.entryType) || !lastBlock);
 
-		// and clear the description
-		if (EntryType.route.equals(model.entryType) && lastBlock)
-			description = null;
+		// and set the flag specially for final block / stage / checkpoint
+		finalCheckpoint = (EntryType.route == model.entryType && lastBlock);
 	}
 
 	public boolean showInstance(int instance)
@@ -351,9 +394,27 @@ public class CheckpointViewModel extends AndroidViewModel
 			return allFilled;
 		}
 		case dateOnly:
-			return dateOnlyVm.get().hasSelectedDate();
+		{
+			boolean allFilled = true;
+			for (int i = 0; i < instanceCount; i++)
+			{
+				allFilled = dateOnlyVms.get(i).get().hasSelectedDate();
+				if (!allFilled)
+					break;
+			}
+			return allFilled;
+		}
 		case dateAndText:
-			return dateAndTextVm.get().hasSelectedDate() && !TextUtils.isEmpty(instances.get(0).textEntry.get());
+		{
+			boolean allFilled = true;
+			for (int i = 0; i < instanceCount; i++)
+			{
+				allFilled = dateAndTextVms.get(i).get().hasSelectedDate() && !TextUtils.isEmpty(instances.get(i).textEntry.get());
+				if (!allFilled)
+					break;
+			}
+			return allFilled;
+		}
 		}
 
 		return true;
@@ -415,7 +476,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			{
 				if (instances != null)
 				{
-					for (int i = 0; i < instances.size(); i++)
+					for (int i = 0; i < instanceCount; i++)
 					{
 						entries.setValue(
 							repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i),
@@ -429,7 +490,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			{
 				if (instances != null)
 				{
-					for (int i = 0; i < instances.size(); i++)
+					for (int i = 0; i < instanceCount; i++)
 					{
 						entries.setValue(
 							repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i),
@@ -440,33 +501,39 @@ public class CheckpointViewModel extends AndroidViewModel
 			}
 			case dateOnly:
 			{
-				if (instances != null && !instances.isEmpty())
+				if (instances != null)
 				{
-					DateViewModel vm = dateOnlyVm.get();
-					if (vm != null && vm.isDirty())
+					for (int i = 0; i < instanceCount; i++)
 					{
-						Long date = DateConverter.toTimestamp(dateOnlyVm.get().getSelectedDate());
-						String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0) + "_date";
-						entries.setValue(key, date != null ? date : 0);
+						DateViewModel vm = dateOnlyVms.get(i).get();
+						if (vm != null && vm.isDirty())
+						{
+							Long date = DateConverter.toTimestamp(vm.getSelectedDate());
+							String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i) + "_date";
+							entries.setValue(key, date != null ? date : 0);
+						}
 					}
 				}
 				break;
 			}
 			case dateAndText:
 			{
-				if (instances != null && !instances.isEmpty())
+				if (instances != null)
 				{
-					final String baseKey = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, 0);
-					Instance instance = instances.get(0);
-
-					DateViewModel vm = dateAndTextVm.get();
-					if (vm != null && vm.isDirty())
+					for (int i = 0; i < instanceCount; i++)
 					{
-						Long date = DateConverter.toTimestamp(dateAndTextVm.get().getSelectedDate());
-						entries.setValue(baseKey + "_date", date != null ? date : 0);
-					}
+						final String baseKey = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i);
+						Instance instance = instances.get(i);
 
-					entries.setValue(baseKey + "_text", instance.textEntry.get());
+						DateViewModel vm = dateAndTextVms.get(i).get();
+						if (vm != null && vm.isDirty())
+						{
+							Long date = DateConverter.toTimestamp(vm.getSelectedDate());
+							entries.setValue(baseKey + "_date", date != null ? date : 0);
+						}
+
+						entries.setValue(baseKey + "_text", instance.textEntry.get());
+					}
 				}
 				break;
 			}
@@ -522,10 +589,30 @@ public class CheckpointViewModel extends AndroidViewModel
 		}
 	}
 
-	// workaround for android:onClick="@{(view) -> uxContent.dateAndTextVm.onChangeDate(view)}"
+	// workaround for android:onClick="@{(view) -> uxContent.getDateAndTextViewModel(i).onChangeDate(view)}"
 	// which caused dateAndTextVm to be null and using dateAndTextVm.get() works but gives compiler warning
-	public void onChangeDateAndText(View view)
+	public void onChangeDateAndText(View view, int instance)
 	{
-		dateAndTextVm.get().onChangeDate(view);
+		if (dateAndTextVms != null && instance >= 0 && instance < dateAndTextVms.size())
+		{
+			DateViewModel dateViewModel = dateAndTextVms.get(instance).get();
+			dateViewModel.onChangeDate(view);
+		}
+	}
+
+	public ObservableField<DateViewModel> getDateOnlyViewModel(int instance)
+	{
+		if (dateOnlyVms != null && instance >= 0 && instance < dateOnlyVms.size())
+			return dateOnlyVms.get(instance);
+
+		return null;
+	}
+
+	public ObservableField<DateViewModel> getDateAndTextViewModel(int instance)
+	{
+		if (dateAndTextVms != null && instance >= 0 && instance < dateAndTextVms.size())
+			return dateAndTextVms.get(instance);
+
+		return null;
 	}
 }

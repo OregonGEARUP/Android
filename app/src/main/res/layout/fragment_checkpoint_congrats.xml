@@ -1,0 +1,77 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context="org.oregongoestocollege.itsaplan.ChecklistFragment">
+
+	<data>
+
+		<import type="android.text.TextUtils" />
+
+		<import type="android.view.View" />
+
+		<import type="org.oregongoestocollege.itsaplan.data.EntryType" />
+
+		<import type="org.oregongoestocollege.itsaplan.viewmodel.DateViewModel" />
+
+		<variable
+			name="uxContent"
+			type="org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel" />
+	</data>
+
+	<FrameLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:background="@drawable/checkpoint_background_congrats">
+
+		<ScrollView
+			android:id="@+id/scroll_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent">
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:onLongClick="@{(view) -> uxContent.onShowDebug(view)}"
+				android:orientation="vertical"
+				android:paddingBottom="@dimen/activity_horizontal_margin"
+				android:paddingEnd="@dimen/activity_vertical_margin"
+				android:paddingStart="@dimen/activity_vertical_margin"
+				android:paddingTop="@dimen/activity_horizontal_margin">
+
+				<TextView
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@{uxContent.title}"
+					android:textColor="@color/white"
+					android:textSize="34sp"
+					android:visibility="@{!TextUtils.isEmpty(uxContent.title) ? View.VISIBLE : View.GONE, default=gone}"
+					tools:text="Optional Title"
+					tools:visibility="visible" />
+
+				<ImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:scaleType="fitCenter"
+					android:src="@mipmap/congrats" />
+
+				<ImageView
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:layout_gravity="right"
+					android:scaleType="fitCenter"
+					android:src="@mipmap/firework_multi" />
+			</LinearLayout>
+
+		</ScrollView>
+
+		<Button
+			style="@style/GearUpButtonBorderless"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_horizontal|bottom"
+			android:onClick="@{() -> uxContent.onUrlClick()}"
+			android:text="@{uxContent.urlText}"
+			android:visibility="@{uxContent.urlText != null ? View.VISIBLE : View.GONE, default=gone}"
+			tools:text="Get more information"
+			tools:visibility="visible" />
+	</FrameLayout>
+</layout>
