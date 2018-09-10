@@ -158,4 +158,9 @@ public class College
 	{
 		this.applicationDone = applicationDone;
 	}
+
+	public boolean hasApplicationDate()
+	{
+		return applicationDate != null && applicationDate.getTime() > 0;
+	}
 }

@@ -2,7 +2,6 @@ package org.oregongoestocollege.itsaplan;
 
 import java.util.List;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.Scholarship;
 import org.oregongoestocollege.itsaplan.databinding.FragmentMyPlanScholarshipsBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
@@ -65,36 +63,41 @@ public class MyPlanScholarshipsFragment extends Fragment
 
 		// observe live data
 		viewModel.getAllScholarships().removeObservers(this);
-		viewModel.getAllScholarships().observe(this, new Observer<List<Scholarship>>()
+		viewModel.getAllScholarships().observe(this, scholarships ->
 		{
-			@Override
-			public void onChanged(@Nullable List<Scholarship> scholarships)
+			if (scholarships != null)
 			{
-				Utils.d(LOG_TAG, String.format("All scholarhips changed hasData:%s",
-					scholarships != null ? "true" : "false"));
-
-				if (scholarships != null)
+				if (scholarships.isEmpty())
 				{
-					if (scholarships.isEmpty())
-					{
-						// keep the loading indicator while we insert the first entry
-						// will get another onChanged() when insert is complete
-						viewModel.insertFirstScholarship(getContext());
-					}
-					else
-					{
-						binding.setIsLoading(false);
+					Utils.d(LOG_TAG, "All scholarships changed - inserting first scholarhip");
 
-						List<BindingItem> items = viewModel.getItems(scholarships);
-						if (adapter.getItemCount() != 0)
-							adapter.clear();
-						adapter.addAll(items);
-					}
+					// keep the loading indicator while we insert the first entry
+					// will get another onChanged() when insert is complete
+					viewModel.insertFirstScholarship(getContext());
+				}
+				else if (viewModel.checkFirstScholarship(getContext(), scholarships))
+				{
+					// keep loading indicator while we update the first entry with user entered
+					// data. will get another onChanged() when update is complete
+					Utils.d(LOG_TAG, "All scholarships changed - updating first scholarhip");
 				}
 				else
 				{
-					binding.setIsLoading(true);
+					Utils.d(LOG_TAG, "All scholarships changed - displaying scholarships");
+
+					binding.setIsLoading(false);
+
+					List<BindingItem> items = viewModel.getItems(scholarships);
+					if (adapter.getItemCount() != 0)
+						adapter.clear();
+					adapter.addAll(items);
 				}
+			}
+			else
+			{
+				Utils.d(LOG_TAG, "All scholarships changed - loading scholarships");
+
+				binding.setIsLoading(true);
 			}
 		});
 

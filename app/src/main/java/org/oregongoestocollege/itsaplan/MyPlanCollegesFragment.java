@@ -2,7 +2,6 @@ package org.oregongoestocollege.itsaplan;
 
 import java.util.List;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.College;
 import org.oregongoestocollege.itsaplan.databinding.FragmentMyPlanCollegesBinding;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 import org.oregongoestocollege.itsaplan.support.BindingItemsAdapter;
@@ -66,36 +64,41 @@ public class MyPlanCollegesFragment extends Fragment
 
 		// observe live data
 		viewModel.getAllColleges().removeObservers(this);
-		viewModel.getAllColleges().observe(this, new Observer<List<College>>()
+		viewModel.getAllColleges().observe(this, colleges ->
 		{
-			@Override
-			public void onChanged(@Nullable List<College> colleges)
+			if (colleges != null)
 			{
-				Utils.d(LOG_TAG, String.format("All colleges changed hasData:%s",
-					colleges != null ? "true" : "false"));
-
-				if (colleges != null)
+				if (colleges.isEmpty())
 				{
-					if (colleges.isEmpty())
-					{
-						// keep the loading indicator while we insert the first entry
-						// will get another onChanged() when insert is complete
-						viewModel.insertFirstCollege(getContext());
-					}
-					else
-					{
-						binding.setIsLoading(false);
+					Utils.d(LOG_TAG, "All colleges changed - inserting first college");
 
-						List<BindingItem> items = viewModel.getItems(colleges);
-						if (adapter.getItemCount() != 0)
-							adapter.clear();
-						adapter.addAll(items);
-					}
+					// keep the loading indicator while we insert the first entry
+					// will get another onChanged() when insert is complete
+					viewModel.insertFirstCollege(getContext());
+				}
+				else if (viewModel.checkFirstCollege(getContext(), colleges))
+				{
+					// keep loading indicator while we update the first entry with user entered
+					// data. will get another onChanged() when update is complete
+					Utils.d(LOG_TAG, "All colleges changed - updating first college");
 				}
 				else
 				{
-					binding.setIsLoading(true);
+					Utils.d(LOG_TAG, "All colleges changed - displaying colleges");
+
+					binding.setIsLoading(false);
+
+					List<BindingItem> items = viewModel.getItems(colleges);
+					if (adapter.getItemCount() != 0)
+						adapter.clear();
+					adapter.addAll(items);
 				}
+			}
+			else
+			{
+				Utils.d(LOG_TAG, "All colleges changed - loading colleges");
+
+				binding.setIsLoading(true);
 			}
 		});
 

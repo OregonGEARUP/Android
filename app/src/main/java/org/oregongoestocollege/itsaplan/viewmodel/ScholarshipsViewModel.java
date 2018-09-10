@@ -8,7 +8,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -20,6 +19,8 @@ import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.Scholarship;
 import org.oregongoestocollege.itsaplan.data.UserEntries;
+import org.oregongoestocollege.itsaplan.data.UserEntriesInterface;
+import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 
 /**
@@ -47,6 +48,85 @@ public class ScholarshipsViewModel extends AndroidViewModel
 			// save it to our database which will trigger a reload
 			repository.insertScholarship(name);
 		}
+	}
+
+	private boolean checkFirstScholarship(@NonNull Context context, @NonNull Scholarship scholarship)
+	{
+		UserEntriesInterface userEntries = new UserEntries(context);
+
+		boolean dirty = false;
+		String value;
+
+		if (!TextUtils.isEmpty(value = userEntries.getValue("b3citizen_s2_cp2_i1_text")))
+		{
+			if (!TextUtils.equals(scholarship.getName(), value))
+			{
+				scholarship.setName(value);
+				dirty = true;
+			}
+
+			long appDate = userEntries.getValueAsLong("b3citizen_s2_cp2_i1_date");
+			if (appDate > 0 && !scholarship.hasApplicationDate())
+			{
+				scholarship.setApplicationDate(DateConverter.toDate(appDate));
+				dirty = true;
+			}
+		}
+		else if (!TextUtils.isEmpty(value = userEntries.getValue("b3undoc_s2_cp2_i1_text")))
+		{
+			if (!TextUtils.equals(scholarship.getName(), value))
+			{
+				scholarship.setName(value);
+				dirty = true;
+			}
+
+			long appDate = userEntries.getValueAsLong("b3undoc_s2_cp2_i1_date");
+			if (appDate > 0 && !scholarship.hasApplicationDate())
+			{
+				scholarship.setApplicationDate(DateConverter.toDate(appDate));
+				dirty = true;
+			}
+		}
+		else if (!TextUtils.isEmpty(value = userEntries.getValue("b3visa_s2_cp2_i1_text")))
+		{
+			if (!TextUtils.equals(scholarship.getName(), value))
+			{
+				scholarship.setName(value);
+				dirty = true;
+			}
+
+			long appDate = userEntries.getValueAsLong("b3visa_s2_cp2_i1_date");
+			if (appDate > 0 && !scholarship.hasApplicationDate())
+			{
+				scholarship.setApplicationDate(DateConverter.toDate(appDate));
+				dirty = true;
+			}
+		}
+		else
+		{
+			value = context.getString(R.string.scholarship_1);
+			if (!TextUtils.equals(scholarship.getName(), value))
+			{
+				scholarship.setName(value);
+				dirty = true;
+			}
+		}
+
+		return dirty;
+	}
+
+	public boolean checkFirstScholarship(@Nullable Context context, List<Scholarship> scholarships)
+	{
+		if (context == null || scholarships == null || scholarships.isEmpty())
+			return false;
+
+		// if we have any user entered data that doesn't match the college data, update it
+		Scholarship scholarship = scholarships.get(0);
+		boolean dirty = checkFirstScholarship(context, scholarship);
+		if (dirty)
+			repository.update(scholarship);
+
+		return dirty;
 	}
 
 	public LiveData<List<Scholarship>> getAllScholarships()
@@ -89,19 +169,8 @@ public class ScholarshipsViewModel extends AndroidViewModel
 			.setTitle(context.getString(R.string.add_scholarship))
 			.setMessage(context.getString(R.string.add_scholarship_message))
 			.setView(addView)
-			.setPositiveButton(context.getString(R.string.add), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-					save(addView.getAddedText());
-				}
-			})
-			.setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-				}
-			})
+			.setPositiveButton(context.getString(R.string.add), (dialog, whichButton) -> save(addView.getAddedText()))
+			.setNegativeButton(context.getString(R.string.cancel), (dialog, whichButton) -> { })
 			.show();
 	}
 
@@ -119,8 +188,11 @@ public class ScholarshipsViewModel extends AndroidViewModel
 		if (context == null)
 			return;
 
-		// inserts the first college initializing with any user entered info
-		repository.insertFirstScholarship(new UserEntries(context),
-			context.getString(R.string.scholarship_1));
+		// setup the first scholarship with any user entered data
+		Scholarship scholarship = new Scholarship();
+		checkFirstScholarship(context, scholarship);
+
+		// insert the first scholarship initialized with any user entered info
+		repository.insertScholarship(scholarship);
 	}
 }

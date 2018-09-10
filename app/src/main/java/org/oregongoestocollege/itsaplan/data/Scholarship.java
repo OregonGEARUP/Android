@@ -4,7 +4,6 @@ import java.util.Date;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
 
 /**
  * Scholarship
@@ -27,7 +26,6 @@ public class Scholarship
 	private boolean testsDone;
 	private boolean applicationDone;
 
-	@NonNull
 	public int getUid()
 	{
 		return uid;
@@ -126,5 +124,10 @@ public class Scholarship
 	public void setApplicationDone(boolean applicationDone)
 	{
 		this.applicationDone = applicationDone;
+	}
+
+	public boolean hasApplicationDate()
+	{
+		return applicationDate != null && applicationDate.getTime() > 0;
 	}
 }

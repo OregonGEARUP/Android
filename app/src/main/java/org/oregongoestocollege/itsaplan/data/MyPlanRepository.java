@@ -12,7 +12,6 @@ import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.data.dao.BlockInfoDao;
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
-import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
 import org.oregongoestocollege.itsaplan.data.dao.PasswordsDao;
 import org.oregongoestocollege.itsaplan.data.dao.ResidencyDao;
 import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
@@ -341,6 +340,15 @@ public class MyPlanRepository
 	}
 
 	/**
+	 * Wrapper to insert a new college. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void insertCollege(@NonNull College college)
+	{
+		new InsertCollegeAsyncTask(collegeDao).execute(college);
+	}
+
+	/**
 	 * Wrapper to delete a college. You must call this on a non-UI thread or your app will crash.
 	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
 	 */
@@ -378,6 +386,15 @@ public class MyPlanRepository
 
 		Scholarship scholarship = new Scholarship();
 		scholarship.setName(name);
+		new InsertScholarshipAsyncTask(scholarshipDao).execute(scholarship);
+	}
+
+	/**
+	 * Wrapper to insert a new scholarship. You must call this on a non-UI thread or your app will crash.
+	 * Room ensures that you don't do any long-running operations on the main thread, blocking the UI.
+	 */
+	public void insertScholarship(@NonNull Scholarship scholarship)
+	{
 		new InsertScholarshipAsyncTask(scholarshipDao).execute(scholarship);
 	}
 
@@ -466,82 +483,6 @@ public class MyPlanRepository
 	public void deletePassword(Password password)
 	{
 		new DeletePasswordAsyncTask(passwordsDao).execute(password);
-	}
-
-	/**
-	 * Add the first college from user entered data when visiting the My Plan - college tab.
-	 */
-	public void insertFirstCollege(@NonNull UserEntriesInterface userEntries, String defaultName)
-	{
-		// determine what college name was entered in the checkpoint
-		String value = userEntries.getValue("b2_s3_cp2_i1_text");
-		if (TextUtils.isEmpty(value))
-			value = defaultName;
-
-		College college = new College();
-		college.setName(value);
-
-		// fill in any missing pieces of the first college from the checkpoints
-		long appDate = userEntries.getValueAsLong("b2_s3_cp2_i1_date");
-		if (appDate > 0)
-			college.setApplicationDate(DateConverter.toDate(appDate));
-
-		value = userEntries.getValue("b3citizen_s1_cp3_i1");
-		if (!TextUtils.isEmpty(value))
-			college.setAverageNetPrice(value);
-		else
-		{
-			value = userEntries.getValue("b3undoc_s1_cp3_i1");
-			if (!TextUtils.isEmpty(value))
-				college.setAverageNetPrice(value);
-			else
-			{
-				value = userEntries.getValue("b3visa_s1_cp3_i1");
-				if (TextUtils.isEmpty(value))
-					college.setAverageNetPrice(value);
-			}
-		}
-
-		new InsertCollegeAsyncTask(collegeDao).execute(college);
-	}
-
-	/**
-	 * Add the first scholarship from user entered data when visiting the My Plan - scholarship tab.
-	 */
-	public void insertFirstScholarship(@NonNull UserEntriesInterface userEntries, String defaultName)
-	{
-		String value;
-
-		Scholarship scholarship = new Scholarship();
-
-		if (!TextUtils.isEmpty(value = userEntries.getValue("b3citizen_s2_cp2_i1_text")))
-		{
-			scholarship.setName(value);
-
-			long appDate = userEntries.getValueAsLong("b3citizen_s2_cp2_i1_date");
-			if (appDate > 0)
-				scholarship.setApplicationDate(DateConverter.toDate(appDate));
-		}
-		else if (!TextUtils.isEmpty(value = userEntries.getValue("b3undoc_s2_cp2_i1_text")))
-		{
-			scholarship.setName(value);
-
-			long appDate = userEntries.getValueAsLong("b3undoc_s2_cp2_i1_date");
-			if (appDate > 0)
-				scholarship.setApplicationDate(DateConverter.toDate(appDate));
-		}
-		else if (!TextUtils.isEmpty(value = userEntries.getValue("b3visa_s2_cp2_i1_text")))
-		{
-			scholarship.setName(value);
-
-			long appDate = userEntries.getValueAsLong("b3visa_s2_cp2_i1_date");
-			if (appDate > 0)
-				scholarship.setApplicationDate(DateConverter.toDate(appDate));
-		}
-		else
-			scholarship.setName(defaultName);
-
-		new InsertScholarshipAsyncTask(scholarshipDao).execute(scholarship);
 	}
 
 	/**

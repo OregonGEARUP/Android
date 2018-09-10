@@ -8,7 +8,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -21,6 +20,8 @@ import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.data.College;
 import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.UserEntries;
+import org.oregongoestocollege.itsaplan.data.UserEntriesInterface;
+import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
 
 /**
@@ -31,10 +32,10 @@ public class CollegesViewModel extends AndroidViewModel
 {
 	// debug
 	private static int count = 0;
-	private int mycount;
+	private final int mycount;
 	// data
-	private MyPlanRepository repository;
-	private LiveData<List<College>> allColleges;
+	private final MyPlanRepository repository;
+	private final LiveData<List<College>> allColleges;
 	private List<CollegeViewModel> allViewModels;
 
 	public CollegesViewModel(@NonNull Application application)
@@ -61,6 +62,69 @@ public class CollegesViewModel extends AndroidViewModel
 			// save it to our database which will trigger a reload
 			repository.insertCollege(name);
 		}
+	}
+
+	private boolean checkFirstCollege(@NonNull Context context, @NonNull College college)
+	{
+		UserEntriesInterface userEntries = new UserEntries(context);
+
+		boolean dirty = false;
+
+		// determine what college name was entered in the checkpoint
+		String value = userEntries.getValue("b2_s3_cp2_i1_text");
+		if (TextUtils.isEmpty(value))
+			value = context.getString(R.string.college_1);
+
+		// fill in any missing pieces of the first college from the checkpoints
+		if (!TextUtils.equals(college.getName(), value))
+		{
+			college.setName(value);
+			dirty = true;
+		}
+
+		long appDate = userEntries.getValueAsLong("b2_s3_cp2_i1_date");
+		if (appDate > 0 && !college.hasApplicationDate())
+		{
+			college.setApplicationDate(DateConverter.toDate(appDate));
+			dirty = true;
+		}
+
+		String netPrice = college.getAverageNetPrice();
+		if (TextUtils.isEmpty(netPrice))
+		{
+			value = userEntries.getValue("b3citizen_s1_cp3_i1");
+			if (!TextUtils.isEmpty(value))
+			{
+				college.setAverageNetPrice(value);
+				dirty = true;
+			}
+			else if (!TextUtils.isEmpty(value = userEntries.getValue("b3undoc_s1_cp3_i1")))
+			{
+				college.setAverageNetPrice(value);
+				dirty = true;
+			}
+			else if (!TextUtils.isEmpty(value = userEntries.getValue("b3visa_s1_cp3_i1")))
+			{
+				college.setAverageNetPrice(value);
+				dirty = true;
+			}
+		}
+
+		return dirty;
+	}
+
+	public boolean checkFirstCollege(@Nullable Context context, List<College> colleges)
+	{
+		if (context == null || colleges == null || colleges.isEmpty())
+			return false;
+
+		// if we have any user entered data that doesn't match the college data, update it
+		College college = colleges.get(0);
+		boolean dirty = checkFirstCollege(context, college);
+		if (dirty)
+			repository.update(college);
+
+		return dirty;
 	}
 
 	public LiveData<List<College>> getAllColleges()
@@ -103,19 +167,8 @@ public class CollegesViewModel extends AndroidViewModel
 			.setTitle(context.getString(R.string.add_college))
 			.setMessage(context.getString(R.string.add_college_message))
 			.setView(addView)
-			.setPositiveButton(context.getString(R.string.add), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-					save(addView.getAddedText());
-				}
-			})
-			.setNegativeButton(context.getString(R.string.cancel), new DialogInterface.OnClickListener()
-			{
-				public void onClick(DialogInterface dialog, int whichButton)
-				{
-				}
-			})
+			.setPositiveButton(context.getString(R.string.add), (dialog, whichButton) -> save(addView.getAddedText()))
+			.setNegativeButton(context.getString(R.string.cancel), (dialog, whichButton) -> { })
 			.show();
 	}
 
@@ -133,8 +186,11 @@ public class CollegesViewModel extends AndroidViewModel
 		if (context == null)
 			return;
 
-		// inserts the first college initializing with any user entered info
-		repository.insertFirstCollege(new UserEntries(context),
-			context.getString(R.string.college_1));
+		// setup the first college with any user entered data
+		College college = new College();
+		checkFirstCollege(context, college);
+
+		// insert the first college initialized with any user entered info
+		repository.insertCollege(college);
 	}
 }
