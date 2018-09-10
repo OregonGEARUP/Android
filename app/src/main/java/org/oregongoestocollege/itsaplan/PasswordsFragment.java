@@ -30,7 +30,7 @@ import butterknife.Unbinder;
  * PasswordsFragment - handles data entry for password fields. Uses Butterknife library.
  *
  * @see "https://github.com/JakeWharton/butterknife"
- * @see "http://jakewharton.github.io/butterknife/"
+ * @see "http://jakewharton.github.io/butterknife"
  *
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
@@ -282,10 +282,29 @@ public class PasswordsFragment extends Fragment
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
+		super.onCreateOptionsMenu(menu, inflater);
+
+		menu.clear();
 		inflater.inflate(R.menu.menu_lock, menu);
 
 		if (locked)
 			menu.getItem(0).setTitle(R.string.unlock);
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu)
+	{
+		super.onPrepareOptionsMenu(menu);
+
+		MenuItem item = menu.findItem(R.id.action_toggle_lock);
+		if (item != null)
+		{
+			if (locked)
+				item.setTitle(R.string.unlock);
+			else
+				item.setTitle(R.string.lock);
+			item.setEnabled(true);
+		}
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
@@ -29,10 +30,12 @@ public class InfoFragment extends Fragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		setHasOptionsMenu(true);
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
@@ -51,6 +54,14 @@ public class InfoFragment extends Fragment
 		mWebView.loadUrl(url);
 
 		return v;
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu)
+	{
+		super.onPrepareOptionsMenu(menu);
+
+		Utils.disableMenu(menu);
 	}
 
 	/**

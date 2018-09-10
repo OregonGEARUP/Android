@@ -19,6 +19,7 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -60,6 +61,8 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		navViewModel.getCurrentState().observe(this, this::onChecklistNavStateChanged);
 
 		getChildFragmentManager().addOnBackStackChangedListener(this::onBackStackChanged);
+
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -85,6 +88,14 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 		}
 
 		return v;
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu)
+	{
+		super.onPrepareOptionsMenu(menu);
+
+		Utils.disableMenu(menu);
 	}
 
 	void onBackStackChanged()

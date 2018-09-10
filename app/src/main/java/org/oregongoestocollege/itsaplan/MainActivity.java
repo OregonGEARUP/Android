@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -105,7 +106,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		{
 			boolean showBack = (fragment instanceof OnFragmentInteractionListener) &&
 				((OnFragmentInteractionListener)fragment).canHandleBackPressed();
-			getSupportActionBar().setDisplayHomeAsUpEnabled(showBack);
+
+			ActionBar actionBar = getSupportActionBar();
+			if (actionBar != null)
+				actionBar.setDisplayHomeAsUpEnabled(showBack);
 
 			// see if we need to set our title from a child fragment
 			Utils.updateTitleOnBackStackChanged(fragment, LOG_TAG);

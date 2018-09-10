@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 /**
  * Oregon GEAR UP App
@@ -52,6 +54,22 @@ public class Utils
 			return count;
 		}
 		return count;
+	}
+
+	/**
+	 * Helpler method to disable all menu items. Used to hide menu when not used.
+	 */
+	static void disableMenu(Menu menu)
+	{
+		if (menu != null)
+		{
+			for (int i = 0; i < menu.size(); ++i)
+			{
+				MenuItem item = menu.getItem(i);
+				item.setEnabled(false);
+				item.setVisible(false);
+			}
+		}
 	}
 
 	public static void simulateNetworkDelay()

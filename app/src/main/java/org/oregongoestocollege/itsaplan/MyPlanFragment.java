@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -51,6 +52,8 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 		viewModel.getCurrentTask().observe(this, this::showTask);
 
 		getChildFragmentManager().addOnBackStackChangedListener(this::onBackStackChanged);
+
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -59,6 +62,14 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 	{
 		// Inflate the layout for this fragment
 		return inflater.inflate(R.layout.fragment_my_plan, container, false);
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu)
+	{
+		super.onPrepareOptionsMenu(menu);
+
+		Utils.disableMenu(menu);
 	}
 
 	private void showTask(String currentTask)
