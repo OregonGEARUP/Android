@@ -142,7 +142,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 					if (meetsCriteria)
 						break;
 				}
-				else
+				else if (checkpoint.entryType != null)
 				{
 					checklistStates.add(new ChecklistState(blockIndex, stageIndex, i));
 					count++;
