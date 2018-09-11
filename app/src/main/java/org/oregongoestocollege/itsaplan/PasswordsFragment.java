@@ -4,9 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.arch.lifecycle.LiveData;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v4.app.Fragment;
@@ -38,10 +37,7 @@ import butterknife.Unbinder;
 public class PasswordsFragment extends Fragment
 {
 	private static final String LOG_TAG = "GearUp_PasswordsFrag";
-
-	public static final String GEAR_UP_PREFERENCES = "gearUpSharedPreferences";
-	public static final String IS_FIRST_TIME_PASSWORDS = "passwordsIsFirstTime";
-	public static final String IS_LOCKED_ARGUMENT_KEY = "is_locked_argument_key";
+	private static final String ARGUMENT_KEY_IS_LOCKED = "is_locked_argument_key";
 
 	public static final String EDIT_SSN_KEY = "edit_ssn";
 	public static final String EDIT_SSN_1_KEY = "edit_ssn1";
@@ -64,7 +60,6 @@ public class PasswordsFragment extends Fragment
 	public static final String OSAC_USERNAME = "osac_username";
 	public static final String OSAC_PASSWORD = "osac_password";
 
-	private OnFragmentInteractionListener mListener;
 	// tracks the locked / unlocked state of the controls
 	private boolean locked = true;
 	// holds list of all views we need to show/hide text
@@ -112,13 +107,9 @@ public class PasswordsFragment extends Fragment
 	@BindView(R.id.edit_osac_password)
 	TextInputEditText editOsacPassword;
 
-
 	MyPlanRepository repository;
 	LiveData<List<Password>> allPasswords;
 
-	SharedPreferences sharedPreferences;
-
-	boolean isFirstTime;
 	// TODO
 	// setup controls in layout for all the fields
 	// validate data and perhaps use the TextInputLayout error message to show invalid fields
@@ -132,16 +123,6 @@ public class PasswordsFragment extends Fragment
 	// make sure all fields can be viewed when scrolling, with/without keyboard visible
 	// other ??
 
-	public static PasswordsFragment newInstance(boolean isLocked)
-	{
-		Bundle args = new Bundle();
-		args.putBoolean(IS_LOCKED_ARGUMENT_KEY, isLocked);
-
-		PasswordsFragment fragment = new PasswordsFragment();
-		fragment.setArguments(args);
-		return fragment;
-	}
-
 	public PasswordsFragment()
 	{
 		// Required empty public constructor
@@ -152,27 +133,19 @@ public class PasswordsFragment extends Fragment
 	{
 		super.onCreate(savedInstanceState);
 
-		// check if this is the first time coming to the password fragment
-		sharedPreferences = getActivity().getSharedPreferences(GEAR_UP_PREFERENCES, Context.MODE_PRIVATE);
-		isFirstTime = sharedPreferences.getBoolean(IS_FIRST_TIME_PASSWORDS, true);
-
-		// set the flag so in the future we know we've been here before
-		if (isFirstTime)
-			sharedPreferences.edit().putBoolean(IS_FIRST_TIME_PASSWORDS, false).apply();
-
 		// enable the action Lock/Unlock
 		setHasOptionsMenu(true);
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_passwords, container, false);
 		unbinder = ButterKnife.bind(this, view);
 
-		repository = MyPlanRepository.getInstance(getActivity());
+		repository = MyPlanRepository.getInstance(getContext());
 		allPasswords = repository.getAllPasswords();
 
 		// keep a list of all edit controls so we can show/hide values when we lock/unlock
@@ -187,7 +160,7 @@ public class PasswordsFragment extends Fragment
 			editText.setOnFocusChangeListener(focusChangeListener);
 
 		// if this is the first time we don't need to start locked
-		locked = getArguments().getBoolean(IS_LOCKED_ARGUMENT_KEY, true);
+		locked = getArguments().getBoolean(ARGUMENT_KEY_IS_LOCKED, true);
 		// Toggle editable values asks for boolean showCharacters and we only want to show characters when we are not locked
 		toggleEditableValues(!locked);
 
@@ -409,30 +382,6 @@ public class PasswordsFragment extends Fragment
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
-	public void onAttach(Context context)
-	{
-		super.onAttach(context);
-		if (context instanceof OnFragmentInteractionListener)
-		{
-			mListener = (OnFragmentInteractionListener)context;
-		}
-		else
-		{
-			throw new RuntimeException(context.toString()
-				+ " must implement OnFragmentInteractionListener");
-		}
-
-		Utils.d(LOG_TAG, "onAttach");
-	}
-
-	@Override
-	public void onDetach()
-	{
-		super.onDetach();
-		mListener = null;
-	}
-
 	private void toggleEditableValues(boolean showCharacters)
 	{
 		if (editableViews != null)
@@ -523,5 +472,15 @@ public class PasswordsFragment extends Fragment
 			if (repository != null && name != null && v instanceof TextInputEditText)
 				repository.insertPassword(name, ((TextInputEditText)v).getText().toString());
 		}
+	}
+
+	public static PasswordsFragment newInstance(boolean isLocked)
+	{
+		Bundle args = new Bundle();
+		args.putBoolean(ARGUMENT_KEY_IS_LOCKED, isLocked);
+
+		PasswordsFragment fragment = new PasswordsFragment();
+		fragment.setArguments(args);
+		return fragment;
 	}
 }

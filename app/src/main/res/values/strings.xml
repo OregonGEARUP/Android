@@ -112,10 +112,6 @@
 	<string name="employment_city">Employer City</string>
 	<string name="employment_start_date">Employment Start Date</string>
 	<string name="employment_end_date">Employment End Date</string>
-	<string name="setup_pin_message">You need to setup a PIN for accessing your passwords.</string>
-	<string name="setup_pin_button_text">Setup PIN</string>
-	<string name="set_pin">Set PIN</string>
-	<string name="enter_pin">Enter PIN</string>
 	<string name="css_title">CSS Profile</string>
 	<string name="css_username">CSS username</string>
 	<string name="css_password">CSS password</string>
@@ -130,4 +126,9 @@
 	<string name="welcome_message">Use the It\'s A Plan app regularly throughout your senior year to stay on track and store the info you need. Apply, pay and go to college by following our 10 key steps.</string>
 	<string name="welcome_confirm">Let\'s get started!</string>
 	<string name="checkpoint_incomplete">You must complete this before proceeding.</string>
+	<string name="pin_message_create">You need to setup a 4 digit PIN for accessing your passwords.</string>
+	<string name="pin_message_enter">Enter 4 digit PIN for accessing your passwords.</string>
+	<string name="pin_hint">Enter 4 digit PIN</string>
+	<string name="pin_button_create">Set PIN</string>
+	<string name="pin_error">PIN is not correct.</string>
 </resources>
