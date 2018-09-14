@@ -13,10 +13,6 @@ import android.widget.TextView;
 
 import org.oregongoestocollege.itsaplan.viewmodel.MyPlanNavViewModel;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-
 /**
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
@@ -24,17 +20,10 @@ import butterknife.Unbinder;
 public class MyPlanOptionsFragment extends Fragment implements View.OnClickListener
 {
 	private MyPlanNavViewModel viewModel;
-	// bind to views using Butterknife, need to unbind when used in Fragment
-	private Unbinder unbinder;
-	@BindView(R.id.topic_colleges)
 	TextView textViewColleges;
-	@BindView(R.id.topic_scholarships)
 	TextView textViewScholarships;
-	@BindView(R.id.topic_tests)
 	TextView textViewTests;
-	@BindView(R.id.topic_residency)
 	TextView textViewResidency;
-	@BindView(R.id.topic_calendar)
 	TextView textViewCalendar;
 
 	public MyPlanOptionsFragment()
@@ -56,7 +45,12 @@ public class MyPlanOptionsFragment extends Fragment implements View.OnClickListe
 	{
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_my_plan_options, container, false);
-		unbinder = ButterKnife.bind(this, view);
+
+		textViewColleges = view.findViewById(R.id.topic_colleges);
+		textViewScholarships = view.findViewById(R.id.topic_scholarships);
+		textViewTests = view.findViewById(R.id.topic_tests);
+		textViewResidency = view.findViewById(R.id.topic_residency);
+		textViewCalendar = view.findViewById(R.id.topic_calendar);
 
 		textViewColleges.setOnClickListener(this);
 		textViewScholarships.setOnClickListener(this);
@@ -65,13 +59,6 @@ public class MyPlanOptionsFragment extends Fragment implements View.OnClickListe
 		textViewCalendar.setOnClickListener(this);
 
 		return view;
-	}
-
-	@Override
-	public void onDestroyView()
-	{
-		super.onDestroyView();
-		unbinder.unbind();
 	}
 
 	@Override
