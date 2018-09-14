@@ -162,4 +162,12 @@
 		<item name="android:textStyle">bold</item>
 		<item name="android:textColor">@color/colorAccent</item>
 	</style>
+
+	<!-- limit the password data length since we are encrypting it -->
+	<style name="GearUpEditTextPasswords">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:maxLines">1</item>
+		<item name="android:maxLength">64</item>
+	</style>
 </resources>

@@ -45,6 +45,7 @@ import org.oregongoestocollege.itsaplan.Utils;
 /**
  * references for code
  * https://github.com/googlesamples/android-BasicAndroidKeyStore
+ * https://proandroiddev.com/secure-data-in-android-encryption-in-android-part-1-e5fd150e316f
  * https://gist.github.com/JosiasSena/3bf4ca59777f7dedcaf41a495d96d984
  * https://medium.com/@ericfu/securely-storing-secrets-in-an-android-application-501f030ae5a3
  *
@@ -95,7 +96,9 @@ public class CryptoUtil
 					.setStartDate(start.getTime())
 					.setEndDate(end.getTime())
 					.build();
-				KeyPairGenerator kpg = KeyPairGenerator.getInstance(KeyProperties.KEY_ALGORITHM_RSA, AndroidKeyStore);
+				// using KeyProperties.KEY_ALGORITHM_RSA gives warning but per all the documentation
+				// it's what we can use...
+				KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", AndroidKeyStore);
 				kpg.initialize(spec);
 				kpg.generateKeyPair();
 			}
