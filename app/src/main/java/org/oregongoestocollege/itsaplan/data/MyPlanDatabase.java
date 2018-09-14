@@ -12,7 +12,6 @@ import android.support.annotation.NonNull;
 import org.oregongoestocollege.itsaplan.data.dao.BlockInfoDao;
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
 import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
-import org.oregongoestocollege.itsaplan.data.dao.PasswordsDao;
 import org.oregongoestocollege.itsaplan.data.dao.ResidencyDao;
 import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
 import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
@@ -25,7 +24,7 @@ import org.oregongoestocollege.itsaplan.data.dao.VisitedKeyDao;
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
 @Database(entities = { College.class, Scholarship.class, TestResult.class, Residency.class,
-	Password.class, BlockInfo.class, VisitedKey.class },
+	BlockInfo.class, VisitedKey.class },
 	version = 1,
 	exportSchema = false)
 @TypeConverters(DateConverter.class)
@@ -101,8 +100,6 @@ abstract class MyPlanDatabase extends RoomDatabase
 	public abstract TestResultDao testResultDao();
 
 	public abstract ResidencyDao residencyDao();
-
-	public abstract PasswordsDao passwordsDao();
 
 	public abstract BlockInfoDao blockInfoDao();
 

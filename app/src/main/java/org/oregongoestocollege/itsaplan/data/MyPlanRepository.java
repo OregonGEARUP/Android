@@ -12,7 +12,6 @@ import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.data.dao.BlockInfoDao;
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
-import org.oregongoestocollege.itsaplan.data.dao.PasswordsDao;
 import org.oregongoestocollege.itsaplan.data.dao.ResidencyDao;
 import org.oregongoestocollege.itsaplan.data.dao.ScholarshipDao;
 import org.oregongoestocollege.itsaplan.data.dao.TestResultDao;
@@ -30,10 +29,8 @@ public class MyPlanRepository
 	private ScholarshipDao scholarshipDao;
 	private TestResultDao testResultDao;
 	private ResidencyDao residencyDao;
-	private PasswordsDao passwordsDao;
 	private LiveData<List<College>> allColleges;
 	private LiveData<List<Scholarship>> allScholarships;
-	private LiveData<List<Password>> allPasswords;
 	private LiveData<List<BlockInfo>> allBlockInfos;
 	// allow for direct access for queries performed on a background thread
 	BlockInfoDao blockInfoDao;
@@ -52,8 +49,6 @@ public class MyPlanRepository
 		allScholarships = scholarshipDao.getAll();
 		testResultDao = database.testResultDao();
 		residencyDao = database.residencyDao();
-		passwordsDao = database.passwordsDao();
-		allPasswords = passwordsDao.getAll();
 		blockInfoDao = database.blockInfoDao();
 		allBlockInfos = blockInfoDao.getAll();
 		visitedKeyDao = database.visitedKeyDao();
@@ -204,60 +199,6 @@ public class MyPlanRepository
 		protected Void doInBackground(final Residency... params)
 		{
 			mAsyncTaskDao.update(params[0]);
-			return null;
-		}
-	}
-
-	private static class InsertPasswordAsyncTask extends AsyncTask<Password, Void, Void>
-	{
-		private PasswordsDao mAsyncTaskDao;
-
-		InsertPasswordAsyncTask(PasswordsDao dao)
-		{
-			mAsyncTaskDao = dao;
-		}
-
-		@Override
-		protected Void doInBackground(Password... passwords)
-		{
-			for (Password password : passwords)
-				mAsyncTaskDao.insert(password);
-			return null;
-		}
-	}
-
-	private static class UpdatePasswordAsyncTask extends AsyncTask<Password, Void, Void>
-	{
-		private PasswordsDao mAsyncTaskDao;
-
-		UpdatePasswordAsyncTask(PasswordsDao dao)
-		{
-			mAsyncTaskDao = dao;
-		}
-
-		@Override
-		protected Void doInBackground(Password... passwords)
-		{
-			for (Password password : passwords)
-				mAsyncTaskDao.update(password);
-			return null;
-		}
-	}
-
-	private static class DeletePasswordAsyncTask extends AsyncTask<Password, Void, Void>
-	{
-		private PasswordsDao mAsyncTaskDao;
-
-		DeletePasswordAsyncTask(PasswordsDao dao)
-		{
-			mAsyncTaskDao = dao;
-		}
-
-		@Override
-		protected Void doInBackground(Password... passwords)
-		{
-			for (Password password : passwords)
-				mAsyncTaskDao.delete(password);
 			return null;
 		}
 	}
@@ -459,30 +400,6 @@ public class MyPlanRepository
 	public void update(Residency residency)
 	{
 		new UpdateResidencyAsyncTask(residencyDao).execute(residency);
-	}
-
-	public LiveData<List<Password>> getAllPasswords()
-	{
-		return allPasswords;
-	}
-
-	public void insertPassword(String name, String s)
-	{
-		if (TextUtils.isEmpty(name))
-			return;
-
-		Password password = new Password(name, s);
-		new InsertPasswordAsyncTask(passwordsDao).execute(password);
-	}
-
-	public void updatePassword(Password password)
-	{
-		new UpdatePasswordAsyncTask(passwordsDao).execute(password);
-	}
-
-	public void deletePassword(Password password)
-	{
-		new DeletePasswordAsyncTask(passwordsDao).execute(password);
 	}
 
 	/**
