@@ -53,9 +53,7 @@ import org.oregongoestocollege.itsaplan.Utils;
  */
 public class CryptoUtil
 {
-	private static final String LOG_TAG = "GearUp_EncryptThis";
-	private static final String GEAR_UP_PREFERENCES = "gearUpSharedPreferences";
-	private static final String GEAR_UP_ENCRYPTED_KEY = "gearUpCryptKey";
+	private static final String LOG_TAG = "GearUp_CryptoUtil";
 	private static final String AndroidKeyStore = "AndroidKeyStore";
 	private static final String AES_MODE = "AES/GCM/NoPadding";
 	private static final String RSA_MODE = "RSA/ECB/PKCS1Padding";
@@ -152,8 +150,8 @@ public class CryptoUtil
 		NoSuchAlgorithmException, NoSuchPaddingException,
 		NoSuchProviderException, InvalidKeyException, IOException
 	{
-		SharedPreferences pref = context.getSharedPreferences(GEAR_UP_PREFERENCES, Context.MODE_PRIVATE);
-		String encryptedKeyB64 = pref.getString(GEAR_UP_ENCRYPTED_KEY, null);
+		SharedPreferences pref = GearUpSharedPreferences.getSharedPreferences(context);
+		String encryptedKeyB64 = pref.getString(GearUpSharedPreferences.PREFS_KEY_CRYPTO, null);
 		if (encryptedKeyB64 == null)
 		{
 			byte[] key = new byte[16];
@@ -162,7 +160,7 @@ public class CryptoUtil
 			byte[] encryptedKey = rsaEncrypt(key);
 			encryptedKeyB64 = Base64.encodeToString(encryptedKey, Base64.DEFAULT);
 			SharedPreferences.Editor edit = pref.edit();
-			edit.putString(GEAR_UP_ENCRYPTED_KEY, encryptedKeyB64);
+			edit.putString(GearUpSharedPreferences.PREFS_KEY_CRYPTO, encryptedKeyB64);
 			edit.apply();
 		}
 		return encryptedKeyB64;
@@ -183,7 +181,7 @@ public class CryptoUtil
 		{
 			String encryptedKeyB64 = getEncryptedKey(context);
 
-			// need to check null, omitted here
+			// TODO need to check null
 			byte[] encryptedKey = Base64.decode(encryptedKeyB64, Base64.DEFAULT);
 			byte[] key = rsaDecrypt(encryptedKey);
 			return new SecretKeySpec(key, "AES");

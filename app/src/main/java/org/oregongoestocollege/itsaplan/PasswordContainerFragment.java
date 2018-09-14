@@ -1,7 +1,5 @@
 package org.oregongoestocollege.itsaplan;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,21 +8,44 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.oregongoestocollege.itsaplan.support.GearUpSharedPreferences;
+
 /**
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-public class PasswordContainerFragment extends Fragment implements PasswordPinFragment.PasswordPinListener
+public class PasswordContainerFragment extends BaseFragment
+	implements OnFragmentInteractionListener, PasswordPinFragment.PasswordPinListener
 {
-	public static final String GEAR_UP_PREFERENCES = "gearUpSharedPreferences";
-	public static final String PIN_PREFERENCES_KEY = "passwords_pin";
+	private static final String LOG_TAG = "GearUp_PasswordContainerFrag";
 	private static final String FRAG_PASSWORD_PIN = "frag-pwd-pin";
-	private SharedPreferences sharedPreferences;
-	private boolean hasPinSet;
+	private boolean isPinCreated;
 
 	public PasswordContainerFragment()
 	{
 		// Required empty public constructor
+	}
+
+	private void showPasswordPin(boolean createPin)
+	{
+		PasswordPinFragment fragment = PasswordPinFragment.newInstance(createPin);
+		fragment.setCallback(this);
+
+		getChildFragmentManager().beginTransaction()
+			.replace(R.id.frame, fragment, FRAG_PASSWORD_PIN).commit();
+
+		// only show the back button when entering PIN (not create!)
+		setHomeAsUpEnabled(!createPin);
+	}
+
+	private void showPasswords(boolean lock)
+	{
+		Fragment fragment = PasswordsFragment.newInstance(lock);
+
+		getChildFragmentManager().beginTransaction()
+			.replace(R.id.frame, fragment).commit();
+
+		setHomeAsUpEnabled(false);
 	}
 
 	@Nullable
@@ -34,30 +55,28 @@ public class PasswordContainerFragment extends Fragment implements PasswordPinFr
 	{
 		View v = inflater.inflate(R.layout.fragment_password_container, container, false);
 
-		sharedPreferences = getContext().getSharedPreferences(GEAR_UP_PREFERENCES, Context.MODE_PRIVATE);
-		hasPinSet = sharedPreferences.getString(PIN_PREFERENCES_KEY, null) != null;
+		isPinCreated = GearUpSharedPreferences.isPasswordsPinCreated(getContext());
 
 		// we only need to create the fragments if there is no instance state
 		if (savedInstanceState == null)
 		{
-			Fragment fragment;
-
-			if (hasPinSet)
-				fragment = PasswordsFragment.newInstance(true);
+			if (isPinCreated)
+				showPasswords(true);
 			else
-			{
-				PasswordPinFragment passwordPinFragment = PasswordPinFragment.newInstance(true);
-				passwordPinFragment.setCallback(this);
-				fragment = passwordPinFragment;
-			}
-
-			getChildFragmentManager().beginTransaction().add(R.id.frame, fragment, FRAG_PASSWORD_PIN).commit();
+				showPasswordPin(true);
 		}
 		else
 		{
 			Fragment fragment = getChildFragmentManager().findFragmentByTag(FRAG_PASSWORD_PIN);
 			if (fragment instanceof PasswordPinFragment)
-				((PasswordPinFragment)fragment).setCallback(this);
+			{
+				// hookup the callback again
+				PasswordPinFragment passwordPinFragment = (PasswordPinFragment)fragment;
+				passwordPinFragment.setCallback(this);
+				setHomeAsUpEnabled(!passwordPinFragment.isModeCreate());
+			}
+			else
+				setHomeAsUpEnabled(false);
 		}
 
 		return v;
@@ -70,30 +89,53 @@ public class PasswordContainerFragment extends Fragment implements PasswordPinFr
 	}
 
 	@Override
-	public void onPinCreated(String pin)
+	public boolean handleBackPressed()
 	{
-		// We should only get here from inside the PasswordPinFragment.
-		sharedPreferences.edit().putString(PIN_PREFERENCES_KEY, pin).apply();
+		Utils.d(LOG_TAG, "handleBackPressed");
 
-		Fragment fragment = PasswordsFragment.newInstance(false);
+		Fragment fragment = getChildFragmentManager().findFragmentByTag(FRAG_PASSWORD_PIN);
+		if (fragment instanceof PasswordPinFragment && !((PasswordPinFragment)fragment).isModeCreate())
+		{
+			// show passwords again but keep it locked since user did not enter pin
+			showPasswords(true);
+			return true;
+		}
 
-		getChildFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.frame, fragment).commit();
+		return false;
+	}
+
+	@Override
+	public boolean canHandleBackPressed()
+	{
+		Utils.d(LOG_TAG, "canHandleBackPressed");
+
+		Fragment fragment = getChildFragmentManager().findFragmentByTag(FRAG_PASSWORD_PIN);
+		if (fragment instanceof PasswordPinFragment)
+			return !((PasswordPinFragment)fragment).isModeCreate();
+
+		return false;
+	}
+
+	@Override
+	public void onPinCreated()
+	{
+		// We should only get here from inside the PasswordPinFragment which has already
+		// stored the newly created PIN
+		isPinCreated = true;
+
+		// we just created the pin, show the PasswordsFragment unlocked
+		showPasswords(false);
 	}
 
 	@Override
 	public void onPinEntered()
 	{
-		// We've correctly entered our pin, unlock entries in PasswordsFragment
-		Fragment fragment = PasswordsFragment.newInstance(false);
-
-		getChildFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.frame, fragment).commit();
+		// we correctly entered our pin, show the PasswordsFragment unlocked
+		showPasswords(false);
 	}
 
 	public void launchUnlockFragment()
 	{
-		PasswordPinFragment fragment = PasswordPinFragment.newInstance(false);
-		fragment.setCallback(this);
-
-		getChildFragmentManager().beginTransaction().replace(R.id.frame, fragment).commit();
+		showPasswordPin(false);
 	}
 }

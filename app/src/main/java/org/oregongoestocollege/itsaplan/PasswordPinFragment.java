@@ -1,7 +1,6 @@
 package org.oregongoestocollege.itsaplan;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.oregongoestocollege.itsaplan.support.GearUpSharedPreferences;
+
 /**
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
@@ -26,7 +27,7 @@ public class PasswordPinFragment extends Fragment implements View.OnClickListene
 
 	public interface PasswordPinListener
 	{
-		void onPinCreated(String pin);
+		void onPinCreated();
 
 		void onPinEntered();
 	}
@@ -47,7 +48,7 @@ public class PasswordPinFragment extends Fragment implements View.OnClickListene
 	{
 		View v = inflater.inflate(R.layout.fragment_password_pin, container, false);
 
-		// determine our mode
+		// determine our mode, should never be null
 		modeCreate = getArguments().getBoolean(ARG_PIN_MODE_CREATE);
 
 		return v;
@@ -80,8 +81,14 @@ public class PasswordPinFragment extends Fragment implements View.OnClickListene
 	@Override
 	public void onClick(View view)
 	{
-		if (modeCreate && callback != null)
-			callback.onPinCreated(pinEditText.getText().toString());
+		if (modeCreate)
+		{
+			String pin = pinEditText.getText().toString();
+			GearUpSharedPreferences.putPasswordsPin(getContext(), pin);
+
+			if (callback != null)
+				callback.onPinCreated();
+		}
 	}
 
 	@Override
@@ -107,10 +114,7 @@ public class PasswordPinFragment extends Fragment implements View.OnClickListene
 		{
 			if (s.length() == 4)
 			{
-				SharedPreferences preferences =
-					getContext().getSharedPreferences(PasswordContainerFragment.GEAR_UP_PREFERENCES,
-						Context.MODE_PRIVATE);
-				String storedPin = preferences.getString(PasswordContainerFragment.PIN_PREFERENCES_KEY, null);
+				String storedPin = GearUpSharedPreferences.getPasswordsPin(getContext());
 
 				if (pinEditText.getText().toString().equals(storedPin))
 				{
@@ -137,6 +141,11 @@ public class PasswordPinFragment extends Fragment implements View.OnClickListene
 	public void setCallback(PasswordPinListener callback)
 	{
 		this.callback = callback;
+	}
+
+	public boolean isModeCreate()
+	{
+		return modeCreate;
 	}
 
 	public static PasswordPinFragment newInstance(boolean createPin)

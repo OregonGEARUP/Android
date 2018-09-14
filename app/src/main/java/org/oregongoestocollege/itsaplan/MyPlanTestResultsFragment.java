@@ -58,8 +58,8 @@ public class MyPlanTestResultsFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable TestResult testResult)
 			{
-				Utils.d(LOG_TAG, String.format("ACT TestResult changed hasData:%s",
-					testResult != null ? "true" : "false"));
+				Utils.d(LOG_TAG, "ACT TestResult changed hasData:%s",
+					testResult != null ? "true" : "false");
 
 				// could add progress - when loading can start out null followed quickly by non-null
 				if (testResult != null)
@@ -74,8 +74,8 @@ public class MyPlanTestResultsFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable TestResult testResult)
 			{
-				Utils.d(LOG_TAG, String.format("SAT TestResult changed hasData:%s",
-					testResult != null ? "true" : "false"));
+				Utils.d(LOG_TAG, "SAT TestResult changed hasData:%s",
+					testResult != null ? "true" : "false");
 
 				// could add progress - when loading can start out null followed quickly by non-null
 				if (testResult != null)

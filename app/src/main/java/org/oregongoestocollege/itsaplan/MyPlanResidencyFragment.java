@@ -60,8 +60,7 @@ public class MyPlanResidencyFragment extends Fragment
 			@Override
 			public void onChanged(@Nullable Residency residency)
 			{
-				Utils.d(LOG_TAG, String.format("Residency changed hasData:%s",
-					residency != null ? "true" : "false"));
+				Utils.d(LOG_TAG, "Residency changed hasData:%s", residency != null ? "true" : "false");
 
 				// could add progress - when loading can start out null followed quickly by non-null
 				if (residency != null)

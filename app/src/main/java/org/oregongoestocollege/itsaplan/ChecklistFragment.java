@@ -9,12 +9,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.TextAppearanceSpan;
@@ -35,7 +31,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.ChecklistNavViewModel;
  * Oregon GEAR UP App
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class ChecklistFragment extends Fragment implements OnFragmentInteractionListener
+public class ChecklistFragment extends BaseFragment implements OnFragmentInteractionListener
 {
 	private static final String LOG_TAG = "GearUp_ChecklistFrag";
 	private static final String FRAG_OVERVIEW = "frag-overview";
@@ -133,17 +129,6 @@ public class ChecklistFragment extends Fragment implements OnFragmentInteraction
 			Utils.d(LOG_TAG, "onChecklistNavStateChanged Overview");
 
 			showOverview();
-		}
-	}
-
-	private void setHomeAsUpEnabled(boolean enabled)
-	{
-		FragmentActivity activity = getActivity();
-		if (activity != null)
-		{
-			ActionBar actionBar = ((AppCompatActivity)activity).getSupportActionBar();
-			if (actionBar != null)
-				actionBar.setDisplayHomeAsUpEnabled(enabled);
 		}
 	}
 

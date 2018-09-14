@@ -57,7 +57,7 @@ public class Utils
 	}
 
 	/**
-	 * Helpler method to disable all menu items. Used to hide menu when not used.
+	 * Helper method to disable all menu items. Used to hide menu when not used.
 	 */
 	static void disableMenu(Menu menu)
 	{

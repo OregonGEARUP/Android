@@ -550,7 +550,7 @@ public class CheckpointRepository implements CheckpointInterface
 		String key = keyForBlockIndex(stageIndex, checkpointIndex);
 
 		if (Utils.DEBUG)
-			Utils.d(LOG_TAG, String.format("visited %s", key));
+			Utils.d(LOG_TAG, "visited %s", key);
 
 		visited.add(key);
 	}

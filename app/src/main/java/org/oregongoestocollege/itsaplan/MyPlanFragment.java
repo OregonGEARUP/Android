@@ -6,11 +6,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -25,7 +22,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.MyPlanNavViewModel;
  *
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class MyPlanFragment extends Fragment implements OnFragmentInteractionListener
+public class MyPlanFragment extends BaseFragment implements OnFragmentInteractionListener
 {
 	private static final String LOG_TAG = "GearUp_MyPlanFrag";
 	private MyPlanNavViewModel viewModel;
@@ -155,17 +152,6 @@ public class MyPlanFragment extends Fragment implements OnFragmentInteractionLis
 			setHomeAsUpEnabled(false);
 
 			Utils.d(LOG_TAG, "showTask pop backstack");
-		}
-	}
-
-	private void setHomeAsUpEnabled(boolean enabled)
-	{
-		FragmentActivity activity = getActivity();
-		if (activity != null)
-		{
-			ActionBar actionBar = ((AppCompatActivity)activity).getSupportActionBar();
-			if (actionBar != null)
-				actionBar.setDisplayHomeAsUpEnabled(enabled);
 		}
 	}
 
