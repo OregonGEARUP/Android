@@ -89,10 +89,11 @@ public class Utils
 	/**
 	 * Set to true ONLY when developing. Using flag versus Log.isLoggable().
 	 */
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 	public static void d(String tag, String format, Object... args)
 	{
-		Log.d(tag, String.format(format, args));
+		if (DEBUG)
+			Log.d(tag, String.format(format, args));
 	}
 }

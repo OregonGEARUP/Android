@@ -3,9 +3,11 @@ package org.oregongoestocollege.itsaplan.viewmodel;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.arch.lifecycle.ViewModel;
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.text.method.TransformationMethod;
@@ -17,7 +19,7 @@ import org.oregongoestocollege.itsaplan.support.GearUpSharedPreferences;
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-public class PasswordsViewModel extends ViewModel
+public class PasswordsViewModel extends AndroidViewModel
 {
 	private static final String EDIT_SSN_KEY = "edit_ssn";
 	private static final String EDIT_SSN_1_KEY = "edit_ssn1";
@@ -43,8 +45,10 @@ public class PasswordsViewModel extends ViewModel
 	private CryptoUtil cryptoUtil;
 	private Map<String, SecureInfoViewModel> secureInfoMap;
 
-	public PasswordsViewModel()
+	public PasswordsViewModel(@NonNull Application application)
 	{
+		super(application);
+
 		cryptoUtil = new CryptoUtil();
 	}
 
@@ -68,40 +72,40 @@ public class PasswordsViewModel extends ViewModel
 		}
 	}
 
-	private void addToMap(Context context, String key)
+	private void addToMap(String key)
 	{
 		secureInfoMap.put(key,
-			new SecureInfoViewModel(key, cryptoUtil.safeDecrypt(context, prefs.getString(key, null))));
+			new SecureInfoViewModel(key, cryptoUtil.safeDecrypt(getApplication(), prefs.getString(key, null))));
 	}
 
-	public void init(Context context, boolean locked)
+	public void init(boolean locked)
 	{
 		// only need to initialize the item view models once
 		if (secureInfoMap == null)
 		{
-			prefs = GearUpSharedPreferences.getSharedPreferences(context);
+			prefs = GearUpSharedPreferences.getSharedPreferences(getApplication());
 			secureInfoMap = new HashMap<>(25);
 
-			addToMap(context, EDIT_SSN_KEY);
-			addToMap(context, EDIT_SSN_1_KEY);
-			addToMap(context, EDIT_SSN_2_KEY);
-			addToMap(context, EDIT_DRIVER_LIC_KEY);
-			addToMap(context, FSA_USERNAME_KEY);
-			addToMap(context, FSA_PASSWORD_KEY);
-			addToMap(context, APPLICATION_EMAIL_KEY);
-			addToMap(context, APPLICATION_PASSWORD_KEY);
-			addToMap(context, ORSAA_USERNAME_KEY);
-			addToMap(context, ORSAA_PASSWORD_KEY);
-			addToMap(context, CSS_USERNAME_KEY);
-			addToMap(context, CSS_PASSWORD_KEY);
-			addToMap(context, EXTRA_LOGIN_1_ORGANIZATION);
-			addToMap(context, EXTRA_LOGIN_1_USERNAME);
-			addToMap(context, EXTRA_LOGIN_1_PASSWORD);
-			addToMap(context, EXTRA_LOGIN_2_ORGANIZATION);
-			addToMap(context, EXTRA_LOGIN_2_USERNAME);
-			addToMap(context, EXTRA_LOGIN_2_PASSWORD);
-			addToMap(context, OSAC_USERNAME);
-			addToMap(context, OSAC_PASSWORD);
+			addToMap(EDIT_SSN_KEY);
+			addToMap(EDIT_SSN_1_KEY);
+			addToMap(EDIT_SSN_2_KEY);
+			addToMap(EDIT_DRIVER_LIC_KEY);
+			addToMap(FSA_USERNAME_KEY);
+			addToMap(FSA_PASSWORD_KEY);
+			addToMap(APPLICATION_EMAIL_KEY);
+			addToMap(APPLICATION_PASSWORD_KEY);
+			addToMap(ORSAA_USERNAME_KEY);
+			addToMap(ORSAA_PASSWORD_KEY);
+			addToMap(CSS_USERNAME_KEY);
+			addToMap(CSS_PASSWORD_KEY);
+			addToMap(EXTRA_LOGIN_1_ORGANIZATION);
+			addToMap(EXTRA_LOGIN_1_USERNAME);
+			addToMap(EXTRA_LOGIN_1_PASSWORD);
+			addToMap(EXTRA_LOGIN_2_ORGANIZATION);
+			addToMap(EXTRA_LOGIN_2_USERNAME);
+			addToMap(EXTRA_LOGIN_2_PASSWORD);
+			addToMap(OSAC_USERNAME);
+			addToMap(OSAC_PASSWORD);
 		}
 
 		// then make sure our state is in sync
@@ -114,10 +118,12 @@ public class PasswordsViewModel extends ViewModel
 			lockItemViewModels(true);
 	}
 
-	public void save(Context context)
+	public void save()
 	{
 		if (secureInfoMap != null)
 		{
+			Context context = getApplication();
+
 			final SharedPreferences prefs = GearUpSharedPreferences.getSharedPreferences(context);
 			final SharedPreferences.Editor editor = prefs.edit();
 			boolean dirty = false;

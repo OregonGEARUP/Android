@@ -72,7 +72,7 @@ public class PasswordsFragment extends Fragment
 		locked = bundle == null || bundle.getBoolean(ARGUMENT_KEY_IS_LOCKED, true);
 
 		viewModel = ViewModelProviders.of(getParentFragment()).get(PasswordsViewModel.class);
-		viewModel.init(getContext(), locked);
+		viewModel.init(locked);
 
 		// bind to fragment
 		binding.setUxContext(viewModel);
@@ -122,7 +122,7 @@ public class PasswordsFragment extends Fragment
 				// 'lock' so we hide our values
 				locked = true;
 				viewModel.lockSecureInfo();
-				viewModel.save(getContext());
+				viewModel.save();
 			}
 
 			// force update of our menu
