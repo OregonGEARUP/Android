@@ -18,6 +18,8 @@ public interface OnFragmentInteractionListener
 {
 	default void onNavigate(int index, @Nullable String option) { }
 
+	default void handleTabChanged(boolean hidden) { }
+
 	boolean handleBackPressed();
 
 	boolean canHandleBackPressed();

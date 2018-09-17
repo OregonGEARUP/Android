@@ -12,6 +12,7 @@ import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.text.method.TransformationMethod;
 
+import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.support.CryptoUtil;
 import org.oregongoestocollege.itsaplan.support.GearUpSharedPreferences;
 
@@ -21,6 +22,7 @@ import org.oregongoestocollege.itsaplan.support.GearUpSharedPreferences;
  */
 public class PasswordsViewModel extends AndroidViewModel
 {
+	private static final String LOG_TAG = "GearUp_PasswordsViewModel";
 	private static final String EDIT_SSN_KEY = "edit_ssn";
 	private static final String EDIT_SSN_1_KEY = "edit_ssn1";
 	private static final String EDIT_SSN_2_KEY = "edit_ssn2";
@@ -44,6 +46,7 @@ public class PasswordsViewModel extends AndroidViewModel
 	private SharedPreferences prefs;
 	private CryptoUtil cryptoUtil;
 	private Map<String, SecureInfoViewModel> secureInfoMap;
+	private boolean isLocked;
 
 	public PasswordsViewModel(@NonNull Application application)
 	{
@@ -54,22 +57,20 @@ public class PasswordsViewModel extends AndroidViewModel
 
 	private void lockItemViewModels(boolean locked)
 	{
-		TransformationMethod transformationMethod = new PasswordTransformationMethod();
+		// remember our current state
+		isLocked = locked;
+
+		TransformationMethod transformationMethod = locked ? new PasswordTransformationMethod() : null;
+		boolean enabled = !locked;
 
 		for (Map.Entry<String, SecureInfoViewModel> e : secureInfoMap.entrySet())
 		{
 			SecureInfoViewModel viewModel = e.getValue();
-			if (locked)
-			{
-				viewModel.transformation.set(transformationMethod);
-				viewModel.isEnabled.set(false);
-			}
-			else
-			{
-				viewModel.transformation.set(null);
-				viewModel.isEnabled.set(true);
-			}
+			viewModel.transformation.set(transformationMethod);
+			viewModel.isEnabled.set(enabled);
 		}
+
+		Utils.d(LOG_TAG, "lockItemViewModels locked:%s", isLocked);
 	}
 
 	private void addToMap(String key)
@@ -78,7 +79,7 @@ public class PasswordsViewModel extends AndroidViewModel
 			new SecureInfoViewModel(key, cryptoUtil.safeDecrypt(getApplication(), prefs.getString(key, null))));
 	}
 
-	public void init(boolean locked)
+	public void init()
 	{
 		// only need to initialize the item view models once
 		if (secureInfoMap == null)
@@ -106,19 +107,25 @@ public class PasswordsViewModel extends AndroidViewModel
 			addToMap(EXTRA_LOGIN_2_PASSWORD);
 			addToMap(OSAC_USERNAME);
 			addToMap(OSAC_PASSWORD);
-		}
 
-		// then make sure our state is in sync
-		lockItemViewModels(locked);
-	}
-
-	public void lockSecureInfo()
-	{
-		if (secureInfoMap != null)
+			// then make sure our state is in sync
 			lockItemViewModels(true);
+		}
 	}
 
-	public void save()
+	public boolean isLocked()
+	{
+		return isLocked;
+	}
+
+	public void lockAll(boolean lock)
+	{
+		// only lock / unlock if needed
+		if (secureInfoMap != null  && lock != isLocked)
+			lockItemViewModels(lock);
+	}
+
+	public void saveAll()
 	{
 		if (secureInfoMap != null)
 		{
@@ -146,6 +153,8 @@ public class PasswordsViewModel extends AndroidViewModel
 
 			if (dirty)
 				editor.apply();
+
+			Utils.d(LOG_TAG, "saveAll dirty=%s", dirty);
 		}
 	}
 

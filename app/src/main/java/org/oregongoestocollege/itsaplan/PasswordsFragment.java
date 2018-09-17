@@ -26,23 +26,13 @@ import org.oregongoestocollege.itsaplan.viewmodel.PasswordsViewModel;
 public class PasswordsFragment extends Fragment
 {
 	private static final String LOG_TAG = "GearUp_PasswordsFrag";
-	private static final String ARGUMENT_KEY_IS_LOCKED = "is_locked_argument_key";
-	// tracks the locked / unlocked state of the controls
-	private boolean locked = true;
 	private PasswordsViewModel viewModel;
 
 	// TODO
-	// setup controls in layout for all the fields
 	// validate data and perhaps use the TextInputLayout error message to show invalid fields
 	// when typing SSN number we only allow numbers, nice to format as XXX-XX-XXXX once control looses focus
-	// create a manager to hold data, iOS calls it MyPlanDataManager
-	// 		- this manager must persist / encrypt data
-	// rotation should remember lock state / current data entry changes
-	// correctly lock/unlock with pin
-	// when we first come into fragment with no data entered then show fields unlocked / force PIN creating
+	// lock data when user leaves app, based on timestamp?
 	// support fingerprint id as iOS does
-	// make sure all fields can be viewed when scrolling, with/without keyboard visible
-	// other ??
 
 	public PasswordsFragment()
 	{
@@ -67,12 +57,9 @@ public class PasswordsFragment extends Fragment
 			binding = DataBindingUtil.inflate(inflater, R.layout.fragment_passwords, container, false);
 		View v = binding.getRoot();
 
-		// if user just created/entered a PIN then we don't start locked
-		Bundle bundle = getArguments();
-		locked = bundle == null || bundle.getBoolean(ARGUMENT_KEY_IS_LOCKED, true);
-
+		// scope the view model to the parent fragment, in this case PasswordContainerFragment
+		// so it's retained and we don't re-init / re-load on each pin lock / unlock
 		viewModel = ViewModelProviders.of(getParentFragment()).get(PasswordsViewModel.class);
-		viewModel.init(locked);
 
 		// bind to fragment
 		binding.setUxContext(viewModel);
@@ -97,7 +84,7 @@ public class PasswordsFragment extends Fragment
 		MenuItem item = menu.findItem(R.id.action_toggle_lock);
 		if (item != null)
 		{
-			if (locked)
+			if (viewModel.isLocked())
 				item.setTitle(R.string.unlock);
 			else
 				item.setTitle(R.string.lock);
@@ -110,7 +97,7 @@ public class PasswordsFragment extends Fragment
 	{
 		if (viewModel != null && item.getItemId() == R.id.action_toggle_lock)
 		{
-			if (locked)
+			if (viewModel.isLocked())
 			{
 				Fragment fragment = getParentFragment();
 
@@ -120,9 +107,7 @@ public class PasswordsFragment extends Fragment
 			else
 			{
 				// 'lock' so we hide our values
-				locked = true;
-				viewModel.lockSecureInfo();
-				viewModel.save();
+				viewModel.lockAll(true);
 			}
 
 			// force update of our menu
@@ -136,13 +121,8 @@ public class PasswordsFragment extends Fragment
 		return super.onOptionsItemSelected(item);
 	}
 
-	public static PasswordsFragment newInstance(boolean isLocked)
+	public static PasswordsFragment newInstance()
 	{
-		Bundle args = new Bundle();
-		args.putBoolean(ARGUMENT_KEY_IS_LOCKED, isLocked);
-
-		PasswordsFragment fragment = new PasswordsFragment();
-		fragment.setArguments(args);
-		return fragment;
+		return new PasswordsFragment();
 	}
 }

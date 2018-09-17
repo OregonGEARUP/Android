@@ -26,7 +26,12 @@ public class SecureInfoViewModel
 
 	public boolean isDirty()
 	{
-		return !TextUtils.equals(text.get(), originalData);
+		// the binding code seems to set to "" versus null, check for it
+		String currentData = text.get();
+		if (TextUtils.isEmpty(currentData))
+			currentData = null;
+
+		return !TextUtils.equals(currentData, originalData);
 	}
 
 	public void saved()

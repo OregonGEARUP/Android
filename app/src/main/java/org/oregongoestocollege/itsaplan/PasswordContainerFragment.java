@@ -1,5 +1,6 @@
 package org.oregongoestocollege.itsaplan;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.oregongoestocollege.itsaplan.support.GearUpSharedPreferences;
+import org.oregongoestocollege.itsaplan.viewmodel.PasswordsViewModel;
 
 /**
  * Oregon GEAR UP App
@@ -20,6 +22,7 @@ public class PasswordContainerFragment extends BaseFragment
 	private static final String LOG_TAG = "GearUp_PasswordContainerFrag";
 	private static final String FRAG_PASSWORD_PIN = "frag-pwd-pin";
 	private boolean isPinCreated;
+	private PasswordsViewModel viewModel;
 
 	public PasswordContainerFragment()
 	{
@@ -40,7 +43,10 @@ public class PasswordContainerFragment extends BaseFragment
 
 	private void showPasswords(boolean lock)
 	{
-		Fragment fragment = PasswordsFragment.newInstance(lock);
+		// setup the view model before showing
+		viewModel.lockAll(lock);
+
+		Fragment fragment = PasswordsFragment.newInstance();
 
 		getChildFragmentManager().beginTransaction()
 			.replace(R.id.frame, fragment).commit();
@@ -55,7 +61,14 @@ public class PasswordContainerFragment extends BaseFragment
 	{
 		View v = inflater.inflate(R.layout.fragment_password_container, container, false);
 
+		Utils.d(LOG_TAG, "onCreateView");
+
 		isPinCreated = GearUpSharedPreferences.isPasswordsPinCreated(getContext());
+
+		// scope the view model to this fragment, child fragments will do the same so it's
+		// retained across pin lock/unlock, in our case we want it to save data when appropriate
+		viewModel = ViewModelProviders.of(this).get(PasswordsViewModel.class);
+		viewModel.init();
 
 		// we only need to create the fragments if there is no instance state
 		if (savedInstanceState == null)
@@ -83,9 +96,14 @@ public class PasswordContainerFragment extends BaseFragment
 	}
 
 	@Override
-	public void onPause()
+	public void handleTabChanged(boolean hidden)
 	{
-		super.onPause();
+		// for now we don't need to save password data since the data is not used
+		// in any of our other tabs, wait till we get an onStop() to save
+
+		// however, we do want to lock the tab...
+		if (hidden && viewModel != null)
+			viewModel.lockAll(true);
 	}
 
 	@Override
@@ -137,5 +155,16 @@ public class PasswordContainerFragment extends BaseFragment
 	public void launchUnlockFragment()
 	{
 		showPasswordPin(false);
+	}
+
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+		Utils.d(LOG_TAG, "onStop");
+
+		// fragment is getting destroyed, make sure all our data is saved
+		if (viewModel != null)
+			viewModel.saveAll();
 	}
 }

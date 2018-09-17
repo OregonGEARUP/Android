@@ -99,17 +99,32 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		if (Utils.DEBUG)
 			Utils.d(LOG_TAG, "onPageSelected last:%d current:%d", lastSelectedPosition, position);
 
+		// commit any changes from the previous tab since we share data across tabs
+		if (lastSelectedPosition != -1)
+		{
+			Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
+			if (fragment instanceof OnFragmentInteractionListener)
+				((OnFragmentInteractionListener)fragment).handleTabChanged(true);
+		}
+
 		lastSelectedPosition = position;
 
 		Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
 		if (fragment != null)
 		{
-			boolean showBack = (fragment instanceof OnFragmentInteractionListener) &&
-				((OnFragmentInteractionListener)fragment).canHandleBackPressed();
+			OnFragmentInteractionListener listener = null;
+			if (fragment instanceof OnFragmentInteractionListener)
+				listener = (OnFragmentInteractionListener)fragment;
 
-			ActionBar actionBar = getSupportActionBar();
-			if (actionBar != null)
-				actionBar.setDisplayHomeAsUpEnabled(showBack);
+			if (listener != null)
+			{
+				listener.handleTabChanged(true);
+
+				boolean showBack = listener.canHandleBackPressed();
+				ActionBar actionBar = getSupportActionBar();
+				if (actionBar != null)
+					actionBar.setDisplayHomeAsUpEnabled(showBack);
+			}
 
 			// see if we need to set our title from a child fragment
 			Utils.updateTitleOnBackStackChanged(fragment, LOG_TAG);
