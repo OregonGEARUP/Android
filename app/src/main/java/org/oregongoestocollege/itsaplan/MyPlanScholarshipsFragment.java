@@ -106,11 +106,12 @@ public class MyPlanScholarshipsFragment extends Fragment
 	}
 
 	@Override
-	public void onDetach()
+	public void onStop()
 	{
+		super.onStop();
+		Utils.d(LOG_TAG, "onStop");
+
 		if (viewModel != null)
 			viewModel.update();
-
-		super.onDetach();
 	}
 }

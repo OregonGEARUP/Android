@@ -23,7 +23,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.CollegesViewModel;
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-public class MyPlanCollegesFragment extends Fragment
+public class MyPlanCollegesFragment extends Fragment implements OnFragmentInteractionListener
 {
 	private static final String LOG_TAG = "GearUp_CollegeViewModel";
 	private FragmentMyPlanCollegesBinding binding;
@@ -107,11 +107,20 @@ public class MyPlanCollegesFragment extends Fragment
 	}
 
 	@Override
-	public void onDetach()
+	public void handleTabChanged(boolean hidden)
 	{
+		// save any college changes, data is shared with passwords tab
+		if (viewModel != null && hidden)
+			viewModel.update();
+	}
+
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+		Utils.d(LOG_TAG, "onStop");
+
 		if (viewModel != null)
 			viewModel.update();
-
-		super.onDetach();
 	}
 }

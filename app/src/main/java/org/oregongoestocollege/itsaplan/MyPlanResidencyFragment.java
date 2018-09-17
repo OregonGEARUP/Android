@@ -1,6 +1,5 @@
 package org.oregongoestocollege.itsaplan;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.Residency;
 import org.oregongoestocollege.itsaplan.databinding.FragmentMyPlanResidencyBinding;
 import org.oregongoestocollege.itsaplan.viewmodel.ResidencyViewModel;
 
@@ -55,29 +53,23 @@ public class MyPlanResidencyFragment extends Fragment
 
 		// observe live data
 		viewModel.getResidencyData().removeObservers(this);
-		viewModel.getResidencyData().observe(this, new Observer<Residency>()
+		viewModel.getResidencyData().observe(this, residency ->
 		{
-			@Override
-			public void onChanged(@Nullable Residency residency)
-			{
-				Utils.d(LOG_TAG, "Residency changed hasData:%s", residency != null ? "true" : "false");
+			Utils.d(LOG_TAG, "Residency changed hasData:%s", residency != null ? "true" : "false");
 
-				// could add progress - when loading can start out null followed quickly by non-null
-				if (residency != null)
-					viewModel.setResidency(getContext(), residency);
-			}
+			// could add progress - when loading can start out null followed quickly by non-null
+			if (residency != null)
+				viewModel.setResidency(getContext(), residency);
 		});
 	}
 
 	@Override
-	public void onDetach()
+	public void onStop()
 	{
-		Utils.d(LOG_TAG, "onDetach");
+		super.onStop();
+		Utils.d(LOG_TAG, "onStop");
 
-		// persist any user entered data
 		if (viewModel != null)
 			viewModel.update();
-
-		super.onDetach();
 	}
 }

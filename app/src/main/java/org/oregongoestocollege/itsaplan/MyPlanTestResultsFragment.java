@@ -1,6 +1,5 @@
 package org.oregongoestocollege.itsaplan;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.oregongoestocollege.itsaplan.data.TestResult;
 import org.oregongoestocollege.itsaplan.databinding.FragmentMyPlanTestResultsBinding;
 import org.oregongoestocollege.itsaplan.viewmodel.TestResultsViewModel;
 
@@ -53,43 +51,36 @@ public class MyPlanTestResultsFragment extends Fragment
 
 		// observe live data
 		viewModel.getActTestResultData().removeObservers(this);
-		viewModel.getActTestResultData().observe(this, new Observer<TestResult>()
+		viewModel.getActTestResultData().observe(this, testResult ->
 		{
-			@Override
-			public void onChanged(@Nullable TestResult testResult)
-			{
-				Utils.d(LOG_TAG, "ACT TestResult changed hasData:%s",
-					testResult != null ? "true" : "false");
+			Utils.d(LOG_TAG, "ACT TestResult changed hasData:%s",
+				testResult != null ? "true" : "false");
 
-				// could add progress - when loading can start out null followed quickly by non-null
-				if (testResult != null)
-					viewModel.setActTestResult(getContext(), testResult);
-			}
+			// could add progress - when loading can start out null followed quickly by non-null
+			if (testResult != null)
+				viewModel.setActTestResult(getContext(), testResult);
 		});
 
 		// observe live data
 		viewModel.getSatTestResultData().removeObservers(this);
-		viewModel.getSatTestResultData().observe(this, new Observer<TestResult>()
+		viewModel.getSatTestResultData().observe(this, testResult ->
 		{
-			@Override
-			public void onChanged(@Nullable TestResult testResult)
-			{
-				Utils.d(LOG_TAG, "SAT TestResult changed hasData:%s",
-					testResult != null ? "true" : "false");
+			Utils.d(LOG_TAG, "SAT TestResult changed hasData:%s",
+				testResult != null ? "true" : "false");
 
-				// could add progress - when loading can start out null followed quickly by non-null
-				if (testResult != null)
-					viewModel.setSatTestResult(getContext(), testResult);
-			}
+			// could add progress - when loading can start out null followed quickly by non-null
+			if (testResult != null)
+				viewModel.setSatTestResult(getContext(), testResult);
 		});
 	}
 
 	@Override
-	public void onDetach()
+	public void onStop()
 	{
+		super.onStop();
+		Utils.d(LOG_TAG, "onStop");
+
 		if (viewModel != null)
 			viewModel.update();
-
-		super.onDetach();
 	}
 }

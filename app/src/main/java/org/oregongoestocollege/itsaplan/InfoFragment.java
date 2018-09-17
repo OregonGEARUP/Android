@@ -15,11 +15,14 @@ import android.webkit.WebView;
  *
  * Copyright © 2017 Oregon GEAR UP. All rights reserved.
  */
-public class InfoFragment extends Fragment
+public class InfoFragment extends Fragment implements OnFragmentInteractionListener
 {
 	public static final String EXTRA_URL = "extra_url";
+	private static final String LOG_TAG = "GearUp_InfoFragment";
 	private final String GEAR_UP_WEBSITE = "https://oregongoestocollege.org/5-things";
 	private WebView mWebView;
+	private String url;
+	private boolean urlLoaded;
 
 	public InfoFragment()
 	{
@@ -42,16 +45,14 @@ public class InfoFragment extends Fragment
 		View v = inflater.inflate(R.layout.fragment_info, container, false);
 
 		Bundle bundle = getArguments();
-		String url;
 		if (bundle != null)
 			url = bundle.getString(EXTRA_URL, GEAR_UP_WEBSITE);
 		else
 			url = GEAR_UP_WEBSITE;
 
-		// TODO wait till fragment is displayed before loading web page
+		// some of the external links GearUp uses need JS
 		mWebView = v.findViewById(R.id.info_web_view);
 		mWebView.getSettings().setJavaScriptEnabled(true);
-		mWebView.loadUrl(url);
 
 		return v;
 	}
@@ -62,6 +63,19 @@ public class InfoFragment extends Fragment
 		super.onPrepareOptionsMenu(menu);
 
 		Utils.disableMenu(menu);
+	}
+
+	@Override
+	public void handleTabChanged(boolean hidden)
+	{
+		// since this fragment can get pre-loaded via the pager wait till
+		// we are displayed before loading the URL
+		if (!urlLoaded && mWebView != null)
+		{
+			Utils.d(LOG_TAG, "handleTabChanged URL loaded");
+			mWebView.loadUrl(url);
+			urlLoaded = true;
+		}
 	}
 
 	/**

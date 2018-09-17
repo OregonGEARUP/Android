@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
 		lastSelectedPosition = position;
 
+		// setup for new fragment
 		Fragment fragment = pagerAdapter.getRegisteredFragment(lastSelectedPosition);
 		if (fragment != null)
 		{
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
 			if (listener != null)
 			{
-				listener.handleTabChanged(true);
+				listener.handleTabChanged(false);
 
 				boolean showBack = listener.canHandleBackPressed();
 				ActionBar actionBar = getSupportActionBar();

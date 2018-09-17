@@ -156,6 +156,23 @@ public class MyPlanFragment extends BaseFragment implements OnFragmentInteractio
 	}
 
 	@Override
+	public void handleTabChanged(boolean hidden)
+	{
+		// some data is shared across tabs so see if the child fragments
+		// want to save anything when tabs change
+		if (hidden)
+		{
+			FragmentManager manager = getChildFragmentManager();
+			Fragment currentFragment = null;
+			if (manager.getFragments().size() > 1)
+				currentFragment = manager.getFragments().get(1);
+
+			if (currentFragment instanceof OnFragmentInteractionListener)
+				((OnFragmentInteractionListener)currentFragment).handleTabChanged(true);
+		}
+	}
+
+	@Override
 	public boolean handleBackPressed()
 	{
 		Utils.d(LOG_TAG, "handleBackPressed");

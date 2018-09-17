@@ -20,7 +20,13 @@ public interface OnFragmentInteractionListener
 
 	default void handleTabChanged(boolean hidden) { }
 
-	boolean handleBackPressed();
+	default boolean handleBackPressed()
+	{
+		return false;
+	}
 
-	boolean canHandleBackPressed();
+	default boolean canHandleBackPressed()
+	{
+		return false;
+	}
 }
