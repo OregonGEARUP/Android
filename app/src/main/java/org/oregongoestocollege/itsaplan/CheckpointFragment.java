@@ -129,24 +129,6 @@ public class CheckpointFragment extends Fragment
 	}
 
 	@Override
-	public void onResume()
-	{
-		super.onResume();
-
-		Utils.d(LOG_TAG, "onResume blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
-			blockIndex, stageIndex, checkpointIndex);
-	}
-
-	@Override
-	public void onStop()
-	{
-		super.onStop();
-
-		Utils.d(LOG_TAG, "onStop blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
-			blockIndex, stageIndex, checkpointIndex);
-	}
-
-	@Override
 	public void onAttach(Context context)
 	{
 		super.onAttach(context);

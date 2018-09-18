@@ -48,11 +48,12 @@ public class UserEntries implements UserEntriesInterface
 		return !TextUtils.isEmpty(value) ? Long.parseLong(value) : 0;
 	}
 
-	public void apply()
+	public void close(boolean apply)
 	{
 		if (editor != null)
 		{
-			editor.apply();
+			if (apply)
+				editor.apply();
 			editor = null;
 		}
 	}

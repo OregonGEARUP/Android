@@ -22,7 +22,7 @@ public interface UserEntriesInterface
 
 	void setValue(String key, long value);
 
-	void apply();
+	void close(boolean apply);
 
 	ChecklistState getChecklistState();
 

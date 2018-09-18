@@ -11,8 +11,6 @@ public class Instance
 	private String id;
 	private String prompt;
 	private String placeholder;
-	// fields to support UX display
-	public boolean isChecked;
 
 	public String getId()
 	{
@@ -27,10 +25,5 @@ public class Instance
 	public String getPlaceholder()
 	{
 		return placeholder;
-	}
-
-	public void onInstanceChecked(boolean checked)
-	{
-		isChecked = checked;
 	}
 }

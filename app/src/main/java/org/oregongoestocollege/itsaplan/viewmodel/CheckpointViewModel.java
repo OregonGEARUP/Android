@@ -48,30 +48,32 @@ public class CheckpointViewModel extends AndroidViewModel
 	private static final int MAX_DATES = 3;
 	// service data
 	private Checkpoint model;
-	private int blockIndex;
-	private int stageIndex;
-	private int checkpointIndex;
+	private int blockIndex = Utils.NO_INDEX;
+	private int stageIndex = Utils.NO_INDEX;
+	private int checkpointIndex = Utils.NO_INDEX;
 	private final CheckpointInterface repository;
+	private int instanceCount;
+	private List<Instance> instances;
 	// events
 	private final SingleLiveEvent<ChecklistState> nextStageEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<ChecklistState> nextBlockEvent = new SingleLiveEvent<>();
 	private final SingleLiveEvent<NavigationState> navigationEvent = new SingleLiveEvent<>();
 	private boolean finalCheckpoint;
 	private int entryLayout;
-	// view data
+	// view model lists
 	private List<InstanceFieldViewModel> fieldVms;
+	private List<InstanceCheckedViewModel> checkedVms;
 	private final List<ObservableField<DateViewModel>> dateOnlyVms;
 	private final List<ObservableField<DateViewModel>> dateAndTextVms;
+	// view data
 	public final ObservableBoolean showIncomplete = new ObservableBoolean();
 	public String title;
 	public String description;
 	public int descriptionTextColor;
 	public Drawable image;
-	private int instanceCount;
-	private List<Instance> instances;
-	// for info
+	// view data for info
 	public String urlText;
-	// for route / next stage
+	// view data for route / next stage
 	public String nextText;
 	public boolean showNextText;
 	public boolean showStars;
@@ -255,11 +257,12 @@ public class CheckpointViewModel extends AndroidViewModel
 				instanceCount = size > MAX_BUTTONS ? MAX_BUTTONS : size;
 				instances = modelInstances.subList(0, instanceCount);
 
+				checkedVms = new ArrayList<>(instanceCount);
+
 				for (int i = 0; i < instanceCount; i++)
 				{
-					instances.get(i).isChecked = (
-						entries.getValueAsBoolean(
-							repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i)));
+					String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i);
+					checkedVms.add(new InstanceCheckedViewModel(instances.get(i), key, entries.getValueAsBoolean(key)));
 				}
 			}
 		}
@@ -389,7 +392,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		{
 			boolean oneSelected = false;
 			for (int i = 0; i < instanceCount && !oneSelected; i++)
-				oneSelected = instances.get(i).isChecked;
+				oneSelected = checkedVms.get(i).isChecked.get();
 			return oneSelected;
 		}
 		case field:
@@ -479,6 +482,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		{
 			// get ready to save any user entries, we'll apply them at the end
 			UserEntriesInterface entries = new UserEntries(getApplication());
+			boolean saved = false;
 
 			switch (model.entryType)
 			{
@@ -496,6 +500,7 @@ public class CheckpointViewModel extends AndroidViewModel
 						{
 							entries.setValue(fieldVm.key, fieldVm.text.get());
 							fieldVm.saved();
+							saved = true;
 						}
 					}
 				}
@@ -508,9 +513,13 @@ public class CheckpointViewModel extends AndroidViewModel
 				{
 					for (int i = 0; i < instanceCount; i++)
 					{
-						entries.setValue(
-							repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i),
-							instances.get(i).isChecked);
+						InstanceCheckedViewModel checkedVm = checkedVms.get(i);
+						if (checkedVm.isDirty())
+						{
+							entries.setValue(checkedVm.key, checkedVm.isChecked.get());
+							checkedVm.saved();
+							saved = true;
+						}
 					}
 				}
 				break;
@@ -528,6 +537,7 @@ public class CheckpointViewModel extends AndroidViewModel
 							String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i) + "_date";
 							entries.setValue(key, date != null ? date : 0);
 							vm.saved();
+							saved = true;
 						}
 					}
 				}
@@ -547,6 +557,7 @@ public class CheckpointViewModel extends AndroidViewModel
 							Long date = DateConverter.toTimestamp(dateVm.getSelectedDate());
 							entries.setValue(baseKey + "_date", date != null ? date : 0);
 							dateVm.saved();
+							saved = true;
 						}
 
 						InstanceFieldViewModel fieldVm = fieldVms.get(i);
@@ -554,6 +565,7 @@ public class CheckpointViewModel extends AndroidViewModel
 						{
 							entries.setValue(fieldVm.key, fieldVm.text.get());
 							fieldVm.saved();
+							saved = true;
 						}
 					}
 				}
@@ -564,7 +576,9 @@ public class CheckpointViewModel extends AndroidViewModel
 				break;
 			}
 
-			entries.apply();
+			entries.close(saved);
+
+			Utils.d(LOG_TAG, "saveCheckpointEntries isDirty:%s", saved);
 		}
 	}
 
@@ -630,6 +644,14 @@ public class CheckpointViewModel extends AndroidViewModel
 	{
 		if (fieldVms != null && instance >= 0 && instance < fieldVms.size())
 			return fieldVms.get(instance);
+
+		return null;
+	}
+
+	public InstanceCheckedViewModel getCheckedViewModel(int instance)
+	{
+		if (checkedVms != null && instance >= 0 && instance < checkedVms.size())
+			return checkedVms.get(instance);
 
 		return null;
 	}
