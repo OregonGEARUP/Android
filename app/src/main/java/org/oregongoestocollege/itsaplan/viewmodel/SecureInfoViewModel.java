@@ -24,6 +24,9 @@ public class SecureInfoViewModel
 		this.text.set(originalData);
 	}
 
+	/**
+	 * @return true if the stored data is different than the user entered data
+	 */
 	public boolean isDirty()
 	{
 		// the binding code seems to set to "" versus null, check for it
@@ -34,6 +37,9 @@ public class SecureInfoViewModel
 		return !TextUtils.equals(currentData, originalData);
 	}
 
+	/**
+	 * Reset the data so the stored data is the same as the user entered data
+	 */
 	public void saved()
 	{
 		originalData = text.get();

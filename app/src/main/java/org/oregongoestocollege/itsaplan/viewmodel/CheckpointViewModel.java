@@ -472,11 +472,14 @@ public class CheckpointViewModel extends AndroidViewModel
 		repository.markVisited(stageIndex, checkpointIndex);
 	}
 
-	public void saveCheckpointEntries(@NonNull UserEntriesInterface entries)
+	public void saveCheckpointEntries()
 	{
 		model = repository.getCheckpoint(blockIndex, stageIndex, checkpointIndex);
 		if (model != null)
 		{
+			// get ready to save any user entries, we'll apply them at the end
+			UserEntriesInterface entries = new UserEntries(getApplication());
+
 			switch (model.entryType)
 			{
 			case info:
@@ -524,6 +527,7 @@ public class CheckpointViewModel extends AndroidViewModel
 							Long date = DateConverter.toTimestamp(vm.getSelectedDate());
 							String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i) + "_date";
 							entries.setValue(key, date != null ? date : 0);
+							vm.saved();
 						}
 					}
 				}
@@ -542,6 +546,7 @@ public class CheckpointViewModel extends AndroidViewModel
 						{
 							Long date = DateConverter.toTimestamp(dateVm.getSelectedDate());
 							entries.setValue(baseKey + "_date", date != null ? date : 0);
+							dateVm.saved();
 						}
 
 						InstanceFieldViewModel fieldVm = fieldVms.get(i);
@@ -558,6 +563,8 @@ public class CheckpointViewModel extends AndroidViewModel
 			case nextstage:
 				break;
 			}
+
+			entries.apply();
 		}
 	}
 

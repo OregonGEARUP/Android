@@ -166,13 +166,13 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 		viewPager.addOnPageChangeListener(this);
 		viewPager.setAdapter(pagerAdapter);
 
-		setAsVisited(v.getContext(), 0);
+		setAsVisited(0);
 		checkpointInterface.markVisited(stageIndex, 0);
 
 		return v;
 	}
 
-	private void setAsVisited(Context context, int position)
+	private void setAsVisited(int position)
 	{
 		CheckpointViewModel viewModel = pagerAdapter.getCurrentViewModel(position);
 		if (viewModel != null)
@@ -182,7 +182,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 		{
 			viewModel = pagerAdapter.getCurrentViewModel(lastVisitedPosition);
 			if (viewModel != null)
-				viewModel.saveCheckpointEntries(new UserEntries(context));
+				viewModel.saveCheckpointEntries();
 			lastVisitedPosition = position;
 		}
 	}
@@ -198,7 +198,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 
 		CheckpointViewModel viewModel = pagerAdapter.getCurrentViewModel(lastVisitedPosition);
 		if (viewModel != null)
-			viewModel.saveCheckpointEntries(new UserEntries(context));
+			viewModel.saveCheckpointEntries();
 
 		MyPlanRepository myPlanRepository = MyPlanRepository.getInstance(context);
 		CheckpointInterface checkpointInterface = CheckpointRepository.getInstance(context);
@@ -217,10 +217,6 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 	@Override
 	public void onPageSelected(int newPosition)
 	{
-		Context context = getContext();
-		if (context == null)
-			return;
-
 		CheckpointViewModel viewModel = null;
 		boolean isCompleted = true;
 		if (lastVisitedPosition != newPosition)
@@ -248,7 +244,7 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 			// checkpoint is done, move on
 			currentPosition = newPosition;
 
-			setAsVisited(context, newPosition);
+			setAsVisited(newPosition);
 		}
 
 		Utils.d(LOG_TAG, "onPageSelected isCompleted:%s position:%d", isCompleted, currentPosition);

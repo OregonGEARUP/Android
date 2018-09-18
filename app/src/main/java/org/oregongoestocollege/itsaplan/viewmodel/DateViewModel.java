@@ -60,9 +60,20 @@ public class DateViewModel implements BindingItem
 			this.label.set(context.getString(labelStringRes));
 	}
 
+	/**
+	 * @return true if the stored data is different than the user entered data
+	 */
 	public boolean isDirty()
 	{
 		return originalDate != selectedDate;
+	}
+
+	/**
+	 * Reset the data so the stored data is the same as the user entered data
+	 */
+	public void saved()
+	{
+		originalDate = selectedDate;
 	}
 
 	public Date getSelectedDate()

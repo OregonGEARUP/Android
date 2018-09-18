@@ -21,6 +21,7 @@ import org.oregongoestocollege.itsaplan.Utils;
 public class UserEntries implements UserEntriesInterface
 {
 	private WeakReference<SharedPreferences> weakRef;
+	private SharedPreferences.Editor editor;
 
 	public UserEntries(@NonNull Context context)
 	{
@@ -47,38 +48,47 @@ public class UserEntries implements UserEntriesInterface
 		return !TextUtils.isEmpty(value) ? Long.parseLong(value) : 0;
 	}
 
+	public void apply()
+	{
+		if (editor != null)
+		{
+			editor.apply();
+			editor = null;
+		}
+	}
+
 	public void setValue(String key, String value)
 	{
-		SharedPreferences prefs = weakRef.get();
-		SharedPreferences.Editor editor = prefs.edit();
+		if (editor == null)
+			editor = weakRef.get().edit();
+
 		if (TextUtils.isEmpty(value))
 			editor.remove(key);
 		else
 			editor.putString(key, value);
-		editor.apply();
 	}
 
 	public void setValue(String key, boolean value)
 	{
-		SharedPreferences prefs = weakRef.get();
-		SharedPreferences.Editor editor = prefs.edit();
+		if (editor == null)
+			editor = weakRef.get().edit();
+
 		// use '1' for true, we later match criteria based on this value
 		if (!value)
 			editor.remove(key);
 		else
 			editor.putString(key, "1");
-		editor.apply();
 	}
 
 	public void setValue(String key, long value)
 	{
-		SharedPreferences prefs = weakRef.get();
-		SharedPreferences.Editor editor = prefs.edit();
+		if (editor == null)
+			editor = weakRef.get().edit();
+
 		if (value <= 0)
 			editor.remove(key);
 		else
 			editor.putString(key, Long.toString(value));
-		editor.apply();
 	}
 
 	public ChecklistState getChecklistState()

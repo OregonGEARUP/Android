@@ -22,6 +22,8 @@ public interface UserEntriesInterface
 
 	void setValue(String key, long value);
 
+	void apply();
+
 	ChecklistState getChecklistState();
 
 	void setChecklistState(@NonNull ChecklistState checklistState);
