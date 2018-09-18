@@ -1,5 +1,6 @@
 package org.oregongoestocollege.itsaplan;
 
+import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -7,6 +8,7 @@ import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,8 +118,14 @@ public class CheckpointFragment extends Fragment
 
 	void onStateChanged(ChecklistState state)
 	{
-		ChecklistNavViewModel cvm = ViewModelProviders.of(getActivity()).get(ChecklistNavViewModel.class);
-		cvm.setCurrentState(state);
+		FragmentActivity activity = getActivity();
+
+		if (activity != null &&
+			getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED))
+		{
+			ChecklistNavViewModel cvm = ViewModelProviders.of(activity).get(ChecklistNavViewModel.class);
+			cvm.setCurrentState(state);
+		}
 	}
 
 	@Override

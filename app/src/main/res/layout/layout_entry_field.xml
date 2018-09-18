@@ -35,9 +35,9 @@
 			<android.support.design.widget.TextInputEditText
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:hint="@{uxContent.getInstance(0).getPlaceholder()}"
+				android:hint="@{uxContent.getFieldViewModel(0).getPlaceholder()}"
 				android:inputType="text"
-				android:text="@={uxContent.getInstance(0).textEntry}" />
+				android:text="@={uxContent.getFieldViewModel(0).text}" />
 		</android.support.design.widget.TextInputLayout>
 
 		<TextView
@@ -57,9 +57,9 @@
 			<android.support.design.widget.TextInputEditText
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:hint="@{uxContent.getInstance(1).getPlaceholder()}"
+				android:hint="@{uxContent.getFieldViewModel(1).getPlaceholder()}"
 				android:inputType="text"
-				android:text="@={uxContent.getInstance(1).textEntry}" />
+				android:text="@={uxContent.getFieldViewModel(1).text}" />
 		</android.support.design.widget.TextInputLayout>
 
 		<TextView
@@ -77,9 +77,9 @@
 			<android.support.design.widget.TextInputEditText
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:hint="@{uxContent.getInstance(2).getPlaceholder()}"
+				android:hint="@{uxContent.getFieldViewModel(2).getPlaceholder()}"
 				android:inputType="text"
-				android:text="@={uxContent.getInstance(2).textEntry}" />
+				android:text="@={uxContent.getFieldViewModel(2).text}" />
 		</android.support.design.widget.TextInputLayout>
 
 		<TextView
@@ -97,9 +97,9 @@
 			<android.support.design.widget.TextInputEditText
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:hint="@{uxContent.getInstance(3).getPlaceholder()}"
+				android:hint="@{uxContent.getFieldViewModel(3).getPlaceholder()}"
 				android:inputType="text"
-				android:text="@={uxContent.getInstance(3).textEntry}" />
+				android:text="@={uxContent.getFieldViewModel(3).text}" />
 		</android.support.design.widget.TextInputLayout>
 
 		<TextView
@@ -117,9 +117,9 @@
 			<android.support.design.widget.TextInputEditText
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:hint="@{uxContent.getInstance(4).getPlaceholder()}"
+				android:hint="@{uxContent.getFieldViewModel(4).getPlaceholder()}"
 				android:inputType="text"
-				android:text="@={uxContent.getInstance(4).textEntry}" />
+				android:text="@={uxContent.getFieldViewModel(4).text}" />
 		</android.support.design.widget.TextInputLayout>
 
 		<TextView
@@ -138,9 +138,9 @@
 			<android.support.design.widget.TextInputEditText
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:hint="@{uxContent.getInstance(5).getPlaceholder()}"
+				android:hint="@{uxContent.getFieldViewModel(5).getPlaceholder()}"
 				android:inputType="text"
-				android:text="@={uxContent.getInstance(5).textEntry}" />
+				android:text="@={uxContent.getFieldViewModel(5).text}" />
 		</android.support.design.widget.TextInputLayout>
 
 	</LinearLayout>

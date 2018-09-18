@@ -59,9 +59,10 @@ public class CheckpointViewModel extends AndroidViewModel
 	private boolean finalCheckpoint;
 	private int entryLayout;
 	// view data
+	private List<InstanceFieldViewModel> fieldVms;
+	private final List<ObservableField<DateViewModel>> dateOnlyVms;
+	private final List<ObservableField<DateViewModel>> dateAndTextVms;
 	public final ObservableBoolean showIncomplete = new ObservableBoolean();
-	public final List<ObservableField<DateViewModel>> dateOnlyVms;
-	public final List<ObservableField<DateViewModel>> dateAndTextVms;
 	public String title;
 	public String description;
 	public int descriptionTextColor;
@@ -88,6 +89,10 @@ public class CheckpointViewModel extends AndroidViewModel
 
 	public void init(Context context, int blockIndex, int stageIndex, int checkpointIndex)
 	{
+		// only need to init once, view model is associated to the fragment and retained
+		if (this.blockIndex == blockIndex && this.stageIndex == stageIndex && this.checkpointIndex == checkpointIndex)
+			return;
+
 		this.blockIndex = blockIndex;
 		this.stageIndex = stageIndex;
 		this.checkpointIndex = checkpointIndex;
@@ -141,7 +146,7 @@ public class CheckpointViewModel extends AndroidViewModel
 		}
 	}
 
-	String stringWithSubstitutions(String original, UserEntriesInterface entries)
+	private String stringWithSubstitutions(String original, UserEntriesInterface entries)
 	{
 		if (!TextUtils.isEmpty(original))
 		{
@@ -224,10 +229,12 @@ public class CheckpointViewModel extends AndroidViewModel
 				instanceCount = size > MAX_FIELDS ? MAX_FIELDS : size;
 				instances = modelInstances.subList(0, instanceCount);
 
+				fieldVms = new ArrayList<>(instanceCount);
+
 				for (int i = 0; i < instanceCount; i++)
 				{
-					instances.get(i).textEntry.set(
-						entries.getValue(repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i)));
+					String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i);
+					fieldVms.add(new InstanceFieldViewModel(instances.get(i), key, entries.getValue(key)));
 				}
 			}
 		}
@@ -299,6 +306,8 @@ public class CheckpointViewModel extends AndroidViewModel
 				instanceCount = size > MAX_DATES ? MAX_DATES : size;
 				instances = modelInstances.subList(0, instanceCount);
 
+				fieldVms = new ArrayList<>(instanceCount);
+
 				for (int i = 0; i < instanceCount; i++)
 				{
 					instance = instances.get(i);
@@ -308,7 +317,8 @@ public class CheckpointViewModel extends AndroidViewModel
 					Date date = value > 0 ? DateConverter.toDate(value) : null;
 					dateAndTextVms.add(new ObservableField<>(DateViewModel.build(context, date, instance.getPrompt())));
 
-					instance.textEntry.set(entries.getValue(baseKey + "_text"));
+					String textKey = baseKey + "_text";
+					fieldVms.add(new InstanceFieldViewModel(instance, textKey, entries.getValue(textKey)));
 				}
 			}
 		}
@@ -359,7 +369,7 @@ public class CheckpointViewModel extends AndroidViewModel
 
 	public boolean hasInstancePrompt(int instance)
 	{
-		return showInstance(instance) ? !TextUtils.isEmpty(instances.get(instance).getPrompt()) : false;
+		return showInstance(instance) && !TextUtils.isEmpty(instances.get(instance).getPrompt());
 	}
 
 	// equivalent of iOS isCurrentCheckpointCompleted()
@@ -387,7 +397,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			boolean allFilled = true;
 			for (int i = 0; i < instanceCount; i++)
 			{
-				allFilled = !TextUtils.isEmpty(instances.get(i).textEntry.get());
+				allFilled = fieldVms.get(i).hasText();
 				if (!allFilled)
 					break;
 			}
@@ -409,7 +419,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			boolean allFilled = true;
 			for (int i = 0; i < instanceCount; i++)
 			{
-				allFilled = dateAndTextVms.get(i).get().hasSelectedDate() && !TextUtils.isEmpty(instances.get(i).textEntry.get());
+				allFilled = dateAndTextVms.get(i).get().hasSelectedDate() && fieldVms.get(i).hasText();
 				if (!allFilled)
 					break;
 			}
@@ -478,9 +488,12 @@ public class CheckpointViewModel extends AndroidViewModel
 				{
 					for (int i = 0; i < instanceCount; i++)
 					{
-						entries.setValue(
-							repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i),
-							instances.get(i).textEntry.get());
+						InstanceFieldViewModel fieldVm = fieldVms.get(i);
+						if (fieldVm.isDirty())
+						{
+							entries.setValue(fieldVm.key, fieldVm.text.get());
+							fieldVm.saved();
+						}
 					}
 				}
 				break;
@@ -523,16 +536,20 @@ public class CheckpointViewModel extends AndroidViewModel
 					for (int i = 0; i < instanceCount; i++)
 					{
 						final String baseKey = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i);
-						Instance instance = instances.get(i);
 
-						DateViewModel vm = dateAndTextVms.get(i).get();
-						if (vm != null && vm.isDirty())
+						DateViewModel dateVm = dateAndTextVms.get(i).get();
+						if (dateVm != null && dateVm.isDirty())
 						{
-							Long date = DateConverter.toTimestamp(vm.getSelectedDate());
+							Long date = DateConverter.toTimestamp(dateVm.getSelectedDate());
 							entries.setValue(baseKey + "_date", date != null ? date : 0);
 						}
 
-						entries.setValue(baseKey + "_text", instance.textEntry.get());
+						InstanceFieldViewModel fieldVm = fieldVms.get(i);
+						if (fieldVm.isDirty())
+						{
+							entries.setValue(fieldVm.key, fieldVm.text.get());
+							fieldVm.saved();
+						}
 					}
 				}
 				break;
@@ -542,20 +559,6 @@ public class CheckpointViewModel extends AndroidViewModel
 				break;
 			}
 		}
-	}
-
-	public boolean showEntryType(EntryType entryType, boolean verifyInstances)
-	{
-		boolean show = false;
-
-		if (entryType != null && model != null)
-		{
-			show = entryType.equals(model.entryType);
-			if (show && verifyInstances)
-				show = (instances != null && !instances.isEmpty());
-		}
-
-		return show;
 	}
 
 	public void onUrlClick()
@@ -612,6 +615,14 @@ public class CheckpointViewModel extends AndroidViewModel
 	{
 		if (dateAndTextVms != null && instance >= 0 && instance < dateAndTextVms.size())
 			return dateAndTextVms.get(instance);
+
+		return null;
+	}
+
+	public InstanceFieldViewModel getFieldViewModel(int instance)
+	{
+		if (fieldVms != null && instance >= 0 && instance < fieldVms.size())
+			return fieldVms.get(instance);
 
 		return null;
 	}

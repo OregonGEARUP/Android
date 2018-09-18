@@ -1,7 +1,5 @@
 package org.oregongoestocollege.itsaplan.data;
 
-import android.databinding.ObservableField;
-
 /**
  * Instance
  * Oregon GEAR UP App
@@ -15,7 +13,6 @@ public class Instance
 	private String placeholder;
 	// fields to support UX display
 	public boolean isChecked;
-	public final ObservableField<String> textEntry = new ObservableField<>();
 
 	public String getId()
 	{
