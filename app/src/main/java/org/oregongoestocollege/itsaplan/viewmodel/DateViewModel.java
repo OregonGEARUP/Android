@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.text.format.DateFormat;
 import android.view.View;
-import android.widget.DatePicker;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.support.BindingItem;
@@ -95,19 +94,15 @@ public class DateViewModel implements BindingItem
 			c.setTime(selectedDate);
 
 		DatePickerDialog datePickerDialog = new DatePickerDialog(context,
-			new DatePickerDialog.OnDateSetListener()
+			(view1, year, month, day) ->
 			{
-				@Override
-				public void onDateSet(DatePicker view, int year, int month, int day)
-				{
-					final Calendar calendar = Calendar.getInstance();
-					calendar.clear();
-					calendar.set(year, month, day);
+				final Calendar calendar = Calendar.getInstance();
+				calendar.clear();
+				calendar.set(year, month, day);
 
-					// update UX
-					selectedDate = calendar.getTime();
-					value.set(DateFormat.getLongDateFormat(context).format(selectedDate));
-				}
+				// update UX
+				selectedDate = calendar.getTime();
+				value.set(DateFormat.getLongDateFormat(context).format(selectedDate));
 			},
 			c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
 
