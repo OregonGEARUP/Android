@@ -1,0 +1,44 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:context="org.oregongoestocollege.itsaplan.ChecklistFragment">
+
+	<data>
+
+		<import type="android.view.View" />
+
+		<variable
+			name="uxContent"
+			type="org.oregongoestocollege.itsaplan.viewmodel.CheckpointViewModel" />
+	</data>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+
+		<Button
+			style="@style/GearUpButton"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="@dimen/baseline_unit_3x"
+			android:onClick="@{() -> uxContent.onNextClick()}"
+			android:text="@{uxContent.nextText}"
+			android:visibility="@{uxContent.showNextText ? View.VISIBLE : View.GONE, default=gone}"
+			tools:text="Let's keep going"
+			tools:visibility="visible" />
+
+		<ImageView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginStart="@dimen/baseline_unit_4x"
+			android:layout_marginEnd="@dimen/baseline_unit_4x"
+			android:layout_marginTop="@dimen/baseline_unit"
+			android:layout_marginBottom="@dimen/baseline_unit"
+			android:scaleType="fitCenter"
+			android:src="@{uxContent.image}"
+			android:visibility="@{uxContent.showStars ? View.VISIBLE : View.GONE, default=gone}"
+			tools:visibility="visible"
+			tools:src="@mipmap/stars"/>
+
+	</LinearLayout>
+</layout>

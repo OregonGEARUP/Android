@@ -143,6 +143,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			break;
 		case route:
 		case nextstage:
+			entryLayout = R.layout.layout_entry_route;
 			setupRouteEntry(context);
 			break;
 		}

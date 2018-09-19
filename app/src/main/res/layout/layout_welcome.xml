@@ -43,6 +43,17 @@
 				android:layout_marginTop="@dimen/baseline_unit"
 				android:text="@string/welcome_message" />
 
+			<Button
+				android:id="@+id/button"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:paddingStart="@dimen/baseline_unit_2x"
+				android:paddingEnd="@dimen/baseline_unit_2x"
+				android:layout_gravity="center_horizontal"
+				android:background="@drawable/button_accent"
+				android:text="@string/welcome_confirm"
+				android:textColor="@android:color/white" />
+
 			<LinearLayout
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -111,17 +122,6 @@
 						android:text="2" />
 				</LinearLayout>
 			</LinearLayout>
-
-			<Button
-				android:id="@+id/button"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:paddingStart="@dimen/baseline_unit_2x"
-				android:paddingEnd="@dimen/baseline_unit_2x"
-				android:layout_gravity="center_horizontal"
-				android:background="@drawable/button_accent"
-				android:text="@string/welcome_confirm"
-				android:textColor="@android:color/white" />
 		</LinearLayout>
 
 	</FrameLayout>

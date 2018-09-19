@@ -18,6 +18,7 @@ import android.webkit.WebView;
 public class InfoFragment extends Fragment implements OnFragmentInteractionListener
 {
 	public static final String EXTRA_URL = "extra_url";
+	public static final String EXTRA_FLAG_LOAD = "extra_flag_load";
 	private static final String LOG_TAG = "GearUp_InfoFragment";
 	private final String GEAR_UP_WEBSITE = "https://oregongoestocollege.org/5-things";
 	private WebView mWebView;
@@ -27,6 +28,17 @@ public class InfoFragment extends Fragment implements OnFragmentInteractionListe
 	public InfoFragment()
 	{
 		// Required empty public constructor
+	}
+
+	private void loadUrl()
+	{
+		Utils.d(LOG_TAG, "loadUrl() urlLoaded:%s", urlLoaded);
+
+		if (!urlLoaded && mWebView != null)
+		{
+			mWebView.loadUrl(url);
+			urlLoaded = true;
+		}
 	}
 
 	@Override
@@ -54,6 +66,11 @@ public class InfoFragment extends Fragment implements OnFragmentInteractionListe
 		mWebView = v.findViewById(R.id.info_web_view);
 		mWebView.getSettings().setJavaScriptEnabled(true);
 
+		// depending on how we use this fragment, we may want to load the URL
+		// immediately or wait till the fragment is shown
+		if (bundle != null && bundle.getBoolean(EXTRA_FLAG_LOAD, false))
+			loadUrl();
+
 		return v;
 	}
 
@@ -70,24 +87,20 @@ public class InfoFragment extends Fragment implements OnFragmentInteractionListe
 	{
 		// since this fragment can get pre-loaded via the pager wait till
 		// we are displayed before loading the URL
-		if (!urlLoaded && mWebView != null)
-		{
-			Utils.d(LOG_TAG, "handleTabChanged URL loaded");
-			mWebView.loadUrl(url);
-			urlLoaded = true;
-		}
+		loadUrl();
 	}
 
 	/**
 	 * Create a new instance of InfoFragment, initialized to show the specified Url.
 	 */
-	public static InfoFragment newInstance(@NonNull String url)
+	public static InfoFragment newInstance(@NonNull String url, boolean showImmediate)
 	{
 		InfoFragment f = new InfoFragment();
 
 		// Supply url input as an argument.
 		Bundle args = new Bundle();
 		args.putString(EXTRA_URL, url);
+		args.putBoolean(EXTRA_FLAG_LOAD, showImmediate);
 		f.setArguments(args);
 
 		return f;

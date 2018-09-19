@@ -20,7 +20,7 @@ public class WebViewActivity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_fragment);
 
-		Fragment newFragment = InfoFragment.newInstance(getIntent().getStringExtra(InfoFragment.EXTRA_URL));
+		Fragment newFragment = InfoFragment.newInstance(getIntent().getStringExtra(InfoFragment.EXTRA_URL), true);
 		FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 		transaction.add(R.id.fragment_container, newFragment);
 		transaction.commit();
