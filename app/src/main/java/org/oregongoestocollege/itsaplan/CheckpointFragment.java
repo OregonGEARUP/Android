@@ -76,7 +76,8 @@ public class CheckpointFragment extends Fragment
 
 		// Inflate the layout for this fragment
 		ViewDataBinding fragmentBinding;
-		if (checkpointViewModel.isFinalCheckpoint())
+		boolean isFinalCheckpoint = checkpointViewModel.isFinalCheckpoint();
+		if (isFinalCheckpoint)
 		{
 			fragmentBinding = DataBindingUtil.inflate(inflater,
 				R.layout.fragment_checkpoint_congrats, container, false);
@@ -92,7 +93,7 @@ public class CheckpointFragment extends Fragment
 		// add Entry specific layout
 		ViewDataBinding layoutBinding = null;
 		int entryLayoutId = checkpointViewModel.getEntryLayout();
-		if (entryLayoutId != 0)
+		if (!isFinalCheckpoint && entryLayoutId != 0)
 		{
 			layoutBinding = DataBindingUtil.inflate(inflater, entryLayoutId, container, false);
 			FrameLayout frameLayout = v.findViewById(R.id.container);
