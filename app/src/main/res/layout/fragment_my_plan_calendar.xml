@@ -1,34 +1,62 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:background="@color/white">
 
-	<LinearLayout
+	<data>
+
+		<import type="android.view.View" />
+
+		<variable
+			name="viewModel"
+			type="org.oregongoestocollege.itsaplan.viewmodel.CalendarViewModel" />
+	</data>
+
+	<ScrollView
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginEnd="@dimen/activity_horizontal_margin"
-		android:layout_marginStart="@dimen/activity_horizontal_margin"
-		android:layout_marginTop="@dimen/activity_vertical_margin"
-		android:orientation="vertical">
+		android:layout_height="match_parent"
+		android:paddingBottom="@dimen/activity_horizontal_margin"
+		android:paddingEnd="@dimen/activity_vertical_margin"
+		android:paddingStart="@dimen/activity_vertical_margin"
+		android:paddingTop="@dimen/activity_horizontal_margin">
 
-		<TextView
-			style="@style/GearUpTextAppearance.Title"
+		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_marginBottom="@dimen/baseline_unit_2x"
-			android:layout_marginTop="@dimen/baseline_unit_2x"
-			android:text="My Plan Calendar"
-			android:textAlignment="center"
-			android:textColor="@color/colorPrimary" />
+			android:orientation="vertical">
 
-		<TextView
-			style="@style/GearUpTextAppearance.SubTitle"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_marginBottom="@dimen/baseline_unit_2x"
-			android:layout_marginTop="@dimen/baseline_unit_2x"
-			android:text="Coming Soon..."
-			android:textAlignment="center" />
-	</LinearLayout>
+			<TextView
+				style="@style/GearUpTextAppearance.Title"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="center_horizontal"
+				android:layout_marginBottom="@dimen/baseline_unit_2x"
+				android:text="@{viewModel.calendarTitle}"
+				android:textColor="@color/colorPrimary"
+				tools:text="March 2022" />
 
-</FrameLayout>
+			<org.oregongoestocollege.itsaplan.compactcalendarview.CompactCalendarView
+				android:id="@+id/compactcalendar_view"
+				android:layout_width="fill_parent"
+				android:layout_height="250dp"
+				app:compactCalendarBackgroundColor="@color/white"
+				app:compactCalendarCurrentDayBackgroundColor="@color/colorAccentLightGreen"
+				app:compactCalendarCurrentSelectedDayBackgroundColor="@color/colorPrimary"
+				app:compactCalendarMultiEventIndicatorColor="@color/colorAccent"
+				app:compactCalendarTargetHeight="250dp"
+				app:compactCalendarTextColor="@color/black"
+				app:compactCalendarTextSize="12sp" />
+
+			<ImageView style="@style/GearUpOptionSeparatorLite"
+				android:paddingTop="0dp"/>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				app:contents="@{viewModel.eventViewModels}" />
+		</LinearLayout>
+
+	</ScrollView>
+</layout>

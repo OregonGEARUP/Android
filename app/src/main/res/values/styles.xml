@@ -51,6 +51,15 @@
 		<item name="android:importantForAccessibility">no</item>
 	</style>
 
+	<style name="GearUpOptionSeparatorLite">
+		<item name="android:layout_width">match_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:paddingTop">@dimen/baseline_unit_half</item>
+		<item name="android:paddingBottom">@dimen/baseline_unit_half</item>
+		<item name="android:src">@drawable/separator_lite</item>
+		<item name="android:importantForAccessibility">no</item>
+	</style>
+
 	<style name="GearUpButton" parent="Widget.AppCompat.Button">
 		<item name="android:background">@drawable/button_normal</item>
 		<item name="android:textColor">@color/white</item>

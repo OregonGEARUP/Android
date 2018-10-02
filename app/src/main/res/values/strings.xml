@@ -132,4 +132,5 @@
 	<string name="pin_button_create">Set PIN</string>
 	<string name="pin_error">PIN is not correct.</string>
 	<string name="pin_encrypt_error">Sorry - there was an unexpected issue storing your PIN safely.</string>
+	<string name="calendar_no_events">no events</string>
 </resources>
