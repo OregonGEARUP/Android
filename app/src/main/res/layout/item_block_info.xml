@@ -15,59 +15,60 @@
 			type="org.oregongoestocollege.itsaplan.viewmodel.BlockInfoItemViewModel" />
 	</data>
 
-	<RelativeLayout
+	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:background="@{viewModel.isEnabled ? (viewModel.isDone ? @drawable/button_background_green : @drawable/button_background_blue) : @drawable/button_background_disabled}"
-		android:minHeight="@dimen/gearup_min_button_height"
-		android:padding="@dimen/baseline_unit_1_half"
 		android:layout_marginBottom="@dimen/baseline_unit_2x"
+		android:background="@{viewModel.isEnabled ? (viewModel.isDone ? @drawable/button_background_green : @drawable/button_background_blue) : @drawable/button_background_disabled}"
 		android:clickable="@{viewModel.clickable}"
-		android:onClick="@{() -> uxItemClickCallback.onClick(viewModel)}">
+		android:minHeight="@dimen/gearup_min_button_height"
+		android:onClick="@{() -> uxItemClickCallback.onClick(viewModel)}"
+		android:orientation="horizontal"
+		android:padding="@dimen/baseline_unit_1_half">
 
 		<TextView
 			android:id="@+id/textview_title"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_centerVertical="true"
 			style="@style/GearUpTextAppearance.Title"
-			android:textColor="@{viewModel.isEnabled ? @color/white : @color/button_text_disabled_light}"
+			android:layout_width="0dp"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:layout_weight="1"
+			android:ellipsize="end"
+			android:maxLines="2"
 			android:text="@{viewModel.title}"
-			tools:text="1. Explore your options." />
+			android:textColor="@{viewModel.isEnabled ? @color/white : @color/button_text_disabled_light}"
+			tools:text="1. Explore your options. And add enough for 2nd line of text." />
 
 		<LinearLayout
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentEnd="true"
-			android:layout_centerVertical="true"
 			android:orientation="vertical"
 			android:visibility="@{viewModel.showCount ? View.VISIBLE : View.GONE, default=gone}"
 			tools:visibility="visible">
 
 			<TextView
+				style="@style/GearUpTextAppearance.Title"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				style="@style/GearUpTextAppearance.Title"
-				android:textColor="@{viewModel.isEnabled ? @color/white : @color/button_text_disabled_light}"
+				android:layout_marginStart="@dimen/baseline_unit"
 				android:text="@{viewModel.count}"
+				android:textColor="@{viewModel.isEnabled ? @color/white : @color/button_text_disabled_light}"
 				tools:text="0 of 3" />
 
 			<TextView
+				style="@style/GearUpTextAppearance.Small"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				style="@style/GearUpTextAppearance.Small"
-				android:textColor="@{viewModel.isEnabled ? @color/white : @color/button_text_disabled_light}"
-				android:text="@string/completed" />
+				android:text="@string/completed"
+				android:textColor="@{viewModel.isEnabled ? @color/white : @color/button_text_disabled_light}" />
 		</LinearLayout>
 
 		<ImageView
 			android:layout_width="48dp"
 			android:layout_height="48dp"
-			android:layout_alignParentEnd="true"
-			android:layout_centerVertical="true"
 			android:tint="@color/white"
-			app:srcCompat="@drawable/ic_check_black_24dp"
 			android:visibility="@{viewModel.isDone ? View.VISIBLE : View.GONE, default=gone}"
-			tools:visibility="visible"/>
-	</RelativeLayout>
+			app:srcCompat="@drawable/ic_check_black_24dp"
+			tools:visibility="visible" />
+	</LinearLayout>
 </layout>
