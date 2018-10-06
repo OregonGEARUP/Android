@@ -42,7 +42,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CheckpointRepository implements CheckpointInterface
 {
 	private final static String LOG_TAG = "GearUp_CheckpointRepo";
-	private static final String baseUrl = "https://oregongoestocollege.org/mobileApp/json/";
 	private static CheckpointRepository instance;
 	private final List<String> traces = new ArrayList<>();
 	// pending Tasks
@@ -193,7 +192,7 @@ public class CheckpointRepository implements CheckpointInterface
 					Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from network");
 
 					// load the block info
-					URL url = new URL(baseUrl + "blocks.json");
+					URL url = new URL(Utils.BASE_URL + "blocks.json");
 					HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
 
 					InputStream stream = new BufferedInputStream(urlConnection.getInputStream());
@@ -277,7 +276,7 @@ public class CheckpointRepository implements CheckpointInterface
 				{
 					Utils.d(CheckpointRepository.LOG_TAG, "Block %s from network", blockFileName);
 
-					URL url = new URL(baseUrl + blockFileName);
+					URL url = new URL(Utils.BASE_URL + blockFileName);
 					HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
 
 					InputStream stream = new BufferedInputStream(urlConnection.getInputStream());

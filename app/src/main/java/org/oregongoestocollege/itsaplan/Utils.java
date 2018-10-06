@@ -14,6 +14,7 @@ import android.view.MenuItem;
  */
 public class Utils
 {
+	public static final String BASE_URL = "https://oregongoestocollege.org/mobileApp/json/";
 	static final String PARAM_BLOCK_FILE_NAME = "blockFileName";
 	static final String PARAM_BLOCK_INDEX = "blockIndex";
 	static final String PARAM_STAGE_INDEX = "stageIndex";

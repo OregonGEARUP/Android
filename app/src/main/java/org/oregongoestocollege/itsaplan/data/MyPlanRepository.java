@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Set;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import org.oregongoestocollege.itsaplan.Utils;
 import org.oregongoestocollege.itsaplan.data.dao.BlockInfoDao;
 import org.oregongoestocollege.itsaplan.data.dao.CollegeDao;
 import org.oregongoestocollege.itsaplan.data.dao.ResidencyDao;
@@ -23,6 +25,7 @@ import org.oregongoestocollege.itsaplan.data.dao.VisitedKeyDao;
  */
 public class MyPlanRepository
 {
+	private final static String LOG_TAG = "GearUp_MyPlanRepo";
 	private static MyPlanRepository instance;
 	private final MyPlanDatabase database;
 	private CollegeDao collegeDao;
@@ -32,6 +35,9 @@ public class MyPlanRepository
 	private LiveData<List<College>> allColleges;
 	private LiveData<List<Scholarship>> allScholarships;
 	private LiveData<List<BlockInfo>> allBlockInfos;
+	private MutableLiveData<ResponseData<List<CalendarEvent>>> allCalendarEvents;
+	// pending Tasks
+	private MyPlanTasks.CalendarEventsTask calendarEventsTask;
 	// allow for direct access for queries performed on a background thread
 	BlockInfoDao blockInfoDao;
 	VisitedKeyDao visitedKeyDao;
@@ -52,6 +58,8 @@ public class MyPlanRepository
 		blockInfoDao = database.blockInfoDao();
 		allBlockInfos = blockInfoDao.getAll();
 		visitedKeyDao = database.visitedKeyDao();
+
+		allCalendarEvents = new MutableLiveData<>();
 	}
 
 	public static MyPlanRepository getInstance(@NonNull Context context)
@@ -256,7 +264,6 @@ public class MyPlanRepository
 		}
 	}
 
-
 	/**
 	 * Wrapper to get all colleges from the database. Room executes all queries on a separate thread.
 	 * Observed LiveData will notify the observer when the data has changed.
@@ -441,5 +448,46 @@ public class MyPlanRepository
 		final VisitedKey[] array = VisitedKey.toArrayList(keys);
 
 		new DeleteAndInsertVisitedKeysAsyncTask(visitedKeyDao).execute(array);
+	}
+
+	/**
+	 * Wrapper to get all calendar events. All network / room queries are performed on a separate thread.
+	 * Observed LiveData will notify the observer when the data has changed.
+	 */
+	public LiveData<ResponseData<List<CalendarEvent>>> getCalendarEvents()
+	{
+		return allCalendarEvents;
+	}
+
+	public void loadCalendarEvents()
+	{
+		// setup a background task or hookup to our existing one
+		MyPlanTasks.CalendarEventsTask newTask = null;
+		synchronized (this)
+		{
+			if (calendarEventsTask == null)
+			{
+				newTask = new MyPlanTasks.CalendarEventsTask(this);
+				calendarEventsTask = newTask;
+
+				Utils.d(LOG_TAG, "CalendarEventsTask starting");
+			}
+			else
+				Utils.d(LOG_TAG, "CalendarEventsTask pending");
+		}
+
+		if (newTask != null)
+		{
+			allCalendarEvents.setValue(ResponseData.loading(null));
+			newTask.execute();
+		}
+	}
+
+	void loadCalendarEventsCompleted(@NonNull ResponseData<List<CalendarEvent>> responseData)
+	{
+		Utils.d(LOG_TAG, "CalendarEventsTask ending");
+
+		calendarEventsTask = null;
+		allCalendarEvents.setValue(responseData);
 	}
 }
