@@ -7,7 +7,7 @@
 
 		<variable
 			name="viewModel"
-			type="org.oregongoestocollege.itsaplan.viewmodel.CalendarEventViewModel" />
+			type="org.oregongoestocollege.itsaplan.viewmodel.CalendarItemViewModel" />
 	</data>
 
 	<LinearLayout

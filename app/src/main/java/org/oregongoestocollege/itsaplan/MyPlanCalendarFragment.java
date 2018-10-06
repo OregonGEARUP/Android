@@ -58,6 +58,10 @@ public class MyPlanCalendarFragment extends Fragment implements CompactCalendarV
 
 		viewModel = ViewModelProviders.of(this).get(CalendarViewModel.class);
 
+		// listen for data changes
+		MyPlanRepository myPlanRepository = MyPlanRepository.getInstance(getContext());
+		myPlanRepository.getCalendarEvents().observe(this, this::onCalendarEventsChanged);
+
 		// our VM stores the last selected date for rotation, etc. check it
 		Date selectedDate = viewModel.getSelectedDate();
 		if (selectedDate != null)
@@ -65,12 +69,7 @@ public class MyPlanCalendarFragment extends Fragment implements CompactCalendarV
 		else
 			viewModel.setCalendarTitle(calendarView.getFirstDayOfCurrentMonth());
 
-		// listen for data changes
-		MyPlanRepository myPlanRepository = MyPlanRepository.getInstance(getContext());
-		myPlanRepository.getCalendarEvents().observe(this, this::onCalendarEventsChanged);
-		myPlanRepository.loadCalendarEvents();
-
-		// bind to fragment to show list of events
+		// bind to fragment to show list of events and calendar title
 		binding.setViewModel(viewModel);
 
 		return v;
@@ -92,6 +91,14 @@ public class MyPlanCalendarFragment extends Fragment implements CompactCalendarV
 					calendarView.addEvents(events);
 			}
 		}
+	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+
+		viewModel.start();
 	}
 
 	@Override

@@ -10,11 +10,11 @@ import org.oregongoestocollege.itsaplan.support.BindingItem;
  * Oregon GEAR UP App
  * Copyright © 2018 Oregon GEAR UP. All rights reserved.
  */
-public class CalendarEventViewModel implements BindingItem
+public class CalendarItemViewModel implements BindingItem
 {
 	public final String title;
 
-	public CalendarEventViewModel(String title)
+	public CalendarItemViewModel(String title)
 	{
 		this.title = title;
 	}
@@ -22,7 +22,7 @@ public class CalendarEventViewModel implements BindingItem
 	@Override
 	public int getLayoutId()
 	{
-		return R.layout.item_calendar_event;
+		return R.layout.item_calendar_details;
 	}
 
 	@Override
