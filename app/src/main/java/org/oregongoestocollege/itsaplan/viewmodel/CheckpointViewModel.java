@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -17,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Toast;
 
@@ -44,7 +41,6 @@ import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
 public class CheckpointViewModel extends AndroidViewModel
 {
 	private static final String LOG_TAG = "GearUp_CheckpointViewModel";
-	private static final Pattern PATTERN_TEMPLATE = Pattern.compile("##[^(##)]+##");
 	private static final int MAX_DATES = 3;
 	// service data
 	private Checkpoint model;
@@ -109,7 +105,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			return;
 
 		// setup defaults
-		title = stringWithSubstitutions(model.title, entries);
+		title = entries.stringWithSubstitutions(context, model.title);
 		description = model.description;
 		descriptionTextColor = ContextCompat.getColor(context, R.color.text_primary);
 
@@ -147,49 +143,6 @@ public class CheckpointViewModel extends AndroidViewModel
 			setupRouteEntry(context);
 			break;
 		}
-	}
-
-	private String stringWithSubstitutions(String original, UserEntriesInterface entries)
-	{
-		if (!TextUtils.isEmpty(original))
-		{
-			// replacing values with patterns such as
-			// "##b2_s3_cp2_i1_text##",
-			// "##b2_s3_cp2_i1_text##, due ##b2_s3_cp2_i1_date##"
-
-			Matcher matcher = PATTERN_TEMPLATE.matcher(original);
-			StringBuffer sb = new StringBuffer();
-			while (matcher.find())
-			{
-				String substring = original.substring(matcher.start(), matcher.end());
-				int length = substring.length();
-				if (length > 4)
-				{
-					String key = substring.substring(2, length - 2);
-					String replacement = null;
-
-					if (key.endsWith("_date"))
-					{
-						long value = entries.getValueAsLong(key);
-						Date date = value > 0 ? DateConverter.toDate(value) : null;
-						if (date != null)
-							replacement = DateFormat.getLongDateFormat(getApplication()).format(date);
-					}
-					else
-						replacement = entries.getValue(key);
-
-					if (TextUtils.isEmpty(replacement))
-						replacement = String.format(Locale.getDefault(), "<< missing value for (%s) >>", key);
-
-					matcher.appendReplacement(sb, replacement);
-				}
-			}
-			matcher.appendTail(sb);
-			if (sb.length() > 0)
-				return sb.toString();
-		}
-
-		return original;
 	}
 
 	public boolean isFinalCheckpoint()

@@ -459,7 +459,7 @@ public class MyPlanRepository
 		return allCalendarEvents;
 	}
 
-	public void loadCalendarEvents()
+	public void loadCalendarEvents(@NonNull Context context)
 	{
 		// setup a background task or hookup to our existing one
 		MyPlanTasks.CalendarEventsTask newTask = null;
@@ -467,7 +467,7 @@ public class MyPlanRepository
 		{
 			if (calendarEventsTask == null)
 			{
-				newTask = new MyPlanTasks.CalendarEventsTask(this);
+				newTask = new MyPlanTasks.CalendarEventsTask(context);
 				calendarEventsTask = newTask;
 
 				Utils.d(LOG_TAG, "CalendarEventsTask starting");

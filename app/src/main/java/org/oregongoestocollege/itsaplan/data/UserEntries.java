@@ -1,14 +1,21 @@
 package org.oregongoestocollege.itsaplan.data;
 
 import java.lang.ref.WeakReference;
+import java.util.Date;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 
 import org.oregongoestocollege.itsaplan.Utils;
+import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
 
 /**
  * This class is used to retrieve and store user entered data.
@@ -20,6 +27,7 @@ import org.oregongoestocollege.itsaplan.Utils;
  */
 public class UserEntries implements UserEntriesInterface
 {
+	private static final Pattern PATTERN_TEMPLATE = Pattern.compile("##[^(##)]+##");
 	private WeakReference<SharedPreferences> weakRef;
 	private SharedPreferences.Editor editor;
 
@@ -112,5 +120,48 @@ public class UserEntries implements UserEntriesInterface
 		editor.putInt("currentStageIndex", checklistState.stageIndex);
 		editor.putInt("currentCheckpointIndex", checklistState.checkpointIndex);
 		editor.apply();
+	}
+
+	public String stringWithSubstitutions(@NonNull Context context, @Nullable String original)
+	{
+		if (!TextUtils.isEmpty(original))
+		{
+			// replacing values with patterns such as
+			// "##b2_s3_cp2_i1_text##"
+			// "##b2_s3_cp2_i1_text##, due ##b2_s3_cp2_i1_date##"
+
+			Matcher matcher = PATTERN_TEMPLATE.matcher(original);
+			StringBuffer sb = new StringBuffer();
+			while (matcher.find())
+			{
+				String substring = original.substring(matcher.start(), matcher.end());
+				int length = substring.length();
+				if (length > 4)
+				{
+					String key = substring.substring(2, length - 2);
+					String replacement = null;
+
+					if (key.endsWith("_date"))
+					{
+						long value = getValueAsLong(key);
+						Date date = value > 0 ? DateConverter.toDate(value) : null;
+						if (date != null)
+							replacement = DateFormat.getLongDateFormat(context).format(date);
+					}
+					else
+						replacement = getValue(key);
+
+					if (TextUtils.isEmpty(replacement))
+						replacement = String.format(Locale.getDefault(), "<< missing value for (%s) >>", key);
+
+					matcher.appendReplacement(sb, replacement);
+				}
+			}
+			matcher.appendTail(sb);
+			if (sb.length() > 0)
+				return sb.toString();
+		}
+
+		return original;
 	}
 }

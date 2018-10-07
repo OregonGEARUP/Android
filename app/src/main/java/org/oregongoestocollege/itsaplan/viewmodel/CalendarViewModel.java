@@ -53,8 +53,7 @@ public class CalendarViewModel extends AndroidViewModel
 
 			for (CalendarEvent calendarEvent : calendarEvents)
 			{
-				if (calendarEvent.hasEventDetails())
-					events.add(new Event(color, calendarEvent.getEventDate().getTime(), calendarEvent));
+				events.add(new Event(color, calendarEvent.getEventDate().getTime(), calendarEvent));
 			}
 		}
 		return events;
@@ -97,7 +96,7 @@ public class CalendarViewModel extends AndroidViewModel
 			return;
 
 		MyPlanRepository myPlanRepository = MyPlanRepository.getInstance(getApplication());
-		myPlanRepository.loadCalendarEvents();
+		myPlanRepository.loadCalendarEvents(getApplication());
 	}
 
 	/**

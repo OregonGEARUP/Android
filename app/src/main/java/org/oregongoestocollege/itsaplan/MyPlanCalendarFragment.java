@@ -30,7 +30,6 @@ import org.oregongoestocollege.itsaplan.viewmodel.CalendarViewModel;
 public class MyPlanCalendarFragment extends Fragment implements CompactCalendarView.CompactCalendarViewListener
 {
 	private static final String LOG_TAG = "GearUp_CalendarFrag";
-	private static final String FRAG_SELECTED_DATE = "frag-se-date";
 	private CalendarViewModel viewModel;
 	private CompactCalendarView calendarView;
 
