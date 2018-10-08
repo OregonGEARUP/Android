@@ -27,4 +27,7 @@ public interface TestResultDao
 
 	@Query("SELECT * from testresult_table where name = :name")
 	LiveData<TestResult> getTestResult(String name);
+
+	@Query("SELECT * from testresult_table")
+	TestResult[] getAllDirect();
 }

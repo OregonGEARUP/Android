@@ -107,6 +107,14 @@ public class MyPlanCollegesFragment extends Fragment implements OnFragmentIntera
 	}
 
 	@Override
+	public void onDestroyView()
+	{
+		super.onDestroyView();
+
+		binding = null;
+	}
+
+	@Override
 	public void handleTabChanged(boolean hidden)
 	{
 		// save any college changes, data is shared with passwords tab

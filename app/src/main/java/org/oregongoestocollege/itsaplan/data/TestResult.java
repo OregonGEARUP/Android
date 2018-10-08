@@ -113,4 +113,9 @@ public class TestResult
 	{
 		this.writing = writing;
 	}
+
+	public boolean hasTestDate()
+	{
+		return date != null && date.getTime() > 0;
+	}
 }

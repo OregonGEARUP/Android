@@ -33,4 +33,7 @@ public interface ScholarshipDao
 
 	@Query("SELECT * from scholarship_table")
 	LiveData<List<Scholarship>> getAll();
+
+	@Query("SELECT * from scholarship_table")
+	Scholarship[] getAllDirect();
 }

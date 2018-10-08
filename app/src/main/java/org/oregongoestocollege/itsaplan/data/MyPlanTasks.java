@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
 
 /**
@@ -42,10 +43,11 @@ class MyPlanTasks
 		@Override
 		protected ResponseData<List<CalendarEvent>> doInBackground(Void... voids)
 		{
-			try
+			// see if we need to get the data from the network, if we do, store the
+			// raw data so we can populate it with the latest user entered data
+			if (dataFromNetwork == null)
 			{
-				// see if we need to get the data from the network
-				if (dataFromNetwork == null)
+				try
 				{
 					URL url = new URL(Utils.BASE_URL + "calendar.json");
 					HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
@@ -60,36 +62,75 @@ class MyPlanTasks
 
 					urlConnection.disconnect();
 				}
-
-				List<CalendarEvent> events = null;
-				if (dataFromNetwork != null && !dataFromNetwork.isEmpty())
+				catch (IOException e)
 				{
-					UserEntriesInterface userEntries = new UserEntries(contextWeakReference.get());
-
-					// build event list with substitutions of user entered data
-					events = new ArrayList<>();
-
-					for (CalendarEventData data : dataFromNetwork)
-					{
-						CalendarEvent event = CalendarEvent.from(contextWeakReference.get(), data, userEntries);
-						if (event != null)
-							events.add(event);
-					}
+					e.printStackTrace();
 				}
-
-				// if we have a list of events than we successfully retrieved them from the network
-				// so we should at least have one event...
-				if (events != null && !events.isEmpty())
-					responseData = ResponseData.success(events);
-				else
-					responseData = ResponseData.error("No calendar data found on server.", null);
 			}
-			catch (IOException e)
+
+			CalendarEvent event;
+			List<CalendarEvent> events = new ArrayList<>();
+			final Context context = contextWeakReference.get();
+
+			// track whether we got the calendar events so we can show a warning
+			boolean gotNetworkData = dataFromNetwork != null && !dataFromNetwork.isEmpty();
+			if (gotNetworkData)
 			{
-				responseData = ResponseData.error("There was a problem loading the calendar information.", null);
+				UserEntriesInterface userEntries = new UserEntries(context);
 
-				e.printStackTrace();
+				// add events with substitutions of user entered data
+				for (CalendarEventData data : dataFromNetwork)
+				{
+					event = CalendarEvent.from(context, data, userEntries);
+					if (event != null)
+						events.add(event);
+				}
 			}
+
+			MyPlanRepository repository = MyPlanRepository.getInstance(context);
+
+			// add college application deadlines
+			College[] colleges = repository.collegeDao.getAllDirect();
+			if (colleges != null)
+			{
+				for (int i = 0; i < colleges.length; i++)
+				{
+					event = CalendarEvent.from(colleges[i], i);
+					if (event != null)
+						events.add(event);
+				}
+			}
+
+			// add scholarship application deadlines
+			Scholarship[] scholarships = repository.scholarshipDao.getAllDirect();
+			if (scholarships != null)
+			{
+				for (int i = 0; i < scholarships.length; i++)
+				{
+					event = CalendarEvent.from(scholarships[i], i);
+					if (event != null)
+						events.add(event);
+				}
+			}
+
+			// add test dates
+			TestResult[] testResults = repository.testResultDao.getAllDirect();
+			if (testResults != null)
+			{
+				for (TestResult testResult : testResults)
+				{
+					event = CalendarEvent.from(testResult);
+					if (event != null)
+						events.add(event);
+				}
+			}
+
+			// if the network call failed than set the response as an error so the user
+			// can be warned that not all events have been loaded...
+			if (gotNetworkData)
+				responseData = ResponseData.success(events);
+			else
+				responseData = ResponseData.error(context.getString(R.string.calendar_error_loading), events);
 
 			return responseData;
 		}

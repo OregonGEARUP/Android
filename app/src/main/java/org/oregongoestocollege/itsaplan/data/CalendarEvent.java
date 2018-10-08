@@ -51,7 +51,7 @@ public class CalendarEvent
 	}
 
 	/**
-	 * Using calendar data from the network, build a {@link CalendarEvent} that substitues user
+	 * Using calendar data from the network, build a {@link CalendarEvent} that substitutes user
 	 * entered data where appropriate.
 	 *
 	 * @param data {@link CalendarEventData} from the GearUP website
@@ -131,5 +131,72 @@ public class CalendarEvent
 			return new CalendarEvent(data, eventDate, eventDescription);
 		else
 			return null;
+	}
+
+	@Nullable
+	public static CalendarEvent from(College college, int index)
+	{
+		if (college != null && college.hasApplicationDate())
+		{
+			CalendarEventData data = new CalendarEventData();
+			data.reminderId = String.format(Locale.US, "collegeApp-%d", index);
+			data.reminder = String
+				.format(Locale.getDefault(), "The %s application is due in one week! Have you submitted it?",
+					college.getName());
+			data.reminderDelta = -7;
+
+			return new CalendarEvent(data, college.getApplicationDate(),
+				String.format(Locale.getDefault(), "%s  application deadline", college.getName()));
+		}
+
+		return null;
+	}
+
+	@Nullable
+	public static CalendarEvent from(Scholarship scholarship, int index)
+	{
+		if (scholarship != null && scholarship.hasApplicationDate())
+		{
+			CalendarEventData data = new CalendarEventData();
+			data.reminderId = String.format(Locale.US, "scholarshipApp-%d", index);
+			data.reminder = String
+				.format(Locale.getDefault(), "The %s application is due in one week! Have you submitted it?",
+					scholarship.getName());
+			data.reminderDelta = -7;
+
+			return new CalendarEvent(data, scholarship.getApplicationDate(),
+				String.format(Locale.getDefault(), "%s  application deadline", scholarship.getName()));
+		}
+
+		return null;
+	}
+
+	@Nullable
+	public static CalendarEvent from(TestResult testResult)
+	{
+		if (testResult != null && testResult.hasTestDate())
+		{
+			final String testName = testResult.getName();
+			if (TestResult.NAME_ACT.equals(testName))
+			{
+				CalendarEventData data = new CalendarEventData();
+				data.reminderId = "testResultApp-act";
+				data.reminder = "Good luck on the ACT tomorrow! Get plenty of rest and eat a good breakfast.";
+				data.reminderDelta = -7;
+
+				return new CalendarEvent(data, testResult.getDate(), "ACT Test");
+			}
+			else if (TestResult.NAME_SAT.equals(testName))
+			{
+				CalendarEventData data = new CalendarEventData();
+				data.reminderId = "testResultApp-sat";
+				data.reminder = "Good luck on the SAT tomorrow! Get plenty of rest and eat a good breakfast.";
+				data.reminderDelta = -7;
+
+				return new CalendarEvent(data, testResult.getDate(), "SAT Test");
+			}
+		}
+
+		return null;
 	}
 }

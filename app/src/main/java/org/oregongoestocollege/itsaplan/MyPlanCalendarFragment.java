@@ -87,7 +87,16 @@ public class MyPlanCalendarFragment extends Fragment implements CompactCalendarV
 				calendarView.removeAllEvents();
 
 				if (!events.isEmpty())
+				{
 					calendarView.addEvents(events);
+
+					Date currentDate = calendarView.getCurrentDate();
+					if (currentDate != null)
+					{
+						List<Event> currentEvents = calendarView.getEvents(currentDate);
+						viewModel.dateSelected(currentDate, currentEvents);
+					}
+				}
 			}
 		}
 	}

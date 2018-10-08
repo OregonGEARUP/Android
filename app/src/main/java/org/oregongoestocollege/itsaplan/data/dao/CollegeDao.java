@@ -33,4 +33,7 @@ public interface CollegeDao
 
 	@Query("SELECT * from college_table")
 	LiveData<List<College>> getAll();
+
+	@Query("SELECT * from college_table")
+	College[] getAllDirect();
 }

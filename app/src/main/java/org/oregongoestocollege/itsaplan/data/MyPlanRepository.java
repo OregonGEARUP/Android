@@ -29,9 +29,6 @@ public class MyPlanRepository
 	private final static String LOG_TAG = "GearUp_MyPlanRepo";
 	private static MyPlanRepository instance;
 	private final MyPlanDatabase database;
-	private CollegeDao collegeDao;
-	private ScholarshipDao scholarshipDao;
-	private TestResultDao testResultDao;
 	private ResidencyDao residencyDao;
 	private LiveData<List<College>> allColleges;
 	private LiveData<List<Scholarship>> allScholarships;
@@ -39,7 +36,10 @@ public class MyPlanRepository
 	private MutableLiveData<ResponseData<List<CalendarEvent>>> allCalendarEvents;
 	// pending Tasks
 	private MyPlanTasks.CalendarEventsTask calendarEventsTask;
-	// allow for direct access for queries performed on a background thread
+	// allow for direct access for queries performed in tasks / on a background thread
+	CollegeDao collegeDao;
+	ScholarshipDao scholarshipDao;
+	TestResultDao testResultDao;
 	BlockInfoDao blockInfoDao;
 	VisitedKeyDao visitedKeyDao;
 

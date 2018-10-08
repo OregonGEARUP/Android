@@ -75,6 +75,14 @@ public class MyPlanTestResultsFragment extends Fragment
 	}
 
 	@Override
+	public void onDestroyView()
+	{
+		super.onDestroyView();
+
+		binding = null;
+	}
+
+	@Override
 	public void onStop()
 	{
 		super.onStop();

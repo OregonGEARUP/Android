@@ -2,7 +2,6 @@ package org.oregongoestocollege.itsaplan.viewmodel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -14,6 +13,8 @@ import android.databinding.ObservableField;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.text.TextUtils;
+import android.widget.Toast;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
@@ -145,10 +146,13 @@ public class CalendarViewModel extends AndroidViewModel
 				loading.set(true);
 				break;
 			case ERROR:
-				List<CalendarItemViewModel> viewModels = Collections.singletonList(
-					new CalendarItemViewModel(getApplication().getString(R.string.calendar_error_loading)));
-				itemViewModels.set(viewModels);
+				// we may have an error but still have events
+				events = createEvents(response.data);
 				loading.set(false);
+				// warn that not all is loaded
+				if (!TextUtils.isEmpty(response.message))
+					Toast.makeText(getApplication(), response.message, Toast.LENGTH_LONG).
+						show();
 				break;
 			case SUCCESS:
 				events = createEvents(response.data);
