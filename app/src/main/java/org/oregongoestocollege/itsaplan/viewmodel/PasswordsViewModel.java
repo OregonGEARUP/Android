@@ -1,5 +1,6 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +48,7 @@ public class PasswordsViewModel extends AndroidViewModel
 	private CryptoUtil cryptoUtil;
 	private Map<String, SecureInfoViewModel> secureInfoMap;
 	private boolean isLocked;
+	private long timestamp;
 
 	public PasswordsViewModel(@NonNull Application application)
 	{
@@ -123,6 +125,25 @@ public class PasswordsViewModel extends AndroidViewModel
 		// only lock / unlock if needed
 		if (secureInfoMap != null  && lock != isLocked)
 			lockItemViewModels(lock);
+
+		if (isLocked())
+			timestamp = 0;
+	}
+
+	public void onPause()
+	{
+		timestamp = Calendar.getInstance().getTimeInMillis();
+	}
+
+	public void onResume()
+	{
+		if (!isLocked() && timestamp != 0)
+		{
+			// if user left the app for more than 30 seconds, lock the data
+			long now = Calendar.getInstance().getTimeInMillis();
+			if (now - timestamp > 30000)
+				lockAll(true);
+		}
 	}
 
 	public void saveAll()

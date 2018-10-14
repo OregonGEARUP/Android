@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -155,6 +156,31 @@ public class PasswordContainerFragment extends BaseFragment
 	public void launchUnlockFragment()
 	{
 		showPasswordPin(false);
+	}
+
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+		Utils.d(LOG_TAG, "onPause");
+
+		if (viewModel != null)
+			viewModel.onPause();
+	}
+
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		Utils.d(LOG_TAG, "onResume");
+
+		if (viewModel != null)
+			viewModel.onResume();
+
+		// force update of our menu
+		FragmentActivity activity = getActivity();
+		if (activity != null)
+			getActivity().invalidateOptionsMenu();
 	}
 
 	@Override
