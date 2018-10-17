@@ -199,4 +199,28 @@ public class CalendarEvent
 
 		return null;
 	}
+
+	public boolean hasReminderInfo()
+	{
+		return !TextUtils.isEmpty(data.reminderId) && !TextUtils.isEmpty(data.reminder);
+	}
+
+	public int getReminderId()
+	{
+		// we need a numeric value for notification identifiers
+		if (!TextUtils.isEmpty(data.reminderId))
+			return Integer.valueOf(data.reminderId, 36);
+
+		return 0;
+	}
+
+	public String getReminderMessage()
+	{
+		return data.reminder;
+	}
+
+	public int getReminderDelta()
+	{
+		return data.reminderDelta;
+	}
 }
