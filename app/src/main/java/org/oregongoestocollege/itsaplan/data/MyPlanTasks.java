@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.oregongoestocollege.itsaplan.NotificationJobService;
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.Utils;
 
@@ -43,6 +44,8 @@ class MyPlanTasks
 		@Override
 		protected ResponseData<List<CalendarEvent>> doInBackground(Void... voids)
 		{
+			boolean firstLoad = false;
+
 			// see if we need to get the data from the network, if we do, store the
 			// raw data so we can populate it with the latest user entered data
 			if (dataFromNetwork == null)
@@ -61,6 +64,8 @@ class MyPlanTasks
 					dataFromNetwork = new Gson().fromJson(bufferedReader, listType);
 
 					urlConnection.disconnect();
+
+					firstLoad = true;
 				}
 				catch (IOException e)
 				{
@@ -128,7 +133,13 @@ class MyPlanTasks
 			// if the network call failed than set the response as an error so the user
 			// can be warned that not all events have been loaded...
 			if (gotNetworkData)
+			{
 				responseData = ResponseData.success(events);
+
+				// schedule notifications for all events only on first load
+				if (firstLoad)
+					NotificationJobService.scheduleNotifications(context, events);
+			}
 			else
 				responseData = ResponseData.error(context.getString(R.string.calendar_error_loading), events);
 

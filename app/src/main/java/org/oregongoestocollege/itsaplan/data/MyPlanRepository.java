@@ -477,11 +477,10 @@ public class MyPlanRepository
 				Utils.d(LOG_TAG, "CalendarEventsTask pending");
 		}
 
+		allCalendarEvents.setValue(ResponseData.loading(null));
+
 		if (newTask != null)
-		{
-			allCalendarEvents.setValue(ResponseData.loading(null));
 			newTask.execute();
-		}
 	}
 
 	void loadCalendarEventsCompleted(@NonNull ResponseData<List<CalendarEvent>> responseData)

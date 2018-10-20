@@ -1,5 +1,10 @@
 package org.oregongoestocollege.itsaplan;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -13,9 +18,13 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
+
+import org.oregongoestocollege.itsaplan.data.CalendarEvent;
 
 /**
  * Oregon GEAR UP App
@@ -27,6 +36,7 @@ public class NotificationJobService extends JobService
 	private static final String CHANNEL_ID = "GearUpChannelDefault";
 	private static final String KEY_NOTIFICATION_ID = "notif-id";
 	private static final String KEY_NOTIFICATION_MESSAGE = "notif-message";
+	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault());
 
 	/**
 	 * This is called by the system once it determines it is time to run the job.
@@ -82,8 +92,7 @@ public class NotificationJobService extends JobService
 
 	private void createNotificationChannel(Context context)
 	{
-		// Create the NotificationChannel, but only on API 26+ because
-		// the NotificationChannel class is new and not in the support library
+		// Create the NotificationChannel, but only on API 26+
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
 		{
 			CharSequence name = context.getString(R.string.channel_name);
@@ -101,18 +110,9 @@ public class NotificationJobService extends JobService
 		}
 	}
 
-	public static void scheduleNotification(@NonNull Context context, int id, @NonNull String message,
-		long delayBy)
+	private static void scheduleJob(@NonNull JobScheduler scheduler, @NonNull ComponentName serviceName,
+		int id, @NonNull String message, long delayBy)
 	{
-		if (id <= 0 || TextUtils.isEmpty(message))
-			return;
-
-		JobScheduler scheduler = (JobScheduler)context.getSystemService(JOB_SCHEDULER_SERVICE);
-		if (scheduler == null)
-			return;
-
-		ComponentName serviceName = new ComponentName(context.getPackageName(), NotificationJobService.class.getName());
-
 		PersistableBundle extras = new PersistableBundle(2);
 		extras.putInt(KEY_NOTIFICATION_ID, id);
 		extras.putString(KEY_NOTIFICATION_MESSAGE, message);
@@ -124,6 +124,129 @@ public class NotificationJobService extends JobService
 			.setPersisted(true)
 			.setExtras(extras);
 
-		scheduler.schedule(builder.build());
+		int result = scheduler.schedule(builder.build());
+
+		if (result == JobScheduler.RESULT_FAILURE && Utils.DEBUG)
+			Utils.d(LOG_TAG, "failed to schedule id %s", id);
+	}
+
+	public static void scheduleNotification(
+		@NonNull Context context, int id, @NonNull String message,
+		long delayBy)
+	{
+		if (id <= 0 || TextUtils.isEmpty(message))
+			return;
+
+		JobScheduler scheduler = (JobScheduler)context.getSystemService(JOB_SCHEDULER_SERVICE);
+		if (scheduler == null)
+			return;
+
+		ComponentName serviceName = new ComponentName(context.getPackageName(), NotificationJobService.class.getName());
+
+		scheduleJob(scheduler, serviceName, id, message, delayBy);
+	}
+
+	/**
+	 * Cancels all pending jobs and reschedules all current calendar events.
+	 *
+	 * @param context used to retrieve job scheduler resources
+	 * @param events list of events to schedule for notification
+	 */
+	public static void scheduleNotifications(@NonNull Context context, @Nullable List<CalendarEvent> events)
+	{
+		if (events == null || events.isEmpty())
+			return;
+
+		JobScheduler scheduler = (JobScheduler)context.getSystemService(JOB_SCHEDULER_SERVICE);
+		if (scheduler == null)
+			return;
+
+		ComponentName serviceName = new ComponentName(context.getPackageName(), NotificationJobService.class.getName());
+
+		// cancel all existing jobs
+		scheduler.cancelAll();
+
+		// get the time in milliseconds now
+		Calendar calendar = Calendar.getInstance();
+		long now = calendar.getTimeInMillis();
+
+		for (CalendarEvent event : events)
+		{
+			if (event.hasReminderInfo())
+			{
+				// setup calendar for event date at 10 AM
+				calendar.clear();
+				calendar.setTime(event.getEventDate());
+				calendar.set(Calendar.HOUR, 10);
+				calendar.set(Calendar.MINUTE, 0);
+
+				if (Utils.DEBUG)
+				{
+					Utils.d(LOG_TAG, event.getEventDescription());
+					Utils.d(LOG_TAG, "Event id:%s (%d)", event.getReminderIdString(), event.getReminderId());
+					Utils.d(LOG_TAG, "  Event   date %s", dateFormat.format(calendar.getTime()));
+				}
+
+				// adjust the event date by the delta and set to notify at 10 AM
+				calendar.add(Calendar.DAY_OF_MONTH, event.getReminderDelta());
+
+				// calculate how long to delay notification from now
+				long delayBy = calendar.getTimeInMillis() - now;
+				if (delayBy > 0)
+				{
+					scheduleJob(scheduler, serviceName, event.getReminderId(),
+						event.getReminderMessage(), delayBy);
+				}
+
+				if (Utils.DEBUG)
+				{
+					Utils.d(LOG_TAG, "  Scheduled %s", delayBy > 0);
+					Utils.d(LOG_TAG, "  Scheduled %s", delayBy > 0);
+				}
+			}
+		}
+	}
+
+	public static void testOnlyScheduleNotification(@NonNull Context context)
+	{
+		JobScheduler scheduler = (JobScheduler)context.getSystemService(JOB_SCHEDULER_SERVICE);
+		if (scheduler == null)
+			return;
+
+		ComponentName serviceName = new ComponentName(context.getPackageName(), NotificationJobService.class.getName());
+
+		scheduleJob(scheduler, serviceName, 9999,
+			"Here is a test message that displays in 30 seconds!",
+			(30 * 1000));
+	}
+
+	public static void testOnlyLogAllNotificationJobs(@NonNull Context context)
+	{
+		if (!Utils.DEBUG)
+			return;
+
+		JobScheduler scheduler = (JobScheduler)context.getSystemService(JOB_SCHEDULER_SERVICE);
+		if (scheduler == null)
+			return;
+
+		List<JobInfo> list = scheduler.getAllPendingJobs();
+		Utils.d(LOG_TAG, "testOnlyLogAllNotificationJobs count %d", list.size());
+
+		// get the time in milliseconds now
+		Calendar calendar = Calendar.getInstance();
+		long now = calendar.getTimeInMillis();
+
+		for (JobInfo jobInfo : list)
+		{
+			PersistableBundle extras = jobInfo.getExtras();
+			final int id = extras.getInt(KEY_NOTIFICATION_ID);
+			final String message = extras.getString(KEY_NOTIFICATION_MESSAGE);
+
+			Utils.d(LOG_TAG, "id:%d when:%s extra_id:%d %s",
+				jobInfo.getId(),
+				DateUtils.getRelativeTimeSpanString(now + jobInfo.getMinLatencyMillis()),
+				id, message);
+
+		}
 	}
 }

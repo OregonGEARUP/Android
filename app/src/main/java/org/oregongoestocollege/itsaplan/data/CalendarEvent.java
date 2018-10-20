@@ -22,6 +22,9 @@ import org.oregongoestocollege.itsaplan.data.dao.DateConverter;
 public class CalendarEvent
 {
 	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy", Locale.US);
+	private static final int REMINDER_INDEX_COLLEGE = 100;
+	private static final int REMINDER_INDEX_SCHOLARSHIP = 500;
+	private static final int REMINDER_INDEX_TESTS = 900;
 	// data from the JSON files on the website
 	@NonNull
 	private CalendarEventData data;
@@ -139,7 +142,7 @@ public class CalendarEvent
 		if (college != null && college.hasApplicationDate())
 		{
 			CalendarEventData data = new CalendarEventData();
-			data.reminderId = String.format(Locale.US, "collegeApp-%d", index);
+			data.reminderId = String.format(Locale.US, "%d", REMINDER_INDEX_COLLEGE + index);
 			data.reminder = String
 				.format(Locale.getDefault(), "The %s application is due in one week! Have you submitted it?",
 					college.getName());
@@ -158,7 +161,7 @@ public class CalendarEvent
 		if (scholarship != null && scholarship.hasApplicationDate())
 		{
 			CalendarEventData data = new CalendarEventData();
-			data.reminderId = String.format(Locale.US, "scholarshipApp-%d", index);
+			data.reminderId = String.format(Locale.US, "%d", REMINDER_INDEX_SCHOLARSHIP + index);
 			data.reminder = String
 				.format(Locale.getDefault(), "The %s application is due in one week! Have you submitted it?",
 					scholarship.getName());
@@ -180,7 +183,7 @@ public class CalendarEvent
 			if (TestResult.NAME_ACT.equals(testName))
 			{
 				CalendarEventData data = new CalendarEventData();
-				data.reminderId = "testResultApp-act";
+				data.reminderId = String.format(Locale.US, "%d", REMINDER_INDEX_TESTS + 1);
 				data.reminder = "Good luck on the ACT tomorrow! Get plenty of rest and eat a good breakfast.";
 				data.reminderDelta = -7;
 
@@ -189,7 +192,7 @@ public class CalendarEvent
 			else if (TestResult.NAME_SAT.equals(testName))
 			{
 				CalendarEventData data = new CalendarEventData();
-				data.reminderId = "testResultApp-sat";
+				data.reminderId = String.format(Locale.US, "%d", REMINDER_INDEX_TESTS + 2);
 				data.reminder = "Good luck on the SAT tomorrow! Get plenty of rest and eat a good breakfast.";
 				data.reminderDelta = -7;
 
@@ -212,6 +215,11 @@ public class CalendarEvent
 			return Integer.valueOf(data.reminderId, 36);
 
 		return 0;
+	}
+
+	public String getReminderIdString()
+	{
+		return data.reminderId;
 	}
 
 	public String getReminderMessage()

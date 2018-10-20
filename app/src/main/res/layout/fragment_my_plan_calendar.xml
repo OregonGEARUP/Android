@@ -66,6 +66,12 @@
 				android:orientation="vertical"
 				app:contents="@{viewModel.itemViewModels}"
 				android:visibility="@{viewModel.isLoading? View.GONE : View.VISIBLE}" />
+
+			<!--<Button-->
+				<!--android:layout_width="wrap_content"-->
+				<!--android:layout_height="wrap_content"-->
+				<!--android:text="test"-->
+				<!--android:onClick="@{view -> viewModel.onTestNotifications(view)}"/>-->
 		</LinearLayout>
 
 	</ScrollView>

@@ -165,4 +165,14 @@ public class CalendarViewModel extends AndroidViewModel
 
 		return events;
 	}
+
+//	public void onTestNotifications(View view)
+//	{
+//		final Context context = view.getContext();
+//
+//		if (context == null)
+//			return;
+//
+//		NotificationJobService.testOnlyLogAllNotificationJobs(context);
+//	}
 }

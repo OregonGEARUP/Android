@@ -48,6 +48,6 @@ dependencies {
 	implementation "android.arch.lifecycle:extensions:$lifecycle_version"
 	implementation "android.arch.persistence.room:runtime:$room_version"
 	annotationProcessor "android.arch.persistence.room:compiler:$room_version"
-	compile 'com.google.guava:guava:25.1-android'
-	compile 'com.google.code.findbugs:jsr305:3.0.2'
+	implementation 'com.google.guava:guava:25.1-android'
+	implementation 'com.google.code.findbugs:jsr305:3.0.2'
 }
