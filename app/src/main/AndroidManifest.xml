@@ -13,17 +13,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
+        <!-- not using for now, issues with Pixel 2 and splash_background -->
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme">
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"/>
         <activity
             android:name=".WebViewActivity"
             android:label="@string/title_info"/>

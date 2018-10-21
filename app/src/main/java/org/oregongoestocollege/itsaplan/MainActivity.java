@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.support.BottomBarAdapter;
 import org.oregongoestocollege.itsaplan.support.NoSwipePager;
 import org.oregongoestocollege.itsaplan.viewmodel.MyPlanNavViewModel;
@@ -49,6 +50,15 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		viewPager.addOnPageChangeListener(this);
 
 		viewModel = ViewModelProviders.of(this).get(MyPlanNavViewModel.class);
+	}
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+
+		// pre-load calendar event data so it's available to schedule notifications
+		MyPlanRepository.getInstance(this).loadCalendarEvents(this);
 	}
 
 	boolean onNavigationItemSelected(@NonNull MenuItem item)

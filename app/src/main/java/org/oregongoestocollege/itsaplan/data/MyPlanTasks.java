@@ -30,15 +30,14 @@ class MyPlanTasks
 {
 	static class CalendarEventsTask extends AsyncTask<Void, Void, ResponseData<List<CalendarEvent>>>
 	{
-		// todo - find right place to store this, could put in DB but since CalendarEventData has fields of
-		// List<String> docs suggest storing as JSON using converter so maybe just save the response to a file
-		private static List<CalendarEventData> dataFromNetwork;
 		private WeakReference<Context> contextWeakReference;
+		private List<CalendarEventData> dataFromNetwork;
 		private ResponseData<List<CalendarEvent>> responseData;
 
-		CalendarEventsTask(@NonNull Context context)
+		CalendarEventsTask(@NonNull Context context, List<CalendarEventData> dataFromNetwork)
 		{
 			this.contextWeakReference = new WeakReference<>(context);
+			this.dataFromNetwork = dataFromNetwork;
 		}
 
 		@Override
@@ -152,6 +151,11 @@ class MyPlanTasks
 			super.onPostExecute(listResponseData);
 
 			MyPlanRepository.getInstance(contextWeakReference.get()).loadCalendarEventsCompleted(responseData);
+		}
+
+		List<CalendarEventData> getRawData()
+		{
+			return dataFromNetwork;
 		}
 	}
 }

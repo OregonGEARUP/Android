@@ -12,6 +12,11 @@
 	<style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
 		<item name="android:windowBackground">@drawable/splash_background</item>
 	</style>
+	<style name="AppTheme.Launcher">
+		<item name="android:windowBackground">@drawable/splash_background</item>
+		<!-- Optional, on Android 5+ you can modify the colorPrimaryDark color to match the windowBackground color for further branding-->
+		<item name="colorPrimaryDark">@android:color/white</item>
+	</style>
 
 	<style name="GearUpTextAppearance" parent="@android:style/TextAppearance">
 		<item name="android:textSize">14sp</item>

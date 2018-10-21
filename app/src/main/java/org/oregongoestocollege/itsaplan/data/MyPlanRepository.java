@@ -34,8 +34,9 @@ public class MyPlanRepository
 	private LiveData<List<Scholarship>> allScholarships;
 	private LiveData<List<BlockInfo>> allBlockInfos;
 	private MutableLiveData<ResponseData<List<CalendarEvent>>> allCalendarEvents;
-	// pending Tasks
+	// calendar fields
 	private MyPlanTasks.CalendarEventsTask calendarEventsTask;
+	private List<CalendarEventData> calendarEventDataFromNetwork;
 	// allow for direct access for queries performed in tasks / on a background thread
 	CollegeDao collegeDao;
 	ScholarshipDao scholarshipDao;
@@ -460,33 +461,70 @@ public class MyPlanRepository
 		return allCalendarEvents;
 	}
 
-	public void loadCalendarEvents(@NonNull Context context)
+	/**
+	 * Private method to make sure we only have one task executing to retrieve calendar events.
+	 */
+	private void loadCalendarEvents(@NonNull Context context, boolean networkOnly)
 	{
+		boolean loading = false;
+
 		// setup a background task or hookup to our existing one
 		MyPlanTasks.CalendarEventsTask newTask = null;
 		synchronized (this)
 		{
-			if (calendarEventsTask == null)
+			if (!networkOnly || calendarEventDataFromNetwork == null)
 			{
-				newTask = new MyPlanTasks.CalendarEventsTask(context);
-				calendarEventsTask = newTask;
+				if (calendarEventsTask == null)
+				{
+					// have task use previously loaded network data when available
+					newTask = new MyPlanTasks.CalendarEventsTask(context, calendarEventDataFromNetwork);
+					calendarEventsTask = newTask;
 
-				Utils.d(LOG_TAG, "CalendarEventsTask starting");
+					Utils.d(LOG_TAG, "CalendarEventsTask starting");
+				}
+				else
+					Utils.d(LOG_TAG, "CalendarEventsTask pending");
+
+				loading = true;
 			}
 			else
-				Utils.d(LOG_TAG, "CalendarEventsTask pending");
+				Utils.d(LOG_TAG, "CalendarEventsTask skipped");
+
 		}
 
-		allCalendarEvents.setValue(ResponseData.loading(null));
+		if (loading)
+		{
+			allCalendarEvents.setValue(ResponseData.loading(null));
 
-		if (newTask != null)
-			newTask.execute();
+			if (newTask != null)
+				newTask.execute();
+		}
+	}
+
+
+	/**
+	 * Called on start of main activity to pre-load any calendar events from the network.
+	 * If we already have data from the network this method should do nothing...
+	 */
+	public void loadCalenderEventsFromNetwork(@NonNull Context context)
+	{
+		loadCalendarEvents(context, true);
+	}
+
+	/**
+	 * Called when displaying calender to user. Reflects any changes made to dates.
+	 */
+	public void loadCalendarEvents(@NonNull Context context)
+	{
+		loadCalendarEvents(context, false);
 	}
 
 	void loadCalendarEventsCompleted(@NonNull ResponseData<List<CalendarEvent>> responseData)
 	{
 		Utils.d(LOG_TAG, "CalendarEventsTask ending");
 
+		// keep track of the network data, we only want to retrieve it once
+		calendarEventDataFromNetwork = calendarEventsTask.getRawData();
 		calendarEventsTask = null;
 		allCalendarEvents.setValue(responseData);
 	}
