@@ -109,7 +109,15 @@ public class ScholarshipViewModel implements BindingItem
 		scholarship.setTestsDone(testsDone.get());
 		scholarship.setApplicationDone(applicationDone.get());
 
+		applicationDateVm.get().saved();
+
 		repository.update(scholarship);
+	}
+
+	public boolean isNotificationDirty()
+	{
+		return applicationDateVm.get().isDirty() ||
+			!TextUtils.equals(name.get(), scholarship.getName());
 	}
 
 	public boolean isRemovable()

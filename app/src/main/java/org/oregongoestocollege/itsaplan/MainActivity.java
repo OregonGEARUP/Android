@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 		super.onResume();
 
 		// pre-load calendar event data so it's available to schedule notifications
-		MyPlanRepository.getInstance(this).loadCalendarEvents(this);
+		MyPlanRepository.getInstance(this).preFetchCalenderEvents(this);
 	}
 
 	boolean onNavigationItemSelected(@NonNull MenuItem item)

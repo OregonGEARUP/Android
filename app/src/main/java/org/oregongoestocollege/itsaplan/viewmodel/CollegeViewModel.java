@@ -121,7 +121,15 @@ public class CollegeViewModel implements BindingItem
 		college.setFeeDeferralDone(feeDeferralDone.get());
 		college.setApplicationDone(applicationDone.get());
 
+		applicationDateVm.get().saved();
+
 		repository.update(college);
+	}
+
+	public boolean isNotificationDirty()
+	{
+		return applicationDateVm.get().isDirty() ||
+			!TextUtils.equals(name.get(), college.getName());
 	}
 
 	public boolean isRemovable()

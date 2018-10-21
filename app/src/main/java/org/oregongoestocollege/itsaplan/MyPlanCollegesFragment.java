@@ -126,9 +126,11 @@ public class MyPlanCollegesFragment extends Fragment implements OnFragmentIntera
 	public void onStop()
 	{
 		super.onStop();
-		Utils.d(LOG_TAG, "onStop");
+
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onStop");
 
 		if (viewModel != null)
-			viewModel.update();
+			viewModel.stop();
 	}
 }

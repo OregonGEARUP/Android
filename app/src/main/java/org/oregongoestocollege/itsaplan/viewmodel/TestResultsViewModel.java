@@ -23,6 +23,7 @@ public class TestResultsViewModel extends AndroidViewModel
 	// UX fields
 	public final ObservableField<TestResultViewModel> actVm = new ObservableField<>();
 	public final ObservableField<TestResultViewModel> satVm = new ObservableField<>();
+	private boolean refreshNotifications;
 
 	public TestResultsViewModel(@NonNull Application application)
 	{
@@ -71,9 +72,32 @@ public class TestResultsViewModel extends AndroidViewModel
 	{
 		TestResultViewModel viewModel = actVm.get();
 		if (viewModel != null)
+		{
+			if (!refreshNotifications && viewModel.isNotificationDirty())
+				refreshNotifications = true;
+
 			viewModel.update(repository, actTestResultData.getValue());
+		}
 		viewModel = satVm.get();
 		if (viewModel != null)
+		{
+			if (!refreshNotifications && viewModel.isNotificationDirty())
+				refreshNotifications = true;
+
 			viewModel.update(repository, satTestResultData.getValue());
+		}
+	}
+
+	public void stop()
+	{
+		// update anything that has changed
+		update();
+
+		// then update related notifications
+		if (refreshNotifications)
+			repository.updateTestNotifications(getApplication(), refreshNotifications);
+
+		// reset flag till the next time
+		refreshNotifications = false;
 	}
 }

@@ -32,6 +32,7 @@ public class ScholarshipsViewModel extends AndroidViewModel
 	private MyPlanRepository repository;
 	private LiveData<List<Scholarship>> allScholarships;
 	private List<ScholarshipViewModel> allViewModels;
+	private boolean refreshNotifications;
 
 	public ScholarshipsViewModel(@NonNull Application application)
 	{
@@ -179,7 +180,27 @@ public class ScholarshipsViewModel extends AndroidViewModel
 		if (allViewModels != null)
 		{
 			for (ScholarshipViewModel allViewModel : allViewModels)
+			{
+				if (!refreshNotifications && allViewModel.isNotificationDirty())
+					refreshNotifications = true;
+
 				allViewModel.update();
+			}
+		}
+	}
+
+	public void stop()
+	{
+		if (allViewModels != null)
+		{
+			// update anything that has changed
+			update();
+
+			// then update related notifications
+			repository.updateScholarshipNotifications(getApplication(), refreshNotifications);
+
+			// reset flag till the next time
+			refreshNotifications = false;
 		}
 	}
 

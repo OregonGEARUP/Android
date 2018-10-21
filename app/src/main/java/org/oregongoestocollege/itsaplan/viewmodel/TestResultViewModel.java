@@ -54,6 +54,11 @@ public class TestResultViewModel
 		writing.set(testResult.getWriting());
 	}
 
+	public boolean isNotificationDirty()
+	{
+		return testDateVm.get().isDirty();
+	}
+
 	public void update(@NonNull MyPlanRepository repository, TestResult value)
 	{
 		if (!isDirty(value))
@@ -67,6 +72,8 @@ public class TestResultViewModel
 		value.setScience(science.get());
 		value.setReading(reading.get());
 		value.setWriting(writing.get());
+
+		testDateVm.get().saved();
 
 		repository.update(value);
 	}

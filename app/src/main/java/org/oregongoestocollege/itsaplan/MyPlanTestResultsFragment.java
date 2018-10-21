@@ -86,9 +86,11 @@ public class MyPlanTestResultsFragment extends Fragment
 	public void onStop()
 	{
 		super.onStop();
-		Utils.d(LOG_TAG, "onStop");
+
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onStop");
 
 		if (viewModel != null)
-			viewModel.update();
+			viewModel.stop();
 	}
 }

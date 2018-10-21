@@ -15,6 +15,7 @@ import java.util.List;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -72,62 +73,12 @@ class MyPlanTasks
 				}
 			}
 
-			CalendarEvent event;
-			List<CalendarEvent> events = new ArrayList<>();
-			final Context context = contextWeakReference.get();
-
 			// track whether we got the calendar events so we can show a warning
 			boolean gotNetworkData = dataFromNetwork != null && !dataFromNetwork.isEmpty();
-			if (gotNetworkData)
-			{
-				UserEntriesInterface userEntries = new UserEntries(context);
 
-				// add events with substitutions of user entered data
-				for (CalendarEventData data : dataFromNetwork)
-				{
-					event = CalendarEvent.from(context, data, userEntries);
-					if (event != null)
-						events.add(event);
-				}
-			}
-
-			MyPlanRepository repository = MyPlanRepository.getInstance(context);
-
-			// add college application deadlines
-			College[] colleges = repository.collegeDao.getAllDirect();
-			if (colleges != null)
-			{
-				for (int i = 0; i < colleges.length; i++)
-				{
-					event = CalendarEvent.from(colleges[i], i);
-					if (event != null)
-						events.add(event);
-				}
-			}
-
-			// add scholarship application deadlines
-			Scholarship[] scholarships = repository.scholarshipDao.getAllDirect();
-			if (scholarships != null)
-			{
-				for (int i = 0; i < scholarships.length; i++)
-				{
-					event = CalendarEvent.from(scholarships[i], i);
-					if (event != null)
-						events.add(event);
-				}
-			}
-
-			// add test dates
-			TestResult[] testResults = repository.testResultDao.getAllDirect();
-			if (testResults != null)
-			{
-				for (TestResult testResult : testResults)
-				{
-					event = CalendarEvent.from(testResult);
-					if (event != null)
-						events.add(event);
-				}
-			}
+			// build up all of our calendar events
+			final Context context = contextWeakReference.get();
+			List<CalendarEvent> events = buildCalendarEvents(context, dataFromNetwork);
 
 			// if the network call failed than set the response as an error so the user
 			// can be warned that not all events have been loaded...
@@ -157,5 +108,90 @@ class MyPlanTasks
 		{
 			return dataFromNetwork;
 		}
+	}
+
+	static class CalendarSchedulerTask extends AsyncTask<Void, Void, Boolean>
+	{
+		private WeakReference<Context> contextWeakReference;
+		private List<CalendarEventData> dataFromNetwork;
+
+		CalendarSchedulerTask(@NonNull Context context, @Nullable List<CalendarEventData> dataFromNetwork)
+		{
+			this.contextWeakReference = new WeakReference<>(context);
+			this.dataFromNetwork = dataFromNetwork;
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... voids)
+		{
+			// build up all of our calendar events
+			final Context context = contextWeakReference.get();
+			List<CalendarEvent> events = buildCalendarEvents(context, dataFromNetwork);
+
+			// schedule them so user gets notifications
+			NotificationJobService.scheduleNotifications(context, events);
+
+			return true;
+		}
+	}
+
+	private static List<CalendarEvent> buildCalendarEvents(@NonNull Context context, @Nullable List<CalendarEventData> list)
+	{
+		CalendarEvent event;
+		List<CalendarEvent> events = new ArrayList<>();
+
+		// add events we pulled from the network
+		if (list != null)
+		{
+			UserEntriesInterface userEntries = new UserEntries(context);
+
+			// add events with substitutions of user entered data
+			for (CalendarEventData data : list)
+			{
+				event = CalendarEvent.from(context, data, userEntries);
+				if (event != null)
+					events.add(event);
+			}
+		}
+
+		MyPlanRepository repository = MyPlanRepository.getInstance(context);
+
+		// add college application deadlines
+		College[] colleges = repository.collegeDao.getAllDirect();
+		if (colleges != null)
+		{
+			for (int i = 0; i < colleges.length; i++)
+			{
+				event = CalendarEvent.from(colleges[i], i);
+				if (event != null)
+					events.add(event);
+			}
+		}
+
+		// add scholarship application deadlines
+		Scholarship[] scholarships = repository.scholarshipDao.getAllDirect();
+		if (scholarships != null)
+		{
+			for (int i = 0; i < scholarships.length; i++)
+			{
+				event = CalendarEvent.from(scholarships[i], i);
+				if (event != null)
+					events.add(event);
+			}
+		}
+
+		// add test dates
+		TestResult[] testResults = repository.testResultDao.getAllDirect();
+		if (testResults != null)
+		{
+			for (TestResult testResult : testResults)
+			{
+				event = CalendarEvent.from(testResult);
+				if (event != null)
+					events.add(event);
+			}
+		}
+
+		return events;
 	}
 }

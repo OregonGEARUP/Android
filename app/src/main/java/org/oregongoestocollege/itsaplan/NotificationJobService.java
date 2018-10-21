@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -127,7 +128,7 @@ public class NotificationJobService extends JobService
 		int result = scheduler.schedule(builder.build());
 
 		if (result == JobScheduler.RESULT_FAILURE && Utils.DEBUG)
-			Utils.d(LOG_TAG, "failed to schedule id %s", id);
+			Utils.d(LOG_TAG, "failed to schedule id %d", id);
 	}
 
 	public static void scheduleNotification(
@@ -187,11 +188,9 @@ public class NotificationJobService extends JobService
 					Utils.d(LOG_TAG, "  Event   date %s", dateFormat.format(calendar.getTime()));
 				}
 
-				// adjust the event date by the delta and set to notify at 10 AM
-				calendar.add(Calendar.DAY_OF_MONTH, event.getReminderDelta());
-
 				// calculate how long to delay notification from now
-				long delayBy = calendar.getTimeInMillis() - now;
+				long delta = TimeUnit.MILLISECONDS.convert(event.getReminderDelta(), TimeUnit.DAYS);
+				long delayBy = calendar.getTimeInMillis() - now + delta;
 				if (delayBy > 0)
 				{
 					scheduleJob(scheduler, serviceName, event.getReminderId(),
@@ -199,10 +198,7 @@ public class NotificationJobService extends JobService
 				}
 
 				if (Utils.DEBUG)
-				{
 					Utils.d(LOG_TAG, "  Scheduled %s", delayBy > 0);
-					Utils.d(LOG_TAG, "  Scheduled %s", delayBy > 0);
-				}
 			}
 		}
 	}

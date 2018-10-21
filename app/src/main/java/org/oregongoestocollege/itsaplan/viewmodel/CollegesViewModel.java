@@ -37,6 +37,7 @@ public class CollegesViewModel extends AndroidViewModel
 	private final MyPlanRepository repository;
 	private final LiveData<List<College>> allColleges;
 	private List<CollegeViewModel> allViewModels;
+	private boolean refreshNotifications;
 
 	public CollegesViewModel(@NonNull Application application)
 	{
@@ -177,7 +178,27 @@ public class CollegesViewModel extends AndroidViewModel
 		if (allViewModels != null)
 		{
 			for (CollegeViewModel allViewModel : allViewModels)
+			{
+				if (!refreshNotifications && allViewModel.isNotificationDirty())
+					refreshNotifications = true;
+
 				allViewModel.update();
+			}
+		}
+	}
+
+	public void stop()
+	{
+		if (allViewModels != null)
+		{
+			// update anything that has changed
+			update();
+
+			// then update related notifications
+			repository.updateCollegeNotifications(getApplication(), refreshNotifications);
+
+			// reset flag till the next time
+			refreshNotifications = false;
 		}
 	}
 

@@ -37,6 +37,8 @@ public class MyPlanRepository
 	// calendar fields
 	private MyPlanTasks.CalendarEventsTask calendarEventsTask;
 	private List<CalendarEventData> calendarEventDataFromNetwork;
+	private boolean collegeDeleted;
+	private boolean scholarshipDeleted;
 	// allow for direct access for queries performed in tasks / on a background thread
 	CollegeDao collegeDao;
 	ScholarshipDao scholarshipDao;
@@ -304,6 +306,8 @@ public class MyPlanRepository
 	 */
 	public void delete(College college)
 	{
+		collegeDeleted = true;
+
 		new DeleteCollegeAsyncTask(collegeDao).execute(college);
 	}
 
@@ -354,6 +358,8 @@ public class MyPlanRepository
 	 */
 	public void delete(Scholarship scholarship)
 	{
+		scholarshipDeleted = true;
+
 		new DeleteScholarshipAsyncTask(scholarshipDao).execute(scholarship);
 	}
 
@@ -464,7 +470,7 @@ public class MyPlanRepository
 	/**
 	 * Private method to make sure we only have one task executing to retrieve calendar events.
 	 */
-	private void loadCalendarEvents(@NonNull Context context, boolean networkOnly)
+	private void loadCalendarEvents(@NonNull Context context, boolean prefetch)
 	{
 		boolean loading = false;
 
@@ -472,7 +478,7 @@ public class MyPlanRepository
 		MyPlanTasks.CalendarEventsTask newTask = null;
 		synchronized (this)
 		{
-			if (!networkOnly || calendarEventDataFromNetwork == null)
+			if (!prefetch || calendarEventDataFromNetwork == null)
 			{
 				if (calendarEventsTask == null)
 				{
@@ -489,7 +495,6 @@ public class MyPlanRepository
 			}
 			else
 				Utils.d(LOG_TAG, "CalendarEventsTask skipped");
-
 		}
 
 		if (loading)
@@ -501,12 +506,21 @@ public class MyPlanRepository
 		}
 	}
 
+	void loadCalendarEventsCompleted(@NonNull ResponseData<List<CalendarEvent>> responseData)
+	{
+		Utils.d(LOG_TAG, "CalendarEventsTask ending");
+
+		// keep track of the network data, we only want to retrieve it once
+		calendarEventDataFromNetwork = calendarEventsTask.getRawData();
+		calendarEventsTask = null;
+		allCalendarEvents.setValue(responseData);
+	}
 
 	/**
 	 * Called on start of main activity to pre-load any calendar events from the network.
 	 * If we already have data from the network this method should do nothing...
 	 */
-	public void loadCalenderEventsFromNetwork(@NonNull Context context)
+	public void preFetchCalenderEvents(@NonNull Context context)
 	{
 		loadCalendarEvents(context, true);
 	}
@@ -519,13 +533,40 @@ public class MyPlanRepository
 		loadCalendarEvents(context, false);
 	}
 
-	void loadCalendarEventsCompleted(@NonNull ResponseData<List<CalendarEvent>> responseData)
+	public void updateCollegeNotifications(@NonNull Context context, boolean refresh)
 	{
-		Utils.d(LOG_TAG, "CalendarEventsTask ending");
+		// could optimize to only update the scheduled college notifications
+		if (collegeDeleted || refresh)
+		{
+			MyPlanTasks.CalendarSchedulerTask task =
+				new MyPlanTasks.CalendarSchedulerTask(context, calendarEventDataFromNetwork);
+			task.execute();
+		}
 
-		// keep track of the network data, we only want to retrieve it once
-		calendarEventDataFromNetwork = calendarEventsTask.getRawData();
-		calendarEventsTask = null;
-		allCalendarEvents.setValue(responseData);
+		collegeDeleted = false;
+	}
+
+	public void updateScholarshipNotifications(@NonNull Context context, boolean refresh)
+	{
+		// could optimize to only update the scheduled scholarship notifications
+		if (scholarshipDeleted || refresh)
+		{
+			MyPlanTasks.CalendarSchedulerTask task =
+				new MyPlanTasks.CalendarSchedulerTask(context, calendarEventDataFromNetwork);
+			task.execute();
+		}
+
+		scholarshipDeleted = false;
+	}
+
+	public void updateTestNotifications(@NonNull Context context, boolean refresh)
+	{
+		// could optimize to only update the scheduled test notifications
+		if (refresh)
+		{
+			MyPlanTasks.CalendarSchedulerTask task =
+				new MyPlanTasks.CalendarSchedulerTask(context, calendarEventDataFromNetwork);
+			task.execute();
+		}
 	}
 }
