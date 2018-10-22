@@ -15,14 +15,14 @@
 			type="org.oregongoestocollege.itsaplan.viewmodel.StageItemViewModel" />
 	</data>
 
-	<RelativeLayout
+	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:background="@{viewModel.isCompleted ? @drawable/button_background_green : @drawable/button_background_blue}"
 		android:minHeight="@dimen/gearup_min_button_height"
 		android:padding="@dimen/baseline_unit_1_half"
 		android:layout_marginBottom="@dimen/baseline_unit_2x"
-		android:orientation="vertical"
+		android:orientation="horizontal"
 		android:onClick="@{() -> uxItemClickCallback.onClick(viewModel)}"
 		tools:background="@drawable/button_background_blue">
 
@@ -31,7 +31,8 @@
 			style="@style/GearUpTextAppearance.Title"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_centerVertical="true"
+			android:layout_gravity="center_vertical"
+			android:layout_weight="1"
 			android:text="@{viewModel.title}"
 			android:textColor="@color/white"
 			tools:text="Why go to college?" />
@@ -39,11 +40,11 @@
 		<ImageView
 			android:layout_width="48dp"
 			android:layout_height="48dp"
-			android:layout_alignParentEnd="true"
+			android:layout_marginStart="@dimen/baseline_unit"
 			android:tint="@color/white"
 			app:srcCompat="@drawable/ic_check_black_24dp"
 			android:visibility="@{viewModel.isCompleted ? View.VISIBLE : View.GONE, default=gone}"
 			tools:visibility="visible"/>
 
-	</RelativeLayout>
+	</LinearLayout>
 </layout>

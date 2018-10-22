@@ -145,8 +145,8 @@ public class NotificationJobService extends JobService
 
 		if (Utils.DEBUG)
 		{
-			Utils.d(LOG_TAG, "Event id:%s (%d) %s", event.getReminderIdString(), event.getReminderId(),
-				event.getEventDescription());
+			Utils.d(LOG_TAG, "Event id:%s (%d) delta:%s %s", event.getReminderIdString(),
+				event.getReminderId(), event.getReminderDelta(), event.getEventDescription());
 			Utils.d(LOG_TAG, "  event  date %s", dateFormat.format(calendar.getTime()));
 		}
 
