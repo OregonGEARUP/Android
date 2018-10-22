@@ -19,6 +19,11 @@ public class CalendarEventData
 	public String reminder;
 	public int reminderDelta;
 
+	public boolean hasReminderId()
+	{
+		return !TextUtils.isEmpty(reminderId);
+	}
+
 	public boolean hasDateOrDescriptionKey(@NonNull NotificationInfo notificationInfo)
 	{
 		boolean match = false;

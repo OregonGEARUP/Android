@@ -78,7 +78,7 @@ class MyPlanTasks
 
 			// build up all of our calendar events
 			final Context context = contextWeakReference.get();
-			List<CalendarEvent> events = buildCalendarEvents(context, dataFromNetwork);
+			List<CalendarEvent> events = buildCalendarEvents(context, dataFromNetwork, false);
 
 			// if the network call failed than set the response as an error so the user
 			// can be warned that not all events have been loaded...
@@ -126,7 +126,7 @@ class MyPlanTasks
 		{
 			// build up all of our calendar events
 			final Context context = contextWeakReference.get();
-			List<CalendarEvent> events = buildCalendarEvents(context, dataFromNetwork);
+			List<CalendarEvent> events = buildCalendarEvents(context, dataFromNetwork, true);
 
 			// schedule them so user gets notifications
 			NotificationJobService.scheduleNotifications(context, events);
@@ -157,7 +157,7 @@ class MyPlanTasks
 			// see if our notification info is a match for any of the calendar data
 			for (CalendarEventData data : dataFromNetwork)
 			{
-				if (data.hasDateOrDescriptionKey(notificationInfo))
+				if (data.hasReminderId() && data.hasDateOrDescriptionKey(notificationInfo))
 				{
 					final Context context = contextWeakReference.get();
 					calendarEvent = CalendarEvent.from(context, data, new UserEntries(context));
@@ -165,7 +165,7 @@ class MyPlanTasks
 				}
 			}
 
-			if (calendarEvent != null)
+			if (calendarEvent != null && calendarEvent.hasReminderInfo())
 			{
 				final Context context = contextWeakReference.get();
 
@@ -177,7 +177,8 @@ class MyPlanTasks
 		}
 	}
 
-	private static List<CalendarEvent> buildCalendarEvents(@NonNull Context context, @Nullable List<CalendarEventData> list)
+	private static List<CalendarEvent> buildCalendarEvents(@NonNull Context context,
+		@Nullable List<CalendarEventData> list, boolean forNotificationOnly)
 	{
 		CalendarEvent event;
 		List<CalendarEvent> events = new ArrayList<>();
@@ -187,12 +188,17 @@ class MyPlanTasks
 		{
 			UserEntriesInterface userEntries = new UserEntries(context);
 
-			// add events with substitutions of user entered data
 			for (CalendarEventData data : list)
 			{
-				event = CalendarEvent.from(context, data, userEntries);
-				if (event != null)
-					events.add(event);
+				// if we are building for display in the UX calendar we want all events
+				// if we are building for scheduling notifications we only want events with id
+				if (!forNotificationOnly || data.hasReminderId())
+				{
+					// add event with substitution of user entered data
+					event = CalendarEvent.from(context, data, userEntries);
+					if (event != null)
+						events.add(event);
+				}
 			}
 		}
 

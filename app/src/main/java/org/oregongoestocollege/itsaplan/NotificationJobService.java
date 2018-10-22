@@ -65,13 +65,16 @@ public class NotificationJobService extends JobService
 
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
 			.setSmallIcon(R.drawable.ic_event_black_24dp)
-			.setContentTitle(this.getString(R.string.app_name))
 			.setShowWhen(false)
 			.setContentText(message)
 			.setStyle(new NotificationCompat.BigTextStyle().bigText(message))
 			.setPriority(NotificationCompat.PRIORITY_DEFAULT)
 			.setContentIntent(pendingIntent)
 			.setAutoCancel(true);
+
+		// later versions already have the title in the notification
+		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M)
+			builder.setContentTitle(this.getString(R.string.app_name));
 
 		NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
 		notificationManager.notify(id, builder.build());
@@ -117,6 +120,8 @@ public class NotificationJobService extends JobService
 		PersistableBundle extras = new PersistableBundle(2);
 		extras.putInt(KEY_NOTIFICATION_ID, id);
 		extras.putString(KEY_NOTIFICATION_MESSAGE, message);
+
+		//long testDelay = testDelayByCount++ * 60 * 1000;
 
 		JobInfo.Builder builder = new JobInfo.Builder(id, serviceName)
 			// this job should be delayed by the provided amount of time
