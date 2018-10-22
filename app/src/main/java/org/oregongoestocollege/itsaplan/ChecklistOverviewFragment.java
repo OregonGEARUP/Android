@@ -40,7 +40,8 @@ public class ChecklistOverviewFragment extends Fragment implements ItemClickCall
 
 	private void onItemsChanged(List<BindingItem> items)
 	{
-		Utils.d(LOG_TAG, "onItemsChanged()");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onItemsChanged()");
 
 		// Update the list when the data changes
 		if (adapter.getItemCount() != 0)
@@ -52,7 +53,8 @@ public class ChecklistOverviewFragment extends Fragment implements ItemClickCall
 
 	private void onLoadingChanged(Boolean loading)
 	{
-		Utils.d(LOG_TAG, "onItemsChanged()");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onItemsChanged()");
 
 		// Update the flag when the data changes
 		viewModel.dataLoading.set(loading);
@@ -62,7 +64,8 @@ public class ChecklistOverviewFragment extends Fragment implements ItemClickCall
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 		Bundle savedInstanceState)
 	{
-		Utils.d(LOG_TAG, "onCreateView()");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onCreateView()");
 
 		// Inflate the layout for this fragment
 		FragmentChecklistOverviewBinding

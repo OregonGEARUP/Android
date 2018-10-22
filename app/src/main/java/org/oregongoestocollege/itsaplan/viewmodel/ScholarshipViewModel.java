@@ -97,7 +97,8 @@ public class ScholarshipViewModel implements BindingItem
 		if (!isDirty())
 			return;
 
-		Utils.d(LOG_TAG, "Saving %s to database", name.get());
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "Saving %s to database", name.get());
 
 		scholarship.setName(name.get());
 		scholarship.setApplicationDate(applicationDateVm.get().getSelectedDate());

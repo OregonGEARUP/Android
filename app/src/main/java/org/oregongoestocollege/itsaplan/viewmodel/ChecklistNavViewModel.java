@@ -32,7 +32,8 @@ public class ChecklistNavViewModel extends ViewModel
 
 	public ChecklistNavViewModel()
 	{
-		Utils.d(LOG_TAG, "create %d", ++count);
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "create %d", ++count);
 	}
 
 	public LiveData<ChecklistState> getCurrentState()
@@ -48,19 +49,22 @@ public class ChecklistNavViewModel extends ViewModel
 
 		if (oldState == null)
 		{
-			Utils.d(LOG_TAG, "setCurrentState dirty=true");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "setCurrentState dirty=true");
 
 			currentState.setValue(newState);
 		}
 		else if (!oldState.equals(newState))
 		{
-			Utils.d(LOG_TAG, "setCurrentState dirty=true");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "setCurrentState dirty=true");
 
 			currentState.setValue(newState);
 		}
 		else
 		{
-			Utils.d(LOG_TAG, "setCurrentState dirty=false");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "setCurrentState dirty=false");
 		}
 	}
 

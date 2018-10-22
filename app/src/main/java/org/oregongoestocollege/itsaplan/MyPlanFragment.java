@@ -43,7 +43,8 @@ public class MyPlanFragment extends BaseFragment implements OnFragmentInteractio
 	{
 		super.onCreate(savedInstanceState);
 
-		Utils.d(LOG_TAG, "onCreate");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onCreate");
 
 		viewModel = ViewModelProviders.of(getActivity()).get(MyPlanNavViewModel.class);
 		viewModel.getCurrentTask().observe(this, this::showTask);
@@ -83,7 +84,8 @@ public class MyPlanFragment extends BaseFragment implements OnFragmentInteractio
 				currentFragment = manager.getFragments().get(1);
 
 			Fragment fragment = null;
-			@StringRes int title = 0;
+			@StringRes
+			int title = 0;
 
 			switch (currentTask)
 			{
@@ -141,8 +143,9 @@ public class MyPlanFragment extends BaseFragment implements OnFragmentInteractio
 			// show the back button
 			setHomeAsUpEnabled(true);
 
-			Utils.d(LOG_TAG, "showTask %s",
-				fragment == null ? "do nothing" : (currentFragment != null ? "pop/add" : "add only"));
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "showTask %s",
+					fragment == null ? "do nothing" : (currentFragment != null ? "pop/add" : "add only"));
 		}
 		else
 		{
@@ -151,7 +154,8 @@ public class MyPlanFragment extends BaseFragment implements OnFragmentInteractio
 			// hide the back button
 			setHomeAsUpEnabled(false);
 
-			Utils.d(LOG_TAG, "showTask pop backstack");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "showTask pop backstack");
 		}
 	}
 
@@ -175,7 +179,8 @@ public class MyPlanFragment extends BaseFragment implements OnFragmentInteractio
 	@Override
 	public boolean handleBackPressed()
 	{
-		Utils.d(LOG_TAG, "handleBackPressed");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "handleBackPressed");
 
 		return viewModel.resetTask();
 	}
@@ -183,7 +188,8 @@ public class MyPlanFragment extends BaseFragment implements OnFragmentInteractio
 	@Override
 	public boolean canHandleBackPressed()
 	{
-		Utils.d(LOG_TAG, "canHandleBackPressed");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "canHandleBackPressed");
 
 		return (!TextUtils.isEmpty(viewModel.getCurrentTask().getValue()));
 	}

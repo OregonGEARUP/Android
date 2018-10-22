@@ -57,7 +57,8 @@ public class MyPlanCollegesFragment extends Fragment implements OnFragmentIntera
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		Utils.d(LOG_TAG, "onActivityCreated");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onActivityCreated");
 
 		viewModel = ViewModelProviders.of(this).get(CollegesViewModel.class);
 		binding.setIsLoading(true);
@@ -80,11 +81,13 @@ public class MyPlanCollegesFragment extends Fragment implements OnFragmentIntera
 				{
 					// keep loading indicator while we update the first entry with user entered
 					// data. will get another onChanged() when update is complete
-					Utils.d(LOG_TAG, "All colleges changed - updating first college");
+					if (Utils.DEBUG)
+						Utils.d(LOG_TAG, "All colleges changed - updating first college");
 				}
 				else
 				{
-					Utils.d(LOG_TAG, "All colleges changed - displaying colleges");
+					if (Utils.DEBUG)
+						Utils.d(LOG_TAG, "All colleges changed - displaying colleges");
 
 					binding.setIsLoading(false);
 
@@ -96,7 +99,8 @@ public class MyPlanCollegesFragment extends Fragment implements OnFragmentIntera
 			}
 			else
 			{
-				Utils.d(LOG_TAG, "All colleges changed - loading colleges");
+				if (Utils.DEBUG)
+					Utils.d(LOG_TAG, "All colleges changed - loading colleges");
 
 				binding.setIsLoading(true);
 			}

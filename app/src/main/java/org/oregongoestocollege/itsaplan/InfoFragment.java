@@ -32,7 +32,8 @@ public class InfoFragment extends Fragment implements OnFragmentInteractionListe
 
 	private void loadUrl()
 	{
-		Utils.d(LOG_TAG, "loadUrl() urlLoaded:%s", urlLoaded);
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "loadUrl() urlLoaded:%s", urlLoaded);
 
 		if (!urlLoaded && mWebView != null)
 		{

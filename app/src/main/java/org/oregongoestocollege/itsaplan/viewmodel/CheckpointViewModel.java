@@ -97,8 +97,9 @@ public class CheckpointViewModel extends AndroidViewModel
 		this.stageIndex = stageIndex;
 		this.checkpointIndex = checkpointIndex;
 
-		Utils.d(LOG_TAG, "init blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
-			blockIndex, stageIndex, checkpointIndex);
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "init blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
+				blockIndex, stageIndex, checkpointIndex);
 
 		UserEntriesInterface entries = new UserEntries(context);
 
@@ -491,7 +492,8 @@ public class CheckpointViewModel extends AndroidViewModel
 						if (vm != null && vm.isDirty())
 						{
 							Long date = DateConverter.toTimestamp(vm.getSelectedDate());
-							String key = repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i) + "_date";
+							String key =
+								repository.keyForBlockIndex(blockIndex, stageIndex, checkpointIndex, i) + "_date";
 							entries.setValue(key, date != null ? date : 0);
 							vm.saved();
 							saved = true;
@@ -552,7 +554,8 @@ public class CheckpointViewModel extends AndroidViewModel
 				myPlanRepository.updateUserEnteredNotifications(context, notificationInfo);
 			}
 
-			Utils.d(LOG_TAG, "saveCheckpointEntries isDirty:%s", saved);
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "saveCheckpointEntries isDirty:%s", saved);
 		}
 	}
 

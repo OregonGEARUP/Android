@@ -106,7 +106,8 @@ public class CollegeViewModel implements BindingItem
 		if (!isDirty())
 			return;
 
-		Utils.d(LOG_TAG, "Saving %s to database", name.get());
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "Saving %s to database", name.get());
 
 		college.setName(name.get());
 		college.setApplicationDate(applicationDateVm.get().getSelectedDate());

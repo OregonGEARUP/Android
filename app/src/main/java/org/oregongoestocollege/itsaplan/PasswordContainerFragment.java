@@ -62,7 +62,8 @@ public class PasswordContainerFragment extends BaseFragment
 	{
 		View v = inflater.inflate(R.layout.fragment_password_container, container, false);
 
-		Utils.d(LOG_TAG, "onCreateView");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onCreateView");
 
 		isPinCreated = GearUpSharedPreferences.isPasswordsPinCreated(getContext());
 
@@ -110,7 +111,8 @@ public class PasswordContainerFragment extends BaseFragment
 	@Override
 	public boolean handleBackPressed()
 	{
-		Utils.d(LOG_TAG, "handleBackPressed");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "handleBackPressed");
 
 		Fragment fragment = getChildFragmentManager().findFragmentByTag(FRAG_PASSWORD_PIN);
 		if (fragment instanceof PasswordPinFragment && !((PasswordPinFragment)fragment).isModeCreate())
@@ -126,7 +128,8 @@ public class PasswordContainerFragment extends BaseFragment
 	@Override
 	public boolean canHandleBackPressed()
 	{
-		Utils.d(LOG_TAG, "canHandleBackPressed");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "canHandleBackPressed");
 
 		Fragment fragment = getChildFragmentManager().findFragmentByTag(FRAG_PASSWORD_PIN);
 		if (fragment instanceof PasswordPinFragment)
@@ -162,7 +165,9 @@ public class PasswordContainerFragment extends BaseFragment
 	public void onPause()
 	{
 		super.onPause();
-		Utils.d(LOG_TAG, "onPause");
+
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onPause");
 
 		if (viewModel != null)
 			viewModel.onPause();
@@ -172,7 +177,9 @@ public class PasswordContainerFragment extends BaseFragment
 	public void onResume()
 	{
 		super.onResume();
-		Utils.d(LOG_TAG, "onResume");
+
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onResume");
 
 		if (viewModel != null)
 			viewModel.onResume();
@@ -187,7 +194,9 @@ public class PasswordContainerFragment extends BaseFragment
 	public void onStop()
 	{
 		super.onStop();
-		Utils.d(LOG_TAG, "onStop");
+
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onStop");
 
 		// fragment is getting destroyed, make sure all our data is saved
 		if (viewModel != null)

@@ -43,7 +43,8 @@ public class MyPlanResidencyFragment extends Fragment
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		Utils.d(LOG_TAG, "onActivityCreated");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onActivityCreated");
 
 		ResidencyViewModel.Factory factory = new ResidencyViewModel.Factory(getActivity().getApplication());
 
@@ -55,7 +56,8 @@ public class MyPlanResidencyFragment extends Fragment
 		viewModel.getResidencyData().removeObservers(this);
 		viewModel.getResidencyData().observe(this, residency ->
 		{
-			Utils.d(LOG_TAG, "Residency changed hasData:%s", residency != null ? "true" : "false");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "Residency changed hasData:%s", residency != null ? "true" : "false");
 
 			// could add progress - when loading can start out null followed quickly by non-null
 			if (residency != null)
@@ -75,7 +77,9 @@ public class MyPlanResidencyFragment extends Fragment
 	public void onStop()
 	{
 		super.onStop();
-		Utils.d(LOG_TAG, "onStop");
+
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onStop");
 
 		if (viewModel != null)
 			viewModel.update();

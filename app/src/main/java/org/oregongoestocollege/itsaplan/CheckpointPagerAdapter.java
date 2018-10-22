@@ -37,8 +37,9 @@ public class CheckpointPagerAdapter extends SmartFragmentStatePageAdapter
 
 		ChecklistState state = checklistStates.get(position);
 
-		Utils.d(CheckpointFragment.LOG_TAG, "getItem position:%d, blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
-			position, state.blockIndex, state.stageIndex, state.checkpointIndex);
+		if (Utils.DEBUG)
+			Utils.d(CheckpointFragment.LOG_TAG, "getItem position:%d, blockIndex:%d, stageIndex:%d, checkpointIndex:%d",
+				position, state.blockIndex, state.stageIndex, state.checkpointIndex);
 
 		return CheckpointFragment.newInstance(state.blockIndex, state.stageIndex, state.checkpointIndex);
 	}
@@ -52,7 +53,7 @@ public class CheckpointPagerAdapter extends SmartFragmentStatePageAdapter
 	public CheckpointViewModel getCurrentViewModel(int position)
 	{
 		Fragment fragment = getRegisteredFragment(position);
-		if (fragment instanceof  CheckpointFragment)
+		if (fragment instanceof CheckpointFragment)
 		{
 			return ((CheckpointFragment)fragment).getCheckpointViewModel();
 		}

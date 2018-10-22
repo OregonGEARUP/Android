@@ -26,7 +26,8 @@ public class BottomBarAdapter extends SmartFragmentStatePageAdapter
 	@Override
 	public Fragment getItem(int position)
 	{
-		Utils.d(MainActivity.LOG_TAG, "getItem position:%d", position);
+		if (Utils.DEBUG)
+			Utils.d(MainActivity.LOG_TAG, "getItem position:%d", position);
 
 		// When we initially run the app the ViewPager calls getItem for creating fragments.
 		// But when re-creating activity (eg. rotate) the ViewPager restores the fragments

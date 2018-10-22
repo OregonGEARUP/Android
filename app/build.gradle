@@ -6,8 +6,8 @@ android {
 		applicationId "org.oregongoestocollege.itsaplan"
 		minSdkVersion 21
 		targetSdkVersion 28
-		versionCode 5
-		versionName "1.0.5-beta"
+		versionCode 6
+		versionName "1.0.6"
 		testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 		vectorDrawables.useSupportLibrary = true
 	}

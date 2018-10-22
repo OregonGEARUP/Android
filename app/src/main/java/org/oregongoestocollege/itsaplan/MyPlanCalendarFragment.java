@@ -47,7 +47,8 @@ public class MyPlanCalendarFragment extends Fragment implements CompactCalendarV
 			DataBindingUtil.inflate(inflater, R.layout.fragment_my_plan_calendar, container, false);
 		View v = binding.getRoot();
 
-		Utils.d(LOG_TAG, "onCreateView");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onCreateView");
 
 		// set first day to sunday and hookup listeners
 		calendarView = v.findViewById(R.id.compactcalendar_view);
@@ -76,7 +77,8 @@ public class MyPlanCalendarFragment extends Fragment implements CompactCalendarV
 
 	void onCalendarEventsChanged(ResponseData<List<CalendarEvent>> data)
 	{
-		Utils.d(LOG_TAG, "onCalendarEventsChanged");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onCalendarEventsChanged");
 
 		if (viewModel != null)
 		{

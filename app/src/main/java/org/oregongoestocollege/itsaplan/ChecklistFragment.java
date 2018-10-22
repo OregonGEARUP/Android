@@ -51,7 +51,8 @@ public class ChecklistFragment extends BaseFragment implements OnFragmentInterac
 	{
 		super.onCreate(savedInstanceState);
 
-		Utils.d(LOG_TAG, "onCreate");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onCreate");
 
 		navViewModel = ViewModelProviders.of(getActivity()).get(ChecklistNavViewModel.class);
 		navViewModel.getCurrentState().observe(this, this::onChecklistNavStateChanged);
@@ -114,19 +115,22 @@ public class ChecklistFragment extends BaseFragment implements OnFragmentInterac
 
 		if (state.hasBlockAndStageIndex())
 		{
-			Utils.d(LOG_TAG, "onChecklistNavStateChanged Stage");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "onChecklistNavStateChanged Stage");
 
 			showStage(state.blockIndex, state.stageIndex);
 		}
 		else if (state.hasBlockIndexAndFile())
 		{
-			Utils.d(LOG_TAG, "onChecklistNavStateChanged Block");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "onChecklistNavStateChanged Block");
 
 			showBlock(state.blockIndex, state.blockFileName);
 		}
 		else
 		{
-			Utils.d(LOG_TAG, "onChecklistNavStateChanged Overview");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "onChecklistNavStateChanged Overview");
 
 			showOverview();
 		}
@@ -134,7 +138,8 @@ public class ChecklistFragment extends BaseFragment implements OnFragmentInterac
 
 	private void showOverview()
 	{
-		Utils.d(LOG_TAG, "showOverview");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "showOverview");
 
 		// make sure to use getChildFragmentManager versus getSupportFragmentManager
 		FragmentManager manager = getChildFragmentManager();
@@ -156,7 +161,8 @@ public class ChecklistFragment extends BaseFragment implements OnFragmentInterac
 
 	private void showBlock(int blockIndex, String blockFileName)
 	{
-		Utils.d(LOG_TAG, "showBlock");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "showBlock");
 
 		// make sure to use getChildFragmentManager versus getSupportFragmentManager
 		FragmentManager manager = getChildFragmentManager();
@@ -185,7 +191,8 @@ public class ChecklistFragment extends BaseFragment implements OnFragmentInterac
 
 	private void showStage(int blockIndex, int stageIndex)
 	{
-		Utils.d(LOG_TAG, "showStage");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "showStage");
 
 		// make sure to use getChildFragmentManager versus getSupportFragmentManager
 		FragmentManager manager = getChildFragmentManager();
@@ -255,7 +262,8 @@ public class ChecklistFragment extends BaseFragment implements OnFragmentInterac
 	@Override
 	public boolean handleBackPressed()
 	{
-		Utils.d(LOG_TAG, "handleBackPressed");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "handleBackPressed");
 
 		FragmentManager manager = getChildFragmentManager();
 		if (manager.getBackStackEntryCount() > 1)
@@ -270,7 +278,8 @@ public class ChecklistFragment extends BaseFragment implements OnFragmentInterac
 	@Override
 	public boolean canHandleBackPressed()
 	{
-		Utils.d(LOG_TAG, "canHandleBackPressed");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "canHandleBackPressed");
 
 		FragmentManager manager = getChildFragmentManager();
 		return manager.getBackStackEntryCount() > 1;

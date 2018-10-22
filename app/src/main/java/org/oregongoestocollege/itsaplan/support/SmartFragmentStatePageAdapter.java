@@ -33,7 +33,8 @@ public abstract class SmartFragmentStatePageAdapter extends FragmentStatePagerAd
 	@Override
 	public Object instantiateItem(ViewGroup container, int position)
 	{
-		Utils.d(logTag, "instantiateItem position:%d", position);
+		if (Utils.DEBUG)
+			Utils.d(logTag, "instantiateItem position:%d", position);
 
 		Fragment fragment = (Fragment)super.instantiateItem(container, position);
 		registeredFragments.put(position, fragment);
@@ -44,7 +45,8 @@ public abstract class SmartFragmentStatePageAdapter extends FragmentStatePagerAd
 	@Override
 	public void destroyItem(ViewGroup container, int position, Object object)
 	{
-		Utils.d(logTag, "destroyItem position:%d", position);
+		if (Utils.DEBUG)
+			Utils.d(logTag, "destroyItem position:%d", position);
 
 		registeredFragments.remove(position);
 		super.destroyItem(container, position, object);

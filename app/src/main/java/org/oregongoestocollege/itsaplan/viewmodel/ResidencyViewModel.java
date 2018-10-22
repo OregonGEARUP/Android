@@ -108,7 +108,8 @@ public class ResidencyViewModel extends AndroidViewModel
 		if (!isDirty())
 			return;
 
-		Utils.d(LOG_TAG, "Saving Residency to database");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "Saving Residency to database");
 
 		Residency value = residencyData.getValue();
 

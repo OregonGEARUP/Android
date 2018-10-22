@@ -64,7 +64,8 @@ public class TestResultViewModel
 		if (!isDirty(value))
 			return;
 
-		Utils.d(LOG_TAG, "Saving TestResult %s to database", value.getName());
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "Saving TestResult %s to database", value.getName());
 
 		value.setDate(testDateVm.get().getSelectedDate());
 		value.setComposite(composite.get());

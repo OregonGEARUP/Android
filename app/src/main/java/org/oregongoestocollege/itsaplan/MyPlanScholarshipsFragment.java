@@ -57,7 +57,8 @@ public class MyPlanScholarshipsFragment extends Fragment
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		Utils.d(LOG_TAG, "onActivityCreated");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onActivityCreated");
 
 		viewModel = ViewModelProviders.of(this).get(ScholarshipsViewModel.class);
 
@@ -69,7 +70,8 @@ public class MyPlanScholarshipsFragment extends Fragment
 			{
 				if (scholarships.isEmpty())
 				{
-					Utils.d(LOG_TAG, "All scholarships changed - inserting first scholarhip");
+					if (Utils.DEBUG)
+						Utils.d(LOG_TAG, "All scholarships changed - inserting first scholarhip");
 
 					// keep the loading indicator while we insert the first entry
 					// will get another onChanged() when insert is complete
@@ -79,11 +81,13 @@ public class MyPlanScholarshipsFragment extends Fragment
 				{
 					// keep loading indicator while we update the first entry with user entered
 					// data. will get another onChanged() when update is complete
-					Utils.d(LOG_TAG, "All scholarships changed - updating first scholarhip");
+					if (Utils.DEBUG)
+						Utils.d(LOG_TAG, "All scholarships changed - updating first scholarhip");
 				}
 				else
 				{
-					Utils.d(LOG_TAG, "All scholarships changed - displaying scholarships");
+					if (Utils.DEBUG)
+						Utils.d(LOG_TAG, "All scholarships changed - displaying scholarships");
 
 					binding.setIsLoading(false);
 
@@ -95,7 +99,8 @@ public class MyPlanScholarshipsFragment extends Fragment
 			}
 			else
 			{
-				Utils.d(LOG_TAG, "All scholarships changed - loading scholarships");
+				if (Utils.DEBUG)
+					Utils.d(LOG_TAG, "All scholarships changed - loading scholarships");
 
 				binding.setIsLoading(true);
 			}

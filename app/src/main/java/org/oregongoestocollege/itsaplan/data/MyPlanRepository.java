@@ -486,15 +486,22 @@ public class MyPlanRepository
 					newTask = new MyPlanTasks.CalendarEventsTask(context, calendarEventDataFromNetwork);
 					calendarEventsTask = newTask;
 
-					Utils.d(LOG_TAG, "CalendarEventsTask starting");
+					if (Utils.DEBUG)
+						Utils.d(LOG_TAG, "CalendarEventsTask starting");
 				}
 				else
-					Utils.d(LOG_TAG, "CalendarEventsTask pending");
+				{
+					if (Utils.DEBUG)
+						Utils.d(LOG_TAG, "CalendarEventsTask pending");
+				}
 
 				loading = true;
 			}
 			else
-				Utils.d(LOG_TAG, "CalendarEventsTask skipped");
+			{
+				if (Utils.DEBUG)
+					Utils.d(LOG_TAG, "CalendarEventsTask skipped");
+			}
 		}
 
 		if (loading)
@@ -508,7 +515,8 @@ public class MyPlanRepository
 
 	void loadCalendarEventsCompleted(@NonNull ResponseData<List<CalendarEvent>> responseData)
 	{
-		Utils.d(LOG_TAG, "CalendarEventsTask ending");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "CalendarEventsTask ending");
 
 		// keep track of the network data, we only want to retrieve it once
 		calendarEventDataFromNetwork = calendarEventsTask.getRawData();

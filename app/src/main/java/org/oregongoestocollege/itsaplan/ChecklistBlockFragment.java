@@ -44,7 +44,8 @@ public class ChecklistBlockFragment extends Fragment implements ItemClickCallbac
 
 	private void onItemsChanged(List<BindingItem> items)
 	{
-		Utils.d(LOG_TAG, "onItemsChanged()");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onItemsChanged()");
 
 		// Update the list when the data changes
 		if (adapter.getItemCount() != 0)
@@ -70,7 +71,8 @@ public class ChecklistBlockFragment extends Fragment implements ItemClickCallbac
 	{
 		super.onCreate(savedInstanceState);
 
-		Utils.d(LOG_TAG, "onCreate");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onCreate");
 
 		if (getArguments() != null)
 		{

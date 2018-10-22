@@ -225,7 +225,8 @@ public class CryptoUtil
 			}
 			catch (Exception e)
 			{
-				Utils.d(LOG_TAG, "safeEncrypt() message: " + e.getMessage());
+				if (Utils.DEBUG)
+					Utils.d(LOG_TAG, "safeEncrypt() message: " + e.getMessage());
 			}
 		}
 
@@ -248,7 +249,8 @@ public class CryptoUtil
 			}
 			catch (Exception e)
 			{
-				Utils.d(LOG_TAG, "safeDecrypt() message: " + e.getMessage());
+				if (Utils.DEBUG)
+					Utils.d(LOG_TAG, "safeDecrypt() message: " + e.getMessage());
 			}
 		}
 

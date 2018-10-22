@@ -43,7 +43,8 @@ public class MyPlanTestResultsFragment extends Fragment
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		Utils.d(LOG_TAG, "onActivityCreated");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onActivityCreated");
 
 		viewModel = ViewModelProviders.of(this).get(TestResultsViewModel.class);
 
@@ -53,8 +54,9 @@ public class MyPlanTestResultsFragment extends Fragment
 		viewModel.getActTestResultData().removeObservers(this);
 		viewModel.getActTestResultData().observe(this, testResult ->
 		{
-			Utils.d(LOG_TAG, "ACT TestResult changed hasData:%s",
-				testResult != null ? "true" : "false");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "ACT TestResult changed hasData:%s",
+					testResult != null ? "true" : "false");
 
 			// could add progress - when loading can start out null followed quickly by non-null
 			if (testResult != null)
@@ -65,8 +67,9 @@ public class MyPlanTestResultsFragment extends Fragment
 		viewModel.getSatTestResultData().removeObservers(this);
 		viewModel.getSatTestResultData().observe(this, testResult ->
 		{
-			Utils.d(LOG_TAG, "SAT TestResult changed hasData:%s",
-				testResult != null ? "true" : "false");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "SAT TestResult changed hasData:%s",
+					testResult != null ? "true" : "false");
 
 			// could add progress - when loading can start out null followed quickly by non-null
 			if (testResult != null)

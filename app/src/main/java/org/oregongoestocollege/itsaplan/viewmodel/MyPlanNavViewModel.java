@@ -37,7 +37,8 @@ public class MyPlanNavViewModel extends ViewModel
 
 	public MyPlanNavViewModel()
 	{
-		Utils.d(LOG_TAG, "create %d", ++count);
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "create %d", ++count);
 	}
 
 	public LiveData<String> getCurrentTask()

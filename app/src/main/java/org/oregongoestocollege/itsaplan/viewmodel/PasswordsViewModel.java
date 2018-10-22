@@ -72,7 +72,8 @@ public class PasswordsViewModel extends AndroidViewModel
 			viewModel.isEnabled.set(enabled);
 		}
 
-		Utils.d(LOG_TAG, "lockItemViewModels locked:%s", isLocked);
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "lockItemViewModels locked:%s", isLocked);
 	}
 
 	private void addToMap(String key)
@@ -175,7 +176,8 @@ public class PasswordsViewModel extends AndroidViewModel
 			if (dirty)
 				editor.apply();
 
-			Utils.d(LOG_TAG, "saveAll dirty=%s", dirty);
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "saveAll dirty=%s", dirty);
 		}
 	}
 

@@ -58,7 +58,8 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 	{
 		super.onCreate(savedInstanceState);
 
-		Utils.d(LOG_TAG, "onCreate");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onCreate");
 
 		if (getArguments() != null)
 		{
@@ -105,23 +106,27 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 					{
 						if (!TextUtils.isEmpty(checkpoint.routeFileName))
 						{
-							Utils.d(LOG_TAG, "nextCheckpoint meets criteria for %s, will route to %s",
-								checkpointInterface.keyForBlockIndex(stageIndex, i),
-								checkpoint.routeFileName);
+							if (Utils.DEBUG)
+								Utils.d(LOG_TAG, "nextCheckpoint meets criteria for %s, will route to %s",
+									checkpointInterface.keyForBlockIndex(stageIndex, i),
+									checkpoint.routeFileName);
 						}
 						else
 						{
-							Utils.d(LOG_TAG, "nextCheckpoint meets criteria for %s, but is MISSING a routeFileName for route checkpoint %s",
-								checkpointInterface.keyForBlockIndex(stageIndex, i),
-								checkpoint.routeFileName);
+							if (Utils.DEBUG)
+								Utils.d(LOG_TAG,
+									"nextCheckpoint meets criteria for %s, but is MISSING a routeFileName for route checkpoint %s",
+									checkpointInterface.keyForBlockIndex(stageIndex, i),
+									checkpoint.routeFileName);
 
 							meetsCriteria = false;
 						}
 					}
 					else
 					{
-						Utils.d(LOG_TAG, "nextCheckpoint does NOT meet criteria for %s",
-							checkpointInterface.keyForBlockIndex(stageIndex, i));
+						if (Utils.DEBUG)
+							Utils.d(LOG_TAG, "nextCheckpoint does NOT meet criteria for %s",
+								checkpointInterface.keyForBlockIndex(stageIndex, i));
 					}
 
 					if (!meetsCriteria)
@@ -190,7 +195,8 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 	@Override
 	public void onStop()
 	{
-		Utils.d(LOG_TAG, "onStop");
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onStop");
 
 		Context context = getContext();
 		if (context == null)
@@ -247,7 +253,8 @@ public class ChecklistStageFragment extends Fragment implements ViewPager.OnPage
 			setAsVisited(newPosition);
 		}
 
-		Utils.d(LOG_TAG, "onPageSelected isCompleted:%s position:%d", isCompleted, currentPosition);
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "onPageSelected isCompleted:%s position:%d", isCompleted, currentPosition);
 	}
 
 	@Override

@@ -44,7 +44,8 @@ public class CollegesViewModel extends AndroidViewModel
 		super(application);
 
 		mycount = ++count;
-		Utils.d(CollegeViewModel.LOG_TAG, "create %d", mycount);
+		if (Utils.DEBUG)
+			Utils.d(CollegeViewModel.LOG_TAG, "create %d", mycount);
 
 		repository = MyPlanRepository.getInstance(application);
 		allColleges = repository.getAllColleges();
@@ -53,7 +54,8 @@ public class CollegesViewModel extends AndroidViewModel
 	@Override
 	protected void onCleared()
 	{
-		Utils.d(CollegeViewModel.LOG_TAG, "onCleared() %d", mycount);
+		if (Utils.DEBUG)
+			Utils.d(CollegeViewModel.LOG_TAG, "onCleared() %d", mycount);
 	}
 
 	private void save(@Nullable String name)
@@ -71,13 +73,18 @@ public class CollegesViewModel extends AndroidViewModel
 
 		boolean dirty = false;
 
+		String firstCollegePlaceholder = context.getString(R.string.college_1);
+
 		// determine what college name was entered in the checkpoint
 		String value = userEntries.getValue("b2_s3_cp2_i1_text");
 		if (TextUtils.isEmpty(value))
-			value = context.getString(R.string.college_1);
+			value = firstCollegePlaceholder;
 
 		// fill in any missing pieces of the first college from the checkpoints
-		if (!TextUtils.equals(college.getName(), value))
+		String collegeName = college.getName();
+		if (TextUtils.isEmpty(collegeName) ||
+			(TextUtils.equals(collegeName, firstCollegePlaceholder) &&
+				!TextUtils.equals(value, firstCollegePlaceholder) ))
 		{
 			college.setName(value);
 			dirty = true;

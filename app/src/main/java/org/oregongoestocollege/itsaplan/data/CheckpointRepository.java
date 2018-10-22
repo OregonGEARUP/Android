@@ -8,10 +8,8 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -104,7 +102,10 @@ public class CheckpointRepository implements CheckpointInterface
 				currentBlockInfoTask = newTask;
 			}
 			else
-				Utils.d(LOG_TAG, "loadBlockInfoList pending");
+			{
+				if (Utils.DEBUG)
+					Utils.d(LOG_TAG, "loadBlockInfoList pending");
+			}
 		}
 
 		// if we didn't have a task executing, do it now
@@ -138,7 +139,8 @@ public class CheckpointRepository implements CheckpointInterface
 
 		if (blockInfo == null || TextUtils.isEmpty(fileName))
 		{
-			Utils.d(LOG_TAG, "Missing information for loadBlock().");
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "Missing information for loadBlock().");
 			callback.onDataLoaded(false);
 			return;
 		}
@@ -159,7 +161,8 @@ public class CheckpointRepository implements CheckpointInterface
 			{
 				currentTask.setCallback(callback);
 
-				Utils.d(LOG_TAG, "GetBlockTask pending");
+				if (Utils.DEBUG)
+					Utils.d(LOG_TAG, "GetBlockTask pending");
 			}
 		}
 
@@ -189,7 +192,8 @@ public class CheckpointRepository implements CheckpointInterface
 
 				if (dbList == null || dbList.length < 1)
 				{
-					Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from network");
+					if (Utils.DEBUG)
+						Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from network");
 
 					// load the block info
 					URL url = new URL(Utils.BASE_URL + "blocks.json");
@@ -215,10 +219,14 @@ public class CheckpointRepository implements CheckpointInterface
 				{
 					repository.cachedBlockInfos = Arrays.asList(dbList);
 
-					Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from database");
+					if (Utils.DEBUG)
+						Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from database");
 				}
 				else
-					Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from cache");
+				{
+					if (Utils.DEBUG)
+						Utils.d(CheckpointRepository.LOG_TAG, "BlockInfos from cache");
+				}
 
 				// determine if we already have all the visited keys
 				if (repository.visited == null)
@@ -274,7 +282,8 @@ public class CheckpointRepository implements CheckpointInterface
 
 				if (block == null)
 				{
-					Utils.d(CheckpointRepository.LOG_TAG, "Block %s from network", blockFileName);
+					if (Utils.DEBUG)
+						Utils.d(CheckpointRepository.LOG_TAG, "Block %s from network", blockFileName);
 
 					URL url = new URL(Utils.BASE_URL + blockFileName);
 					HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
@@ -299,7 +308,10 @@ public class CheckpointRepository implements CheckpointInterface
 					repository.cachedBlocks.put(blockFileName, block);
 				}
 				else
-					Utils.d(CheckpointRepository.LOG_TAG, "Block %ss from cache", blockFileName);
+				{
+					if (Utils.DEBUG)
+						Utils.d(CheckpointRepository.LOG_TAG, "Block %ss from cache", blockFileName);
+				}
 
 				// TODO persistBlockCompletionInfo() on previous block before changing to new block?
 				repository.persistBlockCompletionInfo(repository.currentBlockIndex, myPlanRepo);
@@ -488,7 +500,8 @@ public class CheckpointRepository implements CheckpointInterface
 				myPlanRepository.update(blockInfo);
 		}
 
-		Utils.d(LOG_TAG, "persistBlockCompletionInfo blockIndex=%d dirty=%s", blockIndex, dirty);
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "persistBlockCompletionInfo blockIndex=%d dirty=%s", blockIndex, dirty);
 	}
 
 	@Override
@@ -579,13 +592,17 @@ public class CheckpointRepository implements CheckpointInterface
 	@Override
 	public void addTrace(String trace)
 	{
+		// skip for now, no way to see trace entries in app
+		/*
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
 		String timestamp = dateFormat.format(new Date());
 		String message = String.format(Locale.US, "%s:  %s", timestamp, trace);
 
 		traces.add(message);
 
-		Utils.d(LOG_TAG, trace);
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, trace);
+		*/
 	}
 
 

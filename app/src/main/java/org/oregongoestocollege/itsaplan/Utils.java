@@ -75,22 +75,25 @@ public class Utils
 
 	public static void simulateNetworkDelay()
 	{
-		try
+		if (DEBUG)
 		{
-			Utils.d("GearUp_", "simulateNetworkDelay start");
-			Thread.sleep(10000L);
-			Utils.d("GearUp_", "simulateNetworkDelay end");
-		}
-		catch (InterruptedException e)
-		{
-			Thread.currentThread().interrupt();
+			try
+			{
+				Utils.d("GearUp_", "simulateNetworkDelay start");
+				Thread.sleep(10000L);
+				Utils.d("GearUp_", "simulateNetworkDelay end");
+			}
+			catch (InterruptedException e)
+			{
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 
 	/**
 	 * Set to true ONLY when developing. Using flag versus Log.isLoggable().
 	 */
-	public static final boolean DEBUG = true;
+	public static final boolean DEBUG = false;
 
 	public static void d(String tag, String format, Object... args)
 	{
