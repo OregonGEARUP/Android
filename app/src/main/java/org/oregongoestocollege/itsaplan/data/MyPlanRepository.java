@@ -535,9 +535,10 @@ public class MyPlanRepository
 
 	public void updateCollegeNotifications(@NonNull Context context, boolean refresh)
 	{
-		// could optimize to only update the scheduled college notifications
 		if (collegeDeleted || refresh)
 		{
+			// could optimize to only update the scheduled college notifications
+			// for now this cancels all notifications and reschedules them
 			MyPlanTasks.CalendarSchedulerTask task =
 				new MyPlanTasks.CalendarSchedulerTask(context, calendarEventDataFromNetwork);
 			task.execute();
@@ -548,9 +549,10 @@ public class MyPlanRepository
 
 	public void updateScholarshipNotifications(@NonNull Context context, boolean refresh)
 	{
-		// could optimize to only update the scheduled scholarship notifications
 		if (scholarshipDeleted || refresh)
 		{
+			// could optimize to only update the scheduled college notifications
+			// for now this cancels all notifications and reschedules them
 			MyPlanTasks.CalendarSchedulerTask task =
 				new MyPlanTasks.CalendarSchedulerTask(context, calendarEventDataFromNetwork);
 			task.execute();
@@ -561,11 +563,25 @@ public class MyPlanRepository
 
 	public void updateTestNotifications(@NonNull Context context, boolean refresh)
 	{
-		// could optimize to only update the scheduled test notifications
 		if (refresh)
 		{
+			// could optimize to only update the scheduled college notifications
+			// for now this cancels all notifications and reschedules them
 			MyPlanTasks.CalendarSchedulerTask task =
 				new MyPlanTasks.CalendarSchedulerTask(context, calendarEventDataFromNetwork);
+			task.execute();
+		}
+	}
+
+	public void updateUserEnteredNotifications(@NonNull Context context, @NonNull NotificationInfo notificationInfo)
+	{
+		// For user entered data we need the event data from the network which has the notification
+		// message and details. If for any reason we don't have it we can skip it. Notifications will
+		// get rescheduled on next successful load of event data.
+		if (calendarEventDataFromNetwork != null)
+		{
+			MyPlanTasks.CalendarSchedulerUpdateTask task =
+				new MyPlanTasks.CalendarSchedulerUpdateTask(context, calendarEventDataFromNetwork, notificationInfo);
 			task.execute();
 		}
 	}

@@ -28,7 +28,9 @@ import org.oregongoestocollege.itsaplan.data.CheckpointInterface;
 import org.oregongoestocollege.itsaplan.data.CheckpointRepository;
 import org.oregongoestocollege.itsaplan.data.EntryType;
 import org.oregongoestocollege.itsaplan.data.Instance;
+import org.oregongoestocollege.itsaplan.data.MyPlanRepository;
 import org.oregongoestocollege.itsaplan.data.NavigationState;
+import org.oregongoestocollege.itsaplan.data.NotificationInfo;
 import org.oregongoestocollege.itsaplan.data.Stage;
 import org.oregongoestocollege.itsaplan.data.UserEntries;
 import org.oregongoestocollege.itsaplan.data.UserEntriesInterface;
@@ -437,6 +439,7 @@ public class CheckpointViewModel extends AndroidViewModel
 			// get ready to save any user entries, we'll apply them at the end
 			UserEntriesInterface entries = new UserEntries(getApplication());
 			boolean saved = false;
+			NotificationInfo notificationInfo = null;
 
 			switch (model.entryType)
 			{
@@ -492,6 +495,8 @@ public class CheckpointViewModel extends AndroidViewModel
 							entries.setValue(key, date != null ? date : 0);
 							vm.saved();
 							saved = true;
+
+							notificationInfo = new NotificationInfo(key, null);
 						}
 					}
 				}
@@ -508,10 +513,13 @@ public class CheckpointViewModel extends AndroidViewModel
 						DateViewModel dateVm = dateAndTextVms.get(i).get();
 						if (dateVm != null && dateVm.isDirty())
 						{
+							String key = baseKey + "_date";
 							Long date = DateConverter.toTimestamp(dateVm.getSelectedDate());
-							entries.setValue(baseKey + "_date", date != null ? date : 0);
+							entries.setValue(key, date != null ? date : 0);
 							dateVm.saved();
 							saved = true;
+
+							notificationInfo = new NotificationInfo(key, null);
 						}
 
 						InstanceFieldViewModel fieldVm = fieldVms.get(i);
@@ -520,6 +528,11 @@ public class CheckpointViewModel extends AndroidViewModel
 							entries.setValue(fieldVm.key, fieldVm.text.get());
 							fieldVm.saved();
 							saved = true;
+
+							if (notificationInfo == null)
+								notificationInfo = new NotificationInfo(baseKey + "_date", fieldVm.key);
+							else
+								notificationInfo.descriptionKey = fieldVm.key;
 						}
 					}
 				}
@@ -531,6 +544,13 @@ public class CheckpointViewModel extends AndroidViewModel
 			}
 
 			entries.close(saved);
+
+			if (notificationInfo != null)
+			{
+				final Context context = getApplication();
+				MyPlanRepository myPlanRepository = MyPlanRepository.getInstance(context);
+				myPlanRepository.updateUserEnteredNotifications(context, notificationInfo);
+			}
 
 			Utils.d(LOG_TAG, "saveCheckpointEntries isDirty:%s", saved);
 		}

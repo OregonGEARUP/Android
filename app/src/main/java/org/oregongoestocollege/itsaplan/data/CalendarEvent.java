@@ -78,15 +78,7 @@ public class CalendarEvent
 
 				if (s.startsWith("##") && s.endsWith("##"))
 				{
-					// Android code stores EntryType.dateOnly user entered data with `_date` in the key
-					// iOS did not. Because of this we were not showing date only calendar events.
-					// (##b5citizen_s4_cp1_i1## - Financial Aid Workshop)
-					// Since we already released a version of the app before the calendar feature was
-					// done. Adjust the key to the format used by Android.
-					String key = s.substring(2, s.length() - 2);
-					if (!key.endsWith("_date"))
-						key += "_date";
-
+					String key = data.getAdjustedDateKey(s);
 					long date = userEntries.getValueAsLong(key);
 					if (date > 0)
 						eventDate = DateConverter.toDate(date);

@@ -135,6 +135,48 @@ class MyPlanTasks
 		}
 	}
 
+	static class CalendarSchedulerUpdateTask extends AsyncTask<Void, Void, Boolean>
+	{
+		private WeakReference<Context> contextWeakReference;
+		private List<CalendarEventData> dataFromNetwork;
+		private NotificationInfo notificationInfo;
+
+		CalendarSchedulerUpdateTask(@NonNull Context context, @Nullable List<CalendarEventData> dataFromNetwork,
+			@NonNull NotificationInfo notificationInfo)
+		{
+			this.contextWeakReference = new WeakReference<>(context);
+			this.dataFromNetwork = dataFromNetwork;
+			this.notificationInfo = notificationInfo;
+		}
+
+		@Override
+		protected Boolean doInBackground(Void... voids)
+		{
+			CalendarEvent calendarEvent = null;
+
+			// see if our notification info is a match for any of the calendar data
+			for (CalendarEventData data : dataFromNetwork)
+			{
+				if (data.hasDateOrDescriptionKey(notificationInfo))
+				{
+					final Context context = contextWeakReference.get();
+					calendarEvent = CalendarEvent.from(context, data, new UserEntries(context));
+					break;
+				}
+			}
+
+			if (calendarEvent != null)
+			{
+				final Context context = contextWeakReference.get();
+
+				// schedule / update so user gets notification
+				NotificationJobService.scheduleNotification(context, calendarEvent);
+			}
+
+			return true;
+		}
+	}
+
 	private static List<CalendarEvent> buildCalendarEvents(@NonNull Context context, @Nullable List<CalendarEventData> list)
 	{
 		CalendarEvent event;

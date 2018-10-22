@@ -22,7 +22,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import org.oregongoestocollege.itsaplan.data.CalendarEvent;
@@ -37,7 +36,8 @@ public class NotificationJobService extends JobService
 	private static final String CHANNEL_ID = "GearUpChannelDefault";
 	private static final String KEY_NOTIFICATION_ID = "notif-id";
 	private static final String KEY_NOTIFICATION_MESSAGE = "notif-message";
-	private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault());
+	private static final SimpleDateFormat dateFormat =
+		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.getDefault());
 
 	/**
 	 * This is called by the system once it determines it is time to run the job.
@@ -131,20 +131,43 @@ public class NotificationJobService extends JobService
 			Utils.d(LOG_TAG, "failed to schedule id %d", id);
 	}
 
-	public static void scheduleNotification(
-		@NonNull Context context, int id, @NonNull String message,
-		long delayBy)
+	private static boolean scheduleJob(@NonNull JobScheduler scheduler, @NonNull ComponentName serviceName,
+		@NonNull CalendarEvent event, long now)
 	{
-		if (id <= 0 || TextUtils.isEmpty(message))
-			return;
+		boolean scheduled = false;
 
-		JobScheduler scheduler = (JobScheduler)context.getSystemService(JOB_SCHEDULER_SERVICE);
-		if (scheduler == null)
-			return;
+		// setup calendar for event date at 10 AM
+		Calendar calendar = Calendar.getInstance();
+		calendar.clear();
+		calendar.setTime(event.getEventDate());
+		calendar.set(Calendar.HOUR, 10);
+		calendar.set(Calendar.MINUTE, 0);
 
-		ComponentName serviceName = new ComponentName(context.getPackageName(), NotificationJobService.class.getName());
+		if (Utils.DEBUG)
+		{
+			Utils.d(LOG_TAG, "Event id:%s (%d) %s", event.getReminderIdString(), event.getReminderId(),
+				event.getEventDescription());
+			Utils.d(LOG_TAG, "  event  date %s", dateFormat.format(calendar.getTime()));
+		}
 
-		scheduleJob(scheduler, serviceName, id, message, delayBy);
+		// calculate how long to delay notification from now
+		long delta = TimeUnit.MILLISECONDS.convert(event.getReminderDelta(), TimeUnit.DAYS);
+		long delayBy = calendar.getTimeInMillis() - now + delta;
+		if (delayBy > 0)
+		{
+			scheduleJob(scheduler, serviceName, event.getReminderId(),
+				event.getReminderMessage(), delayBy);
+
+			scheduled = true;
+		}
+
+		if (Utils.DEBUG)
+		{
+			Utils.d(LOG_TAG, "  notify date %s",
+				scheduled ? dateFormat.format(now + delayBy) : "<not scheduled>");
+		}
+
+		return scheduled;
 	}
 
 	/**
@@ -164,42 +187,52 @@ public class NotificationJobService extends JobService
 
 		ComponentName serviceName = new ComponentName(context.getPackageName(), NotificationJobService.class.getName());
 
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "Cancel and reschedule all jobs");
+
 		// cancel all existing jobs
 		scheduler.cancelAll();
 
 		// get the time in milliseconds now
-		Calendar calendar = Calendar.getInstance();
-		long now = calendar.getTimeInMillis();
+		long now = Calendar.getInstance().getTimeInMillis();
 
 		for (CalendarEvent event : events)
 		{
 			if (event.hasReminderInfo())
-			{
-				// setup calendar for event date at 10 AM
-				calendar.clear();
-				calendar.setTime(event.getEventDate());
-				calendar.set(Calendar.HOUR, 10);
-				calendar.set(Calendar.MINUTE, 0);
+				scheduleJob(scheduler, serviceName, event, now);
+		}
+	}
 
-				if (Utils.DEBUG)
-				{
-					Utils.d(LOG_TAG, event.getEventDescription());
-					Utils.d(LOG_TAG, "Event id:%s (%d)", event.getReminderIdString(), event.getReminderId());
-					Utils.d(LOG_TAG, "  Event   date %s", dateFormat.format(calendar.getTime()));
-				}
+	/**
+	 * Schedules a single calendar event.
+	 *
+	 * @param context used to retrieve job scheduler resources
+	 * @param event event to schedule for notification
+	 */
+	public static void scheduleNotification(@NonNull Context context, @Nullable CalendarEvent event)
+	{
+		if (event == null || !event.hasReminderInfo())
+			return;
 
-				// calculate how long to delay notification from now
-				long delta = TimeUnit.MILLISECONDS.convert(event.getReminderDelta(), TimeUnit.DAYS);
-				long delayBy = calendar.getTimeInMillis() - now + delta;
-				if (delayBy > 0)
-				{
-					scheduleJob(scheduler, serviceName, event.getReminderId(),
-						event.getReminderMessage(), delayBy);
-				}
+		JobScheduler scheduler = (JobScheduler)context.getSystemService(JOB_SCHEDULER_SERVICE);
+		if (scheduler == null)
+			return;
 
-				if (Utils.DEBUG)
-					Utils.d(LOG_TAG, "  Scheduled %s", delayBy > 0);
-			}
+		ComponentName serviceName = new ComponentName(context.getPackageName(), NotificationJobService.class.getName());
+
+		if (Utils.DEBUG)
+			Utils.d(LOG_TAG, "Reschedule single job");
+
+		// get the time in milliseconds now
+		long now = Calendar.getInstance().getTimeInMillis();
+
+		if (!scheduleJob(scheduler, serviceName, event, now))
+		{
+			// not scheduled? try removing the notification in case the date is past
+			scheduler.cancel(event.getReminderId());
+
+			if (Utils.DEBUG)
+				Utils.d(LOG_TAG, "Job cancelled");
 		}
 	}
 
@@ -242,7 +275,6 @@ public class NotificationJobService extends JobService
 				jobInfo.getId(),
 				DateUtils.getRelativeTimeSpanString(now + jobInfo.getMinLatencyMillis()),
 				id, message);
-
 		}
 	}
 }
