@@ -21,7 +21,7 @@ import static com.google.common.base.Verify.verifyNotNull;
  *  Therefore we all <em>clearing</em> the state and the observer should ignore events with null.
  * </p>
  * Oregon GEAR UP App
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class ChecklistNavViewModel extends ViewModel
 {

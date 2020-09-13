@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
  * BaseViewModel
  * Oregon GEAR UP App
  *
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public interface BindingItem
 {

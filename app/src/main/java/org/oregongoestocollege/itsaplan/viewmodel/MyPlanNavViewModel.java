@@ -20,7 +20,7 @@ import org.oregongoestocollege.itsaplan.Utils;
  *  Future - could sync up how these operate.
  * </p>
  * Oregon GEAR UP App
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class MyPlanNavViewModel extends ViewModel
 {

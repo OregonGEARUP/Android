@@ -50,7 +50,7 @@ import org.oregongoestocollege.itsaplan.Utils;
  * https://medium.com/@ericfu/securely-storing-secrets-in-an-android-application-501f030ae5a3
  *
  * Oregon GEAR UP App
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class CryptoUtil
 {

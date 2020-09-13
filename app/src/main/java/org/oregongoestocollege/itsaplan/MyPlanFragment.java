@@ -20,7 +20,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.MyPlanNavViewModel;
  * MyPlanFragment
  * Oregon GEAR UP App
  *
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class MyPlanFragment extends BaseFragment implements OnFragmentInteractionListener
 {

@@ -8,7 +8,7 @@ import org.oregongoestocollege.itsaplan.Utils;
  * Holds the state needed to load {@link Block}s, {@link Stage}s and {@link Checkpoint}s.
  *
  * Oregon GEAR UP App
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class ChecklistState
 {

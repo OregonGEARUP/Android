@@ -12,7 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * TestResult
  * Oregon GEAR UP App
  *
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 @Entity(tableName = "testresult_table")
 public class TestResult

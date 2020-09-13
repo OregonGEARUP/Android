@@ -22,7 +22,7 @@ import org.oregongoestocollege.itsaplan.support.GearUpSharedPreferences;
 
 /**
  * Oregon GEAR UP App
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class PasswordPinFragment extends Fragment implements View.OnClickListener, TextWatcher
 {

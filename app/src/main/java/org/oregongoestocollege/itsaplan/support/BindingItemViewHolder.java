@@ -9,7 +9,7 @@ import org.oregongoestocollege.itsaplan.BR;
  * BindingItemViewHolder
  * Oregon GEAR UP App
  *
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 class BindingItemViewHolder extends RecyclerView.ViewHolder
 {

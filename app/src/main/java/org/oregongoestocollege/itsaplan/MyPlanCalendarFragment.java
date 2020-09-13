@@ -25,7 +25,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.CalendarViewModel;
 
 /**
  * Oregon GEAR UP App
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class MyPlanCalendarFragment extends Fragment implements CompactCalendarView.CompactCalendarViewListener
 {

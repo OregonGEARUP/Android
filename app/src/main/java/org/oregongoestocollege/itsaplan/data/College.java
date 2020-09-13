@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
  * College
  * Oregon GEAR UP App
  *
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 @Entity(tableName = "college_table")
 public class College

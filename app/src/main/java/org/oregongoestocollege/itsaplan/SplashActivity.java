@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
  * SplashActivity
  * Oregon GEAR UP App
  * <p>
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class SplashActivity extends AppCompatActivity
 {

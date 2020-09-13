@@ -12,7 +12,7 @@ import android.view.MenuItem;
 
 /**
  * Oregon GEAR UP App
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class Utils
 {

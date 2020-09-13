@@ -25,7 +25,7 @@ import org.oregongoestocollege.itsaplan.Utils;
 
 /**
  * Oregon GEAR UP App
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 class MyPlanTasks
 {

@@ -22,7 +22,7 @@ import org.oregongoestocollege.itsaplan.data.dao.VisitedKeyDao;
  * MyPlanDatabase - persist data for My Plan tab
  * Oregon GEAR UP App
  *
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 @Database(entities = { College.class, Scholarship.class, TestResult.class, Residency.class,
 	BlockInfo.class, VisitedKey.class },

@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey;
  * Scholarship
  * Oregon GEAR UP App
  *
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 @Entity(tableName = "scholarship_table")
 public class Scholarship

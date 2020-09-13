@@ -25,7 +25,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.OverviewViewModel;
 
 /**
  * Oregon GEAR UP App
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class ChecklistOverviewFragment extends Fragment implements ItemClickCallback
 {

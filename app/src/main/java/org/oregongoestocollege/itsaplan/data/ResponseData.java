@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
  * A generic class that contains data and status about loading data.
  *
  * Oregon GEAR UP App
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class ResponseData<T>
 {

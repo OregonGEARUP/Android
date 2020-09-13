@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
  * VisitedKey
  * Oregon GEAR UP App
  *
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 @Entity(tableName = "visited_key_table")
 public class VisitedKey

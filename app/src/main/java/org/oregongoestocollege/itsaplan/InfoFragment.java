@@ -13,7 +13,7 @@ import android.webkit.WebView;
  * InfoFragment
  * Oregon GEAR UP App
  *
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class InfoFragment extends Fragment implements OnFragmentInteractionListener
 {

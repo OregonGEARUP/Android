@@ -21,7 +21,7 @@ import org.oregongoestocollege.itsaplan.viewmodel.MyPlanNavViewModel;
  * MainActivity
  * Oregon GEAR UP App
  * <p>
- * Copyright © 2018 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener,
 	ViewPager.OnPageChangeListener

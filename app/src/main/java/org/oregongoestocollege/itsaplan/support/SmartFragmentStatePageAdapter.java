@@ -14,7 +14,7 @@ import org.oregongoestocollege.itsaplan.Utils;
  * from SmartFragmentStatePagerAdapter as you would any other PagerAdapter.
  *
  * Oregon GEAR UP App
- * Copyright © 2017 Oregon GEAR UP. All rights reserved.
+ * Copyright © 2020 Oregon GEAR UP. All rights reserved.
  */
 public abstract class SmartFragmentStatePageAdapter extends FragmentStatePagerAdapter
 {
