@@ -51,60 +51,60 @@
 					layout="@layout/date_layout"
 					app:viewModel="@{viewModel.actVm.testDateVm}" />
 
-				<android.support.design.widget.TextInputLayout
+				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
-					<android.support.design.widget.TextInputEditText
+					<com.google.android.material.textfield.TextInputEditText
 						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_composite"
 						android:text="@={viewModel.actVm.composite}"
 						tools:text="500" />
-				</android.support.design.widget.TextInputLayout>
+				</com.google.android.material.textfield.TextInputLayout>
 
-				<android.support.design.widget.TextInputLayout
+				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
-					<android.support.design.widget.TextInputEditText
+					<com.google.android.material.textfield.TextInputEditText
 						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_math"
 						android:text="@={viewModel.actVm.math}"
 						tools:text="500" />
-				</android.support.design.widget.TextInputLayout>
+				</com.google.android.material.textfield.TextInputLayout>
 
-				<android.support.design.widget.TextInputLayout
+				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
-					<android.support.design.widget.TextInputEditText
+					<com.google.android.material.textfield.TextInputEditText
 						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_sciece"
 						android:text="@={viewModel.actVm.science}"
 						tools:text="500" />
-				</android.support.design.widget.TextInputLayout>
+				</com.google.android.material.textfield.TextInputLayout>
 
-				<android.support.design.widget.TextInputLayout
+				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
-					<android.support.design.widget.TextInputEditText
+					<com.google.android.material.textfield.TextInputEditText
 						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_reading"
 						android:text="@={viewModel.actVm.reading}"
 						tools:text="500" />
-				</android.support.design.widget.TextInputLayout>
+				</com.google.android.material.textfield.TextInputLayout>
 
-				<android.support.design.widget.TextInputLayout
+				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
-					<android.support.design.widget.TextInputEditText
+					<com.google.android.material.textfield.TextInputEditText
 						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_writing"
 						android:text="@={viewModel.actVm.writing}"
 						tools:text="500" />
-				</android.support.design.widget.TextInputLayout>
+				</com.google.android.material.textfield.TextInputLayout>
 			</LinearLayout>
 
 			<TextView
@@ -126,49 +126,49 @@
 					layout="@layout/date_layout"
 					app:viewModel="@{viewModel.satVm.testDateVm}" />
 
-				<android.support.design.widget.TextInputLayout
+				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
-					<android.support.design.widget.TextInputEditText
+					<com.google.android.material.textfield.TextInputEditText
 						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_sat_total"
 						android:text="@={viewModel.satVm.composite}"
 						tools:text="500" />
-				</android.support.design.widget.TextInputLayout>
+				</com.google.android.material.textfield.TextInputLayout>
 
-				<android.support.design.widget.TextInputLayout
+				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
-					<android.support.design.widget.TextInputEditText
+					<com.google.android.material.textfield.TextInputEditText
 						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_sat_reading"
 						android:text="@={viewModel.satVm.reading}"
 						tools:text="500" />
-				</android.support.design.widget.TextInputLayout>
+				</com.google.android.material.textfield.TextInputLayout>
 
-				<android.support.design.widget.TextInputLayout
+				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
-					<android.support.design.widget.TextInputEditText
+					<com.google.android.material.textfield.TextInputEditText
 						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_sat_math"
 						android:text="@={viewModel.satVm.math}"
 						tools:text="500" />
-				</android.support.design.widget.TextInputLayout>
+				</com.google.android.material.textfield.TextInputLayout>
 
-				<android.support.design.widget.TextInputLayout
+				<com.google.android.material.textfield.TextInputLayout
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content">
 
-					<android.support.design.widget.TextInputEditText
+					<com.google.android.material.textfield.TextInputEditText
 						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_sat_essay"
 						android:text="@={viewModel.satVm.writing}"
 						tools:text="500" />
-				</android.support.design.widget.TextInputLayout>
+				</com.google.android.material.textfield.TextInputLayout>
 			</LinearLayout>
 		</RelativeLayout>
 

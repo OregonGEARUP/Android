@@ -1,8 +1,8 @@
 package org.oregongoestocollege.itsaplan.support;
 
-import android.databinding.BindingAdapter;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
+import androidx.databinding.BindingAdapter;
+import androidx.annotation.Nullable;
+import com.google.android.material.textfield.TextInputEditText;
 import android.text.method.TransformationMethod;
 
 /**

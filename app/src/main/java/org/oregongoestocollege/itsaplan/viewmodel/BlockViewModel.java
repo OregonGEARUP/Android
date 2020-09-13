@@ -5,11 +5,11 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.databinding.ObservableBoolean;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.databinding.ObservableBoolean;
+import androidx.annotation.NonNull;
 import android.widget.Toast;
 
 import org.oregongoestocollege.itsaplan.R;

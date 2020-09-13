@@ -1,7 +1,7 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.support.BindingItem;

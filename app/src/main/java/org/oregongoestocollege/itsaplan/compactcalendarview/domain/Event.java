@@ -1,6 +1,6 @@
 package org.oregongoestocollege.itsaplan.compactcalendarview.domain;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 public class Event {
 

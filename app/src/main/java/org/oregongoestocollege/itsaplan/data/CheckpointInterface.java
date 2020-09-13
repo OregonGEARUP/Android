@@ -2,8 +2,8 @@ package org.oregongoestocollege.itsaplan.data;
 
 import java.util.List;
 
-import android.arch.lifecycle.LiveData;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.annotation.NonNull;
 
 /**
  * Main entry point for accessing data.

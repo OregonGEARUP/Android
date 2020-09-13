@@ -39,32 +39,32 @@
 			style="@style/GearUpSectionLayout"
 			android:layout_below="@+id/textview_title">
 
-			<android.support.design.widget.TextInputLayout
+			<com.google.android.material.textfield.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputEditText
+				<com.google.android.material.textfield.TextInputEditText
 					style="@style/GearUpTextMaxLengthDefault"
 					android:hint="@string/scholarship_name_hint"
 						android:text="@={viewModel.name}"
 					tools:text="my scholarship" />
-			</android.support.design.widget.TextInputLayout>
+			</com.google.android.material.textfield.TextInputLayout>
 
 			<include
 				layout="@layout/date_layout"
 				app:viewModel="@{viewModel.applicationDateVm}"/>
 
-			<android.support.design.widget.TextInputLayout
+			<com.google.android.material.textfield.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputEditText
+				<com.google.android.material.textfield.TextInputEditText
 					style="@style/GearUpTextMaxLengthDefault"
 					android:hint="@string/website_url"
 					android:inputType="textUri"
 					android:text="@={viewModel.website}"
 					tools:text="https://gotocollege" />
-			</android.support.design.widget.TextInputLayout>
+			</com.google.android.material.textfield.TextInputLayout>
 
 			<CheckBox
 				android:layout_width="wrap_content"
@@ -110,18 +110,18 @@
 				android:checked="@={viewModel.testsDone}"
 				android:text="@string/apply_tests" />
 
-			<android.support.design.widget.TextInputLayout
+			<com.google.android.material.textfield.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputEditText
+				<com.google.android.material.textfield.TextInputEditText
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:hint="@string/other_information"
 					android:inputType="text"
 					android:text="@={viewModel.otherInfo}"
 					tools:text="more info" />
-			</android.support.design.widget.TextInputLayout>
+			</com.google.android.material.textfield.TextInputLayout>
 		</LinearLayout>
 
 		<Button

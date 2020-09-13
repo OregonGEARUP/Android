@@ -1,7 +1,7 @@
 package org.oregongoestocollege.itsaplan.support;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.oregongoestocollege.itsaplan.ChecklistFragment;
 import org.oregongoestocollege.itsaplan.InfoFragment;

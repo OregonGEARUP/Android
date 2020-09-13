@@ -3,12 +3,12 @@ package org.oregongoestocollege.itsaplan.data;
 import java.util.List;
 import java.util.Set;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.SingleLiveEvent;

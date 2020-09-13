@@ -5,9 +5,9 @@ import java.util.Date;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import android.text.format.DateFormat;
 import android.view.View;
 
@@ -55,7 +55,7 @@ public class DateViewModel implements BindingItem
 		else
 			value.set(context.getString(R.string.hint_date_picker));
 
-		if (labelStringRes > 0)
+		if (labelStringRes != 0)
 			this.label.set(context.getString(labelStringRes));
 	}
 

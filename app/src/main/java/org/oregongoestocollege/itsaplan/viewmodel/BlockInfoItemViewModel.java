@@ -3,9 +3,9 @@ package org.oregongoestocollege.itsaplan.viewmodel;
 import java.util.Locale;
 
 import android.content.Context;
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.data.BlockInfo;

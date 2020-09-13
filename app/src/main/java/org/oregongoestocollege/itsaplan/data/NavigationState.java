@@ -1,6 +1,6 @@
 package org.oregongoestocollege.itsaplan.data;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * Holds the state needed to operate on itsaplan:// links.

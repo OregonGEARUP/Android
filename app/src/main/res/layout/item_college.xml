@@ -39,31 +39,31 @@
 			style="@style/GearUpSectionLayout"
 			android:layout_below="@+id/textview_title">
 
-			<android.support.design.widget.TextInputLayout
+			<com.google.android.material.textfield.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputEditText
+				<com.google.android.material.textfield.TextInputEditText
 					style="@style/GearUpTextMaxLengthDefault"
 					android:hint="@string/college_name_hint"
 					android:text="@={viewModel.name}"
 					tools:text="my college" />
-			</android.support.design.widget.TextInputLayout>
+			</com.google.android.material.textfield.TextInputLayout>
 
 			<include
 				layout="@layout/date_layout"
 				app:viewModel="@{viewModel.applicationDateVm}" />
 
-			<android.support.design.widget.TextInputLayout
+			<com.google.android.material.textfield.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputEditText
+				<com.google.android.material.textfield.TextInputEditText
 					style="@style/GearUpTextMaxLengthDefault"
 					android:hint="@string/college_net_price_hint"
 					android:text="@={viewModel.averageNetPrice}"
 					tools:text="10,000" />
-			</android.support.design.widget.TextInputLayout>
+			</com.google.android.material.textfield.TextInputLayout>
 
 			<CheckBox
 				android:layout_width="wrap_content"
@@ -127,16 +127,16 @@
 				android:checked="@={viewModel.feeDeferralDone}"
 				android:text="@string/college_apply_fee_deferral" />
 
-			<android.support.design.widget.TextInputLayout
+			<com.google.android.material.textfield.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputEditText
+				<com.google.android.material.textfield.TextInputEditText
 					style="@style/GearUpTextMaxLengthDefault"
 					android:hint="@string/college_apply_cost_hint"
 					android:text="@={viewModel.applicationCost}"
 					tools:text="10,000" />
-			</android.support.design.widget.TextInputLayout>
+			</com.google.android.material.textfield.TextInputLayout>
 		</LinearLayout>
 
 		<Button

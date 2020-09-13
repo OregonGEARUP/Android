@@ -1,6 +1,6 @@
 package org.oregongoestocollege.itsaplan;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 /**
  * OnFragmentInteractionListener

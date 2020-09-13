@@ -1,8 +1,8 @@
 package org.oregongoestocollege.itsaplan.data;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * This class is a interface used to retrieve and store user entered data.

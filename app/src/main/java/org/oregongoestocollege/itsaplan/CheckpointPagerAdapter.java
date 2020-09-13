@@ -2,8 +2,8 @@ package org.oregongoestocollege.itsaplan;
 
 import java.util.List;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import org.oregongoestocollege.itsaplan.data.ChecklistState;
 import org.oregongoestocollege.itsaplan.support.SmartFragmentStatePageAdapter;

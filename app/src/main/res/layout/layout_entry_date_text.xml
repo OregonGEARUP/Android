@@ -30,17 +30,17 @@
 				android:text="@{uxContent.getInstancePrompt(0)}"
 				tools:text="Your birthdate" />
 
-			<android.support.design.widget.TextInputLayout
+			<com.google.android.material.textfield.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputEditText
+				<com.google.android.material.textfield.TextInputEditText
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:hint="@{uxContent.getFieldViewModel(0).getPlaceholder()}"
 					android:inputType="text"
 					android:text="@={uxContent.getFieldViewModel(0).text}" />
-			</android.support.design.widget.TextInputLayout>
+			</com.google.android.material.textfield.TextInputLayout>
 
 			<TextView
 				android:layout_width="match_parent"
@@ -71,17 +71,17 @@
 				android:text="@{uxContent.getInstancePrompt(1)}"
 				tools:text="Your birthdate" />
 
-			<android.support.design.widget.TextInputLayout
+			<com.google.android.material.textfield.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputEditText
+				<com.google.android.material.textfield.TextInputEditText
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:hint="@{uxContent.getFieldViewModel(1).getPlaceholder()}"
 					android:inputType="text"
 					android:text="@={uxContent.getFieldViewModel(1).text}" />
-			</android.support.design.widget.TextInputLayout>
+			</com.google.android.material.textfield.TextInputLayout>
 
 			<TextView
 				android:layout_width="match_parent"
@@ -112,17 +112,17 @@
 				android:text="@{uxContent.getInstancePrompt(2)}"
 				tools:text="Your birthdate" />
 
-			<android.support.design.widget.TextInputLayout
+			<com.google.android.material.textfield.TextInputLayout
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content">
 
-				<android.support.design.widget.TextInputEditText
+				<com.google.android.material.textfield.TextInputEditText
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:hint="@{uxContent.getFieldViewModel(2).getPlaceholder()}"
 					android:inputType="text"
 					android:text="@={uxContent.getFieldViewModel(2).text}" />
-			</android.support.design.widget.TextInputLayout>
+			</com.google.android.material.textfield.TextInputLayout>
 
 			<TextView
 				android:layout_width="match_parent"

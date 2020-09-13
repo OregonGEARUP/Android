@@ -1,8 +1,10 @@
 package org.oregongoestocollege.itsaplan;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
-import android.support.design.widget.TextInputEditText;
+import androidx.annotation.StringRes;
+import com.google.android.material.textfield.TextInputEditText;
+
+import android.text.Editable;
 import android.widget.FrameLayout;
 
 /**
@@ -29,6 +31,7 @@ public class AddLayoutView extends FrameLayout
 
 	public String getAddedText()
 	{
-		return editText.getText().toString();
+		Editable text = editText.getText();
+		return text != null ? text.toString() : null;
 	}
 }

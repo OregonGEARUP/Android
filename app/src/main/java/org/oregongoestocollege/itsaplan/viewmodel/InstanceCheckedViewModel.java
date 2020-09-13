@@ -1,7 +1,7 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
-import android.databinding.ObservableBoolean;
-import android.support.annotation.NonNull;
+import androidx.databinding.ObservableBoolean;
+import androidx.annotation.NonNull;
 
 import org.oregongoestocollege.itsaplan.data.Instance;
 

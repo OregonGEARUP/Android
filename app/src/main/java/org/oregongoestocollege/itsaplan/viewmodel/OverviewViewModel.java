@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Transformations;
-import android.databinding.ObservableBoolean;
-import android.support.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
+import androidx.databinding.ObservableBoolean;
+import androidx.annotation.NonNull;
 
 import org.oregongoestocollege.itsaplan.data.BlockInfo;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;

@@ -4,13 +4,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,7 +60,7 @@ public class MyPlanCalendarFragment extends Fragment implements CompactCalendarV
 
 		// listen for data changes
 		MyPlanRepository myPlanRepository = MyPlanRepository.getInstance(getContext());
-		myPlanRepository.getCalendarEvents().observe(this, this::onCalendarEventsChanged);
+		myPlanRepository.getCalendarEvents().observe(getViewLifecycleOwner(), this::onCalendarEventsChanged);
 
 		// our VM stores the last selected date for rotation, etc. check it
 		Date selectedDate = viewModel.getSelectedDate();

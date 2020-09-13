@@ -1,7 +1,7 @@
 package org.oregongoestocollege.itsaplan.support;
 
-import android.databinding.ViewDataBinding;
-import android.support.v7.widget.RecyclerView;
+import androidx.databinding.ViewDataBinding;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.oregongoestocollege.itsaplan.BR;
 

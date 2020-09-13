@@ -1,7 +1,7 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
-import android.databinding.ObservableBoolean;
-import android.databinding.ObservableField;
+import androidx.databinding.ObservableBoolean;
+import androidx.databinding.ObservableField;
 import android.text.TextUtils;
 import android.text.method.TransformationMethod;
 

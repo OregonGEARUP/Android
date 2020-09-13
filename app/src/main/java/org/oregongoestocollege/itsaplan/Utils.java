@@ -1,9 +1,11 @@
 package org.oregongoestocollege.itsaplan;
 
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +29,7 @@ public class Utils
 	/**
 	 * Helper method that checks for bread crumb titles on child fragments and if found set's
 	 * the activity title to the bread crumb title. Works because we call
-	 * {@link android.support.v4.app.FragmentTransaction#setBreadCrumbTitle(int)}.
+	 * {@link FragmentTransaction#setBreadCrumbTitle(int)}.
 	 */
 	static int updateTitleOnBackStackChanged(@NonNull Fragment fragment, @NonNull String logTag)
 	{

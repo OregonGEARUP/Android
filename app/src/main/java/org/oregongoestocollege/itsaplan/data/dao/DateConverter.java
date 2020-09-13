@@ -18,7 +18,7 @@ package org.oregongoestocollege.itsaplan.data.dao;
 
 import java.util.Date;
 
-import android.arch.persistence.room.TypeConverter;
+import androidx.room.TypeConverter;
 
 public class DateConverter
 {

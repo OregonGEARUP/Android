@@ -1,8 +1,8 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.data.Instance;

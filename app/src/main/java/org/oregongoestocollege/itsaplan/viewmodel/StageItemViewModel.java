@@ -1,8 +1,8 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
 import android.content.Context;
-import android.databinding.ObservableBoolean;
-import android.support.annotation.NonNull;
+import androidx.databinding.ObservableBoolean;
+import androidx.annotation.NonNull;
 
 import org.oregongoestocollege.itsaplan.R;
 import org.oregongoestocollege.itsaplan.data.CheckpointInterface;

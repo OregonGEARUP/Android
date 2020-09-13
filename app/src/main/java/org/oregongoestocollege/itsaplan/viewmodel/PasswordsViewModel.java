@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
+import androidx.lifecycle.AndroidViewModel;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.method.PasswordTransformationMethod;
 import android.text.method.TransformationMethod;

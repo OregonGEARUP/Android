@@ -1,13 +1,15 @@
 package org.oregongoestocollege.itsaplan.viewmodel;
 
+import java.util.Objects;
+
 import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import android.content.Context;
-import android.databinding.ObservableField;
-import android.support.annotation.NonNull;
+import androidx.databinding.ObservableField;
+import androidx.annotation.NonNull;
 import android.text.TextUtils;
 
 import org.oregongoestocollege.itsaplan.R;
@@ -60,20 +62,20 @@ public class ResidencyViewModel extends AndroidViewModel
 			return false;
 
 		// compare the residency data against the user entry fields
-		return residencyStartDateVm.get().isDirty() ||
-			residencyEndDateVm.get().isDirty() ||
-			parentResidencyStartDateVm.get().isDirty() ||
-			parentResidencyEndDateVm.get().isDirty() ||
-			registerToVoteDateVm.get().isDirty() ||
-			parentsRegisterToVoteDateVm.get().isDirty() ||
-			militaryServiceStartDateVm.get().isDirty() ||
-			militaryServiceEndDateVm.get().isDirty() ||
-			parentMilitaryServiceStartDateVm.get().isDirty() ||
-			parentMilitaryServiceEndDateVm.get().isDirty() ||
+		return Objects.requireNonNull(residencyStartDateVm.get()).isDirty() ||
+			Objects.requireNonNull(residencyEndDateVm.get()).isDirty() ||
+			Objects.requireNonNull(parentResidencyStartDateVm.get()).isDirty() ||
+			Objects.requireNonNull(parentResidencyEndDateVm.get()).isDirty() ||
+			Objects.requireNonNull(registerToVoteDateVm.get()).isDirty() ||
+			Objects.requireNonNull(parentsRegisterToVoteDateVm.get()).isDirty() ||
+			Objects.requireNonNull(militaryServiceStartDateVm.get()).isDirty() ||
+			Objects.requireNonNull(militaryServiceEndDateVm.get()).isDirty() ||
+			Objects.requireNonNull(parentMilitaryServiceStartDateVm.get()).isDirty() ||
+			Objects.requireNonNull(parentMilitaryServiceEndDateVm.get()).isDirty() ||
 			!TextUtils.equals(nameEmployer1.get(), value.getNameEmployer1()) ||
 			!TextUtils.equals(cityEmployer1.get(), value.getCityEmployer1()) ||
-			startEmployer1DateVm.get().isDirty() ||
-			endEmployer1DateVm.get().isDirty();
+			Objects.requireNonNull(startEmployer1DateVm.get()).isDirty() ||
+			Objects.requireNonNull(endEmployer1DateVm.get()).isDirty();
 	}
 
 	public LiveData<Residency> getResidencyData()
@@ -112,25 +114,31 @@ public class ResidencyViewModel extends AndroidViewModel
 			Utils.d(LOG_TAG, "Saving Residency to database");
 
 		Residency value = residencyData.getValue();
+		if (value == null)
+			return;
 
-		value.setResidencyStart(residencyStartDateVm.get().getSelectedDate());
-		value.setResidencyEnd(residencyEndDateVm.get().getSelectedDate());
-		value.setParentResidencyStart(parentResidencyStartDateVm.get().getSelectedDate());
-		value.setParentResidencyEnd(parentResidencyEndDateVm.get().getSelectedDate());
-		value.setRegisterToVote(registerToVoteDateVm.get().getSelectedDate());
-		value.setParentsRegisterToVote(parentsRegisterToVoteDateVm.get().getSelectedDate());
-		value.setMilitaryServiceStart(militaryServiceStartDateVm.get().getSelectedDate());
-		value.setMilitaryServiceEnd(militaryServiceEndDateVm.get().getSelectedDate());
-		value.setParentMilitaryServiceStart(parentMilitaryServiceStartDateVm.get().getSelectedDate());
-		value.setParentMilitaryServiceEnd(parentMilitaryServiceEndDateVm.get().getSelectedDate());
-		value.setFileOregonTaxesYear1(fileOregonTaxesYear1DateVm.get().getSelectedDate());
-		value.setFileOregonTaxesYear2(fileOregonTaxesYear2DateVm.get().getSelectedDate());
-		value.setParentsFileOregonTaxesYear1(parentsFileOregonTaxesYear1DateVm.get().getSelectedDate());
-		value.setParentsFileOregonTaxesYear2(parentsFileOregonTaxesYear2DateVm.get().getSelectedDate());
+		value.setResidencyStart(Objects.requireNonNull(residencyStartDateVm.get()).getSelectedDate());
+		value.setResidencyEnd(Objects.requireNonNull(residencyEndDateVm.get()).getSelectedDate());
+		value.setParentResidencyStart(Objects.requireNonNull(parentResidencyStartDateVm.get()).getSelectedDate());
+		value.setParentResidencyEnd(Objects.requireNonNull(parentResidencyEndDateVm.get()).getSelectedDate());
+		value.setRegisterToVote(Objects.requireNonNull(registerToVoteDateVm.get()).getSelectedDate());
+		value.setParentsRegisterToVote(Objects.requireNonNull(parentsRegisterToVoteDateVm.get()).getSelectedDate());
+		value.setMilitaryServiceStart(Objects.requireNonNull(militaryServiceStartDateVm.get()).getSelectedDate());
+		value.setMilitaryServiceEnd(Objects.requireNonNull(militaryServiceEndDateVm.get()).getSelectedDate());
+		value.setParentMilitaryServiceStart(
+			Objects.requireNonNull(parentMilitaryServiceStartDateVm.get()).getSelectedDate());
+		value.setParentMilitaryServiceEnd(
+			Objects.requireNonNull(parentMilitaryServiceEndDateVm.get()).getSelectedDate());
+		value.setFileOregonTaxesYear1(Objects.requireNonNull(fileOregonTaxesYear1DateVm.get()).getSelectedDate());
+		value.setFileOregonTaxesYear2(Objects.requireNonNull(fileOregonTaxesYear2DateVm.get()).getSelectedDate());
+		value.setParentsFileOregonTaxesYear1(
+			Objects.requireNonNull(parentsFileOregonTaxesYear1DateVm.get()).getSelectedDate());
+		value.setParentsFileOregonTaxesYear2(
+			Objects.requireNonNull(parentsFileOregonTaxesYear2DateVm.get()).getSelectedDate());
 		value.setNameEmployer1(nameEmployer1.get());
 		value.setCityEmployer1(cityEmployer1.get());
-		value.setStartEmployer1(startEmployer1DateVm.get().getSelectedDate());
-		value.setEndEmployer1(endEmployer1DateVm.get().getSelectedDate());
+		value.setStartEmployer1(Objects.requireNonNull(startEmployer1DateVm.get()).getSelectedDate());
+		value.setEndEmployer1(Objects.requireNonNull(endEmployer1DateVm.get()).getSelectedDate());
 
 		repository.update(value);
 	}
