@@ -80,6 +80,7 @@
 	<string name="tests_act_sciece">Science Score</string>
 	<string name="tests_act_reading">Reading Score</string>
 	<string name="tests_act_writing">Writing Score</string>
+	<string name="tests_act_english">English Score</string>
 	<string name="tests_sat">SAT</string>
 	<string name="tests_sat_message">If you have taken the SAT, enter the date and your best scores.</string>
 	<string name="tests_sat_date">Date</string>

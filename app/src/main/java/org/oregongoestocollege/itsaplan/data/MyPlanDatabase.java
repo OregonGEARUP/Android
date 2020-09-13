@@ -1,5 +1,6 @@
 package org.oregongoestocollege.itsaplan.data;
 
+import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import androidx.room.Database;
 import androidx.room.Room;
@@ -25,7 +26,7 @@ import org.oregongoestocollege.itsaplan.data.dao.VisitedKeyDao;
  */
 @Database(entities = { College.class, Scholarship.class, TestResult.class, Residency.class,
 	BlockInfo.class, VisitedKey.class },
-	version = 1,
+	version = 2,
 	exportSchema = false)
 @TypeConverters(DateConverter.class)
 abstract class MyPlanDatabase extends RoomDatabase
@@ -47,6 +48,7 @@ abstract class MyPlanDatabase extends RoomDatabase
 					instance = Room.databaseBuilder(context.getApplicationContext(),
 						MyPlanDatabase.class, "myplan_database")
 						.addCallback(sRoomDatabaseCallback)
+						.addMigrations(MIGRATION_1_2)
 						.build();
 				}
 			}
@@ -104,4 +106,12 @@ abstract class MyPlanDatabase extends RoomDatabase
 	public abstract BlockInfoDao blockInfoDao();
 
 	public abstract VisitedKeyDao visitedKeyDao();
+
+	static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+		@Override
+		public void migrate(SupportSQLiteDatabase database) {
+			database.execSQL("ALTER TABLE testresult_table "
+				+ " ADD COLUMN english TEXT");
+		}
+	};
 }

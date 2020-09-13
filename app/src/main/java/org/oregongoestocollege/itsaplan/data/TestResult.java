@@ -37,6 +37,8 @@ public class TestResult
 	private String reading;
 	// ACT: writing and SAT: essay
 	private String writing;
+	// ACT: english and SAT: n/a
+	private String english;
 
 	public TestResult(@NonNull String name)
 	{
@@ -112,6 +114,16 @@ public class TestResult
 	public void setWriting(String writing)
 	{
 		this.writing = writing;
+	}
+
+	public String getEnglish()
+	{
+		return english;
+	}
+
+	public void setEnglish(String english)
+	{
+		this.english = english;
 	}
 
 	public boolean hasTestDate()

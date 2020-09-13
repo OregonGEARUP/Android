@@ -24,6 +24,7 @@ public class TestResultViewModel
 	public final ObservableField<String> science = new ObservableField<>();
 	public final ObservableField<String> reading = new ObservableField<>();
 	public final ObservableField<String> writing = new ObservableField<>();
+	public final ObservableField<String> english = new ObservableField<>();
 
 	public TestResultViewModel()
 	{
@@ -40,7 +41,8 @@ public class TestResultViewModel
 			!TextUtils.equals(math.get(), value.getMath()) ||
 			!TextUtils.equals(science.get(), value.getScience()) ||
 			!TextUtils.equals(reading.get(), value.getReading()) ||
-			!TextUtils.equals(writing.get(), value.getWriting());
+			!TextUtils.equals(writing.get(), value.getWriting()) ||
+			!TextUtils.equals(english.get(), value.getEnglish());
 	}
 
 	public void setTestResult(@NonNull Context context, TestResult testResult, @StringRes int placeholderStringResId)
@@ -52,6 +54,7 @@ public class TestResultViewModel
 		science.set(testResult.getScience());
 		reading.set(testResult.getReading());
 		writing.set(testResult.getWriting());
+		english.set(testResult.getEnglish());
 	}
 
 	public boolean isNotificationDirty()
@@ -73,6 +76,7 @@ public class TestResultViewModel
 		value.setScience(science.get());
 		value.setReading(reading.get());
 		value.setWriting(writing.get());
+		value.setEnglish(english.get());
 
 		testDateVm.get().saved();
 

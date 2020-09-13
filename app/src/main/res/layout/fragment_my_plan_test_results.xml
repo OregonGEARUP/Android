@@ -68,6 +68,17 @@
 
 					<com.google.android.material.textfield.TextInputEditText
 						style="@style/GearUpTextMaxLengthSmall"
+						android:hint="@string/tests_act_english"
+						android:text="@={viewModel.actVm.english}"
+						tools:text="500" />
+				</com.google.android.material.textfield.TextInputLayout>
+
+				<com.google.android.material.textfield.TextInputLayout
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content">
+
+					<com.google.android.material.textfield.TextInputEditText
+						style="@style/GearUpTextMaxLengthSmall"
 						android:hint="@string/tests_act_math"
 						android:text="@={viewModel.actVm.math}"
 						tools:text="500" />
